@@ -12,17 +12,18 @@
     tools:context=".ui.login.SigninActivity2">
 
     <!-- Back Button -->
-
     <ImageView
         android:id="@+id/back_arrow"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:src="@drawable/ic_arrow_back"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    android:layout_marginTop="16dp"
-    android:layout_marginStart="16dp" />
-
+        android:padding="12dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:contentDescription="@string/back"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        tools:ignore="ContentDescription" />
 
     <!-- Title -->
     <TextView
@@ -34,7 +35,8 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
 
     <!-- Description -->
     <TextView
@@ -52,29 +54,35 @@
     <EditText
         android:id="@+id/email"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/email"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="24dp"
+        android:autofillHints="emailAddress"
+        android:hint="@string/email"
+        android:importantForAutofill="yes"
         android:inputType="textEmailAddress"
-        app:layout_constraintTop_toBottomOf="@id/description"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="24dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/description"
+        tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
 
     <!-- Password -->
     <EditText
         android:id="@+id/etpassword"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:hint="@string/password"
         android:inputType="textPassword"
+        android:importantForAutofill="yes"
+        android:autofillHints="password"
         app:layout_constraintTop_toBottomOf="@id/email"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="16dp"
+        tools:ignore="VisualLintTextFieldSize" />
 
-
-
-    <!-- Show Password Toggle (Optional Enhancement) -->
+    <!-- Show Password Toggle -->
     <TextView
         android:id="@+id/show_password"
         android:layout_width="wrap_content"
@@ -85,21 +93,22 @@
         app:layout_constraintTop_toTopOf="@id/etpassword"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="4dp" />
+        android:layout_marginEnd="20dp" />
 
-    <!-- Sign Up Button -->
+    <!-- Sign In Button -->
     <Button
         android:id="@+id/btnsignup_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="#4CAF50"
+        android:minHeight="48dp"
         android:text="@string/sign_in"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/green_300"
-        app:layout_constraintTop_toBottomOf="@id/etpassword"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp" />
-
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etpassword"
+        tools:ignore="TextContrastCheck,VisualLintButtonSize" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
