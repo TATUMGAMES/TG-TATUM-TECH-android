@@ -1,6 +1,5 @@
 package com.tatumgames.tatumtech.android.data
 
-import com.tatumgames.tatumtech.android.data.model.LoggedInUser
 import java.io.IOException
 
 /**

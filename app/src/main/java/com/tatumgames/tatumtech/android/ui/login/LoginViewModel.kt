@@ -23,7 +23,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 
         if (result is Result.Success) {
             _loginResult.value =
-                LoginResult(success = LoggedInUserView(displayName = result.data.displayName))
+                LoginResult(success = LoggedInUserView())
         } else {
             _loginResult.value = LoginResult(error = R.string.login_failed)
         }
@@ -53,3 +53,5 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         return password.length > 5
     }
 }
+
+class LoggedInUserView

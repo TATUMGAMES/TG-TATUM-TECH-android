@@ -68,7 +68,7 @@
 
     <!-- Password -->
     <EditText
-        android:id="@+id/etpassword"
+        android:id="@+id/et_password"
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:hint="@string/password"
@@ -90,14 +90,14 @@
         android:text="@string/show"
         android:textColor="@color/black"
         android:textSize="14sp"
-        app:layout_constraintTop_toTopOf="@id/etpassword"
+        app:layout_constraintTop_toTopOf="@id/et_password"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="20dp" />
 
     <!-- Sign In Button -->
     <Button
-        android:id="@+id/btnsignup_button"
+        android:id="@+id/btn_signup_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
@@ -108,7 +108,7 @@
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etpassword"
+        app:layout_constraintTop_toBottomOf="@id/et_password"
         tools:ignore="TextContrastCheck,VisualLintButtonSize" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

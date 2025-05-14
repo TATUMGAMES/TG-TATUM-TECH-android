@@ -2,8 +2,6 @@ package com.tatumgames.tatumtech.android.activity.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.tatumgames.tatumtech.android.activity.data.LoginDataSource
-import com.tatumgames.tatumtech.android.activity.data.LoginRepository
 
 /**
  * ViewModel provider factory to instantiate LoginViewModel.

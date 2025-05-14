@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import android.util.Patterns
-import com.tatumgames.tatumtech.android.activity.data.LoginRepository
 import com.tatumgames.tatumtech.android.activity.data.Result
 
 import com.tatumgames.tatumtech.android.activity.R
