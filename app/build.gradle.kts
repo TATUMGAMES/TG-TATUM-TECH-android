@@ -1,16 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.tatumgames.tatumtech.android"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.tatumgames.tatumtech.android"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -33,13 +34,42 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.14" //1.5.14 - for kotlin (1.9.24) // Required for Compose 1.6.6
+    }
 }
 
 dependencies {
-
+    // Core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
+
+    // Jetpack Compose (Material 3)
+    implementation("androidx.activity:activity-compose:1.10.1")
+    implementation("androidx.compose.ui:ui:1.6.6")
+    implementation("androidx.compose.foundation:foundation:1.6.6")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.6.6")
+    implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.constraintlayout.compose)
+    debugImplementation("androidx.compose.ui:ui-tooling:1.6.6")
+    implementation(libs.androidx.navigation.compose)
+
+
+    // Firebase & Google SSO
+    implementation("androidx.credentials:credentials:1.2.1")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.1")
+    implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
+    implementation("com.google.android.gms:play-services-auth:20.7.0") // or latest
+    implementation("com.google.firebase:firebase-auth:22.3.1") // or latest
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation(libs.firebase.common.ktx)
+    implementation(libs.googleid)
+    implementation(libs.androidx.storage)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
