@@ -8,16 +8,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
 
 @Composable
-fun MainScreen(
-    navController: NavController
+fun SigninScreen(
+    navController: NavController,
+    onSignInSuccess: () -> Unit
 ) {
     Column(
         Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Hello, World!")
+//        Text("Sign In Screen")
+//        Button(onClick = { navController.navigate(NavRoutes.FORGOT_PASSWORD_SCREEN) }) {
+//            Text("Forgot Password?")
+//        }
+//        Button(onClick = { onSignInSuccess() }) {
+//            Text("Mock Sign In")
+//        }
     }
 }

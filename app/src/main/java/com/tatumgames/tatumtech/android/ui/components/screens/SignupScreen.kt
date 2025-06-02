@@ -10,14 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 
 @Composable
-fun MainScreen(
-    navController: NavController
-) {
+fun SignupScreen(navController: NavController) {
     Column(
-        Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("Hello, World!")
+        verticalArrangement = Arrangement.Center) {
+        Text("Sign Up Screen")
     }
 }

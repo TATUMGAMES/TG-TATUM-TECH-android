@@ -1,2 +1,93 @@
 package com.tatumgames.tatumtech.android.ui.components.common
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.ui.theme.TatumTechTheme
+
+@Preview(showBackground = true)
+@Composable
+fun HeaderPreview() {
+    TatumTechTheme {
+        Header()
+    }
+}
+
+@Composable
+fun Header(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit = {}
+) {
+    ConstraintLayout(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            // this adds padding equal to the height of the status bar
+            .statusBarsPadding()
+    ) {
+        val (backButton, title, divider) = createRefs()
+
+        // back button
+        Image(
+            modifier = Modifier
+                .size(30.dp)
+                .padding(6.dp)
+                .clickable { onBackClick() }
+                .constrainAs(backButton) {
+                    start.linkTo(parent.start, margin = 10.dp)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                },
+            painter = painterResource(id = R.drawable.back_arrow),
+            contentDescription = null
+        )
+
+        // title
+        TitleText(
+            modifier = Modifier
+                .constrainAs(title) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                },
+            text = stringResource(id = R.string.account_setup),
+            color = colorResource(R.color.purple_200),
+            style = MaterialTheme.typography.headlineSmall.copy(
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
+            )
+        )
+
+        // divider
+        HorizontalDivider(
+            modifier = Modifier
+                .constrainAs(divider) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    top.linkTo(title.bottom)
+                    width = Dimension.fillToConstraints
+                },
+            thickness = 2.dp,
+            color = colorResource(R.color.purple_200)
+        )
+    }
+}

@@ -10,14 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 
 @Composable
-fun MainScreen(
-    navController: NavController
-) {
+fun ForgotPasswordScreen(
+    navController: NavController) {
     Column(
         Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Hello, World!")
+        Text("Forgot Password Screen")
     }
 }
