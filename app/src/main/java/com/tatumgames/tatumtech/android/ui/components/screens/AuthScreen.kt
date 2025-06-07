@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -28,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -107,8 +109,10 @@ fun AuthScreen(
             .background(Color.White)
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+        verticalArrangement = Arrangement.Center
     ) {
+        var buttonWidth = 300.dp
+        var buttonHeight = 60.dp
         Text(
             text = stringResource(id = R.string.lets_begin_your_tatum_tech_experience),
             fontSize = 18.sp,
@@ -122,7 +126,9 @@ fun AuthScreen(
 
         // Sign Up button
         RoundedButton(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .width(buttonWidth)
+                .height(buttonHeight),
             text = stringResource(id = R.string.sign_up),
             onClick = onSignUpClick
         )
@@ -131,7 +137,9 @@ fun AuthScreen(
 
         // Sign In button
         RoundedButton(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .width(buttonWidth)
+                .height(buttonHeight),
             text = stringResource(id = R.string.sign_in),
             onClick = onSignInClick
         )
@@ -147,7 +155,7 @@ fun AuthScreen(
                 fontSize = 16.sp
             ),
             textAlign = TextAlign.Center,
-            color = colorResource(R.color.purple_500)
+            color = colorResource(R.color.black)
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -157,8 +165,8 @@ fun AuthScreen(
             painter = painterResource(id = R.drawable.android_light_sq_signin),
             contentDescription = "Google Sign In",
             modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
+                .width(buttonWidth)
+                .height(buttonHeight)
                 .clickable { onGoogleSignInClick() }
         )
 
