@@ -42,7 +42,7 @@
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
-    <string name="already_have_an_account">Already have an account? Sign In"</string>
+    <string name="already_have_an_account">Already have an account? "</string>
 
     <string name="title_activity_home">homeActivity</string>
     <string name="title_activity_change_password">change_passwordActivity</string>
