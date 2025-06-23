@@ -4,11 +4,7 @@ import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -21,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -32,6 +27,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout // Import ConstraintLayout
+import androidx.constraintlayout.compose.Dimension // Import Dimension for fill width/height
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.navigation.NavController
@@ -97,52 +94,72 @@ fun AuthScreen(
         }
     }
 
-    Column(
+
+    ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(24.dp)
     ) {
+        // Create references for each Composable to position them within the ConstraintLayout
+        val (titleRef, signUpButtonRef, signInButtonRef, orTextRef, googleButtonRef, progressIndicatorRef, emailTextRef, errorTextRef) = createRefs()
+
         val buttonWidth = 300.dp
         val buttonHeight = 60.dp
+
+        // Title Text
         Text(
             text = stringResource(id = R.string.lets_begin_your_tatum_tech_experience),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .constrainAs(titleRef) {
+                    top.linkTo(parent.top, margin = 64.dp) // Adjust margin from top as needed
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints // Allows it to fill width with padding
+                }
         )
-
-        Spacer(modifier = Modifier.height(32.dp))
 
         // Sign Up button
         RoundedButton(
             modifier = Modifier
                 .width(buttonWidth)
-                .height(buttonHeight),
+                .height(buttonHeight)
+                .constrainAs(signUpButtonRef) {
+                    top.linkTo(titleRef.bottom, margin = 32.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
             text = stringResource(id = R.string.sign_up),
             onClick = onSignUpClick
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         // Sign In button
         RoundedButton(
             modifier = Modifier
                 .width(buttonWidth)
-                .height(buttonHeight),
+                .height(buttonHeight)
+                .constrainAs(signInButtonRef) {
+                    top.linkTo(signUpButtonRef.bottom, margin = 16.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
             text = stringResource(id = R.string.sign_in),
             onClick = onSignInClick
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
-
         // StandardText composable for "OR"
         StandardText(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .constrainAs(orTextRef) {
+                    top.linkTo(signInButtonRef.bottom, margin = 24.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints // Allows it to fill width with padding
+                },
             text = stringResource(id = R.string.OR),
             style = MaterialTheme.typography.bodyLarge.copy(
                 fontWeight = FontWeight.Bold,
@@ -152,8 +169,6 @@ fun AuthScreen(
             color = colorResource(R.color.black)
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
-
         // Google SSO button (Image clickable)
         Image(
             painter = painterResource(id = R.drawable.android_light_sq_signin),
@@ -162,22 +177,45 @@ fun AuthScreen(
                 .width(buttonWidth)
                 .height(buttonHeight)
                 .clickable { onGoogleSignInClick() }
+                .constrainAs(googleButtonRef) {
+                    top.linkTo(orTextRef.bottom, margin = 24.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
-
         if (isLoading) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(
+                modifier = Modifier.constrainAs(progressIndicatorRef) {
+                    top.linkTo(googleButtonRef.bottom, margin = 24.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+            )
         }
 
         email?.let {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text("Signed in as $it", color = Color.Black)
+            Text(
+                "Signed in as $it",
+                color = Color.Black,
+                modifier = Modifier.constrainAs(emailTextRef) {
+                    top.linkTo(progressIndicatorRef.bottom, margin = 16.dp) // Link to progress or google button if no progress
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+            )
         }
 
         error?.let {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text("Error: $it", color = Color.Red)
+            Text(
+                "Error: $it",
+                color = Color.Red,
+                modifier = Modifier.constrainAs(errorTextRef) {
+                    top.linkTo(emailTextRef.bottom, margin = 16.dp) // Link to email text or previous element
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+            )
         }
     }
 }

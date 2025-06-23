@@ -15,13 +15,14 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="invalid_password">Password must be at least 6 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="title_activity_login">Login Activity</string>
     <string name="title_activity_signup">Signup Activity</string>
     <string name="title_activity_signin">Signin Activity</string>
-
+    <string name="forgotten_password_message">Have you Forgotten your Password?</string>
     <string name="email">Email</string>
+    <string name="click">Click Here</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_up">Sign Up</string>
     <string name="OR">OR</string>
