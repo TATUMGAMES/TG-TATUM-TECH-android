@@ -1,7 +1,23 @@
+/**
+ * Copyright 2013-present Tatum Games, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.tatumgames.tatumtech.android.constants
 
 object Constants {
+    internal const val TAG = "TG_TatumTech"
+
     // Terms and privacy policy URLS
-    const val URL_TERMS = "https://www.google.com"
-    const val URL_PRIVACY_POLICY = "https://www.yahoo.com"
+    const val URL_TERMS = "https://developer.tatumgames.com/terms"
+    const val URL_PRIVACY_POLICY = "https://developer.tatumgames.com/privacy"
 }

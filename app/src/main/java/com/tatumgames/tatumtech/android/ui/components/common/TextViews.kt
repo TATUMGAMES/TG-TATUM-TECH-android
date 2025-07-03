@@ -1,3 +1,17 @@
+/**
+ * Copyright 2013-present Tatum Games, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.tatumgames.tatumtech.android.ui.components.common
 
 import android.content.Intent
@@ -24,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.activity.MainActivity
 import com.tatumgames.tatumtech.android.constants.Constants.URL_PRIVACY_POLICY
 import com.tatumgames.tatumtech.android.constants.Constants.URL_TERMS
 
@@ -33,7 +48,7 @@ fun StandardText(
     text: String,
     style: TextStyle = MaterialTheme.typography.bodyMedium,
     textAlign: TextAlign = TextAlign.Start,
-    color: Color = colorResource(R.color.purple_500)
+    color: Color = colorResource(R.color.black)
 ) {
     Text(
         text = text,
@@ -50,7 +65,7 @@ fun TitleText(
     text: String,
     style: TextStyle = MaterialTheme.typography.titleLarge,
     textAlign: TextAlign = TextAlign.Start,
-    color: Color = colorResource(R.color.purple_500)
+    color: Color = colorResource(R.color.black)
 ) {
     Text(
         text = text,
@@ -67,7 +82,7 @@ fun ClickableText(
     text: String,
     style: TextStyle = MaterialTheme.typography.bodyMedium,
     textAlign: TextAlign = TextAlign.Start,
-    color: Color = colorResource(R.color.purple_500),
+    color: Color = colorResource(R.color.black),
     onClick: () -> Unit
 ) {
     val annotatedText = buildAnnotatedString {
@@ -132,8 +147,9 @@ fun LinkifyText(
                     start = 0,
                     end = annotatedText.length
                 ).firstOrNull()?.let { annotation ->
-                    val intent = Intent(Intent.ACTION_VIEW, annotation.item.toUri())
-                    context.startActivity(intent)
+                    context.startActivity(
+                        Intent(Intent.ACTION_VIEW, annotation.item.toUri())
+                    )
                 }
             }
         })
@@ -141,7 +157,8 @@ fun LinkifyText(
 
 @Composable
 fun TermsAndPrivacyText(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textColor: Color = colorResource(id = R.color.purple_500)
 ) {
     val context = LocalContext.current
 
@@ -196,7 +213,7 @@ fun TermsAndPrivacyText(
         text = annotatedText,
         style = TextStyle(fontSize = 14.sp, lineHeight = 24.sp),
         textAlign = TextAlign.Center,
-        color = colorResource(R.color.purple_500),
+        color = textColor,
         modifier = modifier.pointerInput(Unit) {
             detectTapGestures { offset ->
                 annotatedText.getStringAnnotations(
@@ -204,8 +221,9 @@ fun TermsAndPrivacyText(
                     start = offset.x.toInt(),
                     end = offset.x.toInt()
                 ).firstOrNull()?.let { annotation ->
-                    val intent = Intent(Intent.ACTION_VIEW, annotation.item.toUri())
-                    context.startActivity(intent)
+                    context.startActivity(
+                        Intent(Intent.ACTION_VIEW, annotation.item.toUri())
+                    )
                 }
             }
         }

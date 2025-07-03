@@ -1,50 +1,48 @@
 <resources>
     <string name="app_name">Tatum Tech</string>
-
     <string name="default_web_client_id">200853064929-k7cus4bcs41l07vvdqfuj5nimaqvk26c.apps.googleusercontent.com</string>
 
-    <!-- app strings -->
-    <string name="back">Back</string>
-    <string name="change_password">Create new Password</string>
-    <string name="submit">Submit</string>
-    <string name="prompt_password">Password</string>
-    <string name="prompt_email">Email</string>
-    <string name="confirm_password">Confirm Password</string>
-    <string name="password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
-    <string name="title_activity_login">Login Activity</string>
-    <string name="title_activity_signup">Signup Activity</string>
-    <string name="title_activity_signin">Signin Activity</string>
+    <!-- common -->
+    <string name="terms">Terms</string>
+    <string name="show">Show</string>
+    <string name="hide">Hide</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="terms_and_policy">By continuing, you confirm that you have read, agree and
+        accept Tatum Tech\'s <b>%1$s</b> and <b>%2$s</b></string>
 
-    <string name="email">Email</string>
+    <!-- app -->
+    <!-- auth -->
     <string name="sign_in">Sign In</string>
     <string name="sign_up">Sign Up</string>
     <string name="OR">OR</string>
-    <string name="lets_begin_your_tatum_tech_experience">Let\'s begin your Tatum Tech experience !</string>
-    <string name="google_SSO">Google SSO</string>
-    <string name="account_setup">Account Setup</string>
-    <string name="terms">Terms</string>
-    <string name="privacy_policy">Privacy Policy</string>
-    <string name="terms_and_policy">By continuing, you confirm that you have read, agree and accept Tatum Tech\'s
-        \n<b>%1$s</b> and <b>%2$s</b></string>
+    <string name="lets_begin_your_tatum_tech_experience">Let\'s begin your Tatum Tech experience.</string>
+    <string name="google_sso">Google SSO</string>
+    <string name="content_description_google_sso">Google Sign In</string>
+    <string name="error_invalid_context">Invalid context</string>">
+    <string name="error_no_id_token_received">No ID token received</string>">
 
-    <string name="title_activity_home2">Home</string>
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="show">Show</string>
-    <string name="web">Web</string>
-    <string name="create_your_account">Create your account</string>
-    <string name="Signin_your_account">Enter your account</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-    <string name="already_have_an_account">Already have an account? Sign In"</string>
+    <!-- sign-in -->
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="welcome_back_sign_in_continue">Welcome back! Sign in to continue.</string>
+    <string name="error_input_valid_email">Input a valid email address.</string>">
+    <string name="error_password_minimum_six_characters">Password must be at minimum 6 characters with 1
+        uppercase letter and 1 special character.</string>
 
-    <string name="title_activity_home">homeActivity</string>
-    <string name="title_activity_change_password">change_passwordActivity</string>
+    <!-- sign-up -->
+    <string name="create_your_account">Create your account.</string>
+    <string name="error_passwords_do_not_match">Passwords do not match.</string>
+    <string name="confirm_password">Confirm Password</string>
+
+    <!-- forgot password -->
+    <string name="forgot_password">Forgot Password</string>
+    <string name="input_email_for_reset">Input your email to reset your password.</string>
+    <string name="reset_password">Reset Password</string>
+
+    <!-- change password -->
+    <string name="set_new_password">Set your new password.</string>
+    <string name="change_password">Change Password</string>
+    <string name="update_password">Update Password</string>
+    <string name="new_password">New Password</string>
 
 </resources>

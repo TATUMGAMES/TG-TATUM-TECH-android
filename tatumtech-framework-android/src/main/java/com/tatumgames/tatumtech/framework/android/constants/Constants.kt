@@ -12,7 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.tatumgames.tatumtech.android.enums
+package com.tatumgames.tatumtech.framework.android.constants
 
-enum class Enums {
+import com.tatumgames.tatumtech.framework.android.BuildConfig
+
+/**
+ * General constants.
+ */
+object Constants {
+    internal const val TAG = "TG_TatumTech_Framework"
+
+    // debuggable mode; true to see debug logs otherwise false
+    internal const val DEBUG = BuildConfig.DEBUG_MODE
 }

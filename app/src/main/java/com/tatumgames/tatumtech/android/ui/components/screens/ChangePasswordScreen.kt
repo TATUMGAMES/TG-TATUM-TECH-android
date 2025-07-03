@@ -1,20 +1,7 @@
-/**
- * Copyright 2013-present Tatum Games, LLC.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.tatumgames.tatumtech.android.ui.components.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +24,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -55,13 +44,13 @@ import com.tatumgames.tatumtech.android.utils.Utils
 
 @Preview(showBackground = true)
 @Composable
-fun ForgotPasswordScreenPreview() {
+fun ChangePasswordScreenPreview() {
     TatumTechTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            ForgotPasswordScreen(
+            ChangePasswordScreen(
                 navController = rememberNavController()
             )
         }
@@ -69,24 +58,31 @@ fun ForgotPasswordScreenPreview() {
 }
 
 @Composable
-fun ForgotPasswordScreen(
+fun ChangePasswordScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
-    var email by remember { mutableStateOf("") }
-    var emailTouched by remember { mutableStateOf(false) }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
-    val isEmailValid = Utils.isEmailValid(email)
-    val isFormValid = isEmailValid
+    var passwordTouched by remember { mutableStateOf(false) }
+    var confirmTouched by remember { mutableStateOf(false) }
+
+    var showPassword by remember { mutableStateOf(false) }
+    var showConfirmPassword by remember { mutableStateOf(false) }
+
+    val isPasswordValid = Utils.isPasswordValid(password)
+    val doPasswordsMatch = confirmPassword == password && confirmPassword.isNotEmpty()
+    val isFormValid = isPasswordValid && doPasswordsMatch
 
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 20.dp)
     ) {
-        val (header, form, resetButton, footer) = createRefs()
+        val (header, form, submitButton, footer) = createRefs()
 
         Header(
             modifier = Modifier.constrainAs(header) {
@@ -94,7 +90,7 @@ fun ForgotPasswordScreen(
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             },
-            text = stringResource(R.string.forgot_password),
+            text = stringResource(R.string.change_password),
             onBackClick = { navController.popBackStack() }
         )
 
@@ -107,7 +103,7 @@ fun ForgotPasswordScreen(
             }
         ) {
             StandardText(
-                text = stringResource(id = R.string.input_email_for_reset),
+                text = stringResource(id = R.string.set_new_password),
                 style = MaterialTheme.typography.bodyLarge,
                 color = colorResource(R.color.black),
                 modifier = Modifier.padding(top = 20.dp)
@@ -115,31 +111,83 @@ fun ForgotPasswordScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // New Password
             OutlinedInputField(
-                value = email,
-                onValueChange = { email = it },
-                placeholder = stringResource(R.string.email),
-                keyboardType = KeyboardType.Email,
+                value = password,
+                onValueChange = { password = it },
+                placeholder = stringResource(R.string.new_password),
+                keyboardType = KeyboardType.Password,
+                visualTransformation = if (showPassword) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
-                    .onFocusChanged { if (!it.isFocused) emailTouched = true }
+                    .onFocusChanged { if (!it.isFocused) passwordTouched = true },
+                trailingIcon = {
+                    StandardText(
+                        text = if (showPassword) stringResource(R.string.hide) else stringResource(R.string.show),
+                        color = colorResource(R.color.black),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier
+                            .clickable { showPassword = !showPassword }
+                            .padding(end = 8.dp)
+                    )
+                }
             )
 
-            val emailErrorVisible = emailTouched && email.isNotBlank() && !isEmailValid
+            val passwordErrorVisible = passwordTouched && password.isNotBlank() && !isPasswordValid
             StandardText(
-                text = stringResource(R.string.error_input_valid_email),
+                text = stringResource(R.string.error_password_minimum_six_characters),
                 color = Color.Red,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 4.dp)
-                    .alpha(if (emailErrorVisible) 1f else 0f)
+                    .alpha(if (passwordErrorVisible) 1f else 0f)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Confirm Password
+            OutlinedInputField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                placeholder = stringResource(R.string.confirm_password),
+                keyboardType = KeyboardType.Password,
+                visualTransformation = if (showConfirmPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .onFocusChanged { if (!it.isFocused) confirmTouched = true },
+                trailingIcon = {
+                    StandardText(
+                        text = if (showConfirmPassword) stringResource(R.string.hide) else stringResource(R.string.show),
+                        color = colorResource(R.color.black),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier
+                            .clickable { showConfirmPassword = !showConfirmPassword }
+                            .padding(end = 8.dp)
+                    )
+                }
+            )
+
+            val confirmErrorVisible = confirmTouched && confirmPassword.isNotBlank() && !doPasswordsMatch
+            StandardText(
+                text = stringResource(R.string.error_passwords_do_not_match),
+                color = Color.Red,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp)
+                    .alpha(if (confirmErrorVisible) 1f else 0f)
             )
         }
 
-        val resetModifier = Modifier
-            .constrainAs(resetButton) {
+        val submitModifier = Modifier
+            .constrainAs(submitButton) {
                 top.linkTo(form.bottom, margin = 20.dp)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
@@ -148,19 +196,21 @@ fun ForgotPasswordScreen(
 
         if (isFormValid) {
             RoundedButton(
-                modifier = resetModifier.height(60.dp),
-                text = stringResource(R.string.reset_password),
+                modifier = submitModifier.height(60.dp),
+                text = stringResource(R.string.new_password),
                 onClick = {
                     focusManager.clearFocus()
 
-                    // TODO: Send reset email logic here
-                    Toast.makeText(context, "Reset email sent!", Toast.LENGTH_SHORT).show()
+                    // TODO: Call API to update password
+                    Toast.makeText(context, "Password updated!", Toast.LENGTH_SHORT).show()
+
+                    // Navigate to login screen or home
                 }
             )
         } else {
             OutlinedButton(
-                modifier = resetModifier.height(60.dp),
-                text = stringResource(R.string.reset_password),
+                modifier = submitModifier.height(60.dp),
+                text = stringResource(R.string.new_password),
                 onClick = { /* Disabled */ }
             )
         }
@@ -175,3 +225,4 @@ fun ForgotPasswordScreen(
         )
     }
 }
+
