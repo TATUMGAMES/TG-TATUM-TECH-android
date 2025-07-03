@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -57,20 +59,15 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling:1.6.6")
     implementation(libs.androidx.navigation.compose)
 
-
-    // Firebase & Google SSO
-    implementation("androidx.credentials:credentials:1.2.1")
-    implementation("androidx.credentials:credentials-play-services-auth:1.2.1")
-    implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
-    implementation("com.google.android.gms:play-services-auth:20.7.0") // or latest
-    implementation("com.google.firebase:firebase-auth:22.3.1") // or latest
+    // Core Android dependencies
     implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation(libs.firebase.common.ktx)
-    implementation(libs.googleid)
     implementation(libs.androidx.storage)
 
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Framework reference - contains all Firebase and Google SSO logic
+    implementation(project(":tatumtech-framework-android"))
 }
