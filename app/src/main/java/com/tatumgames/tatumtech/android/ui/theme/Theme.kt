@@ -8,15 +8,23 @@ import androidx.compose.ui.res.colorResource
 import com.tatumgames.tatumtech.android.R
 import androidx.compose.material3.Typography
 
+val LightColorScheme = lightColorScheme(
+    primary = Purple200,
+    onPrimary = White,
+    secondary = Teal200,
+    onSecondary = Black,
+    background = White,
+    surface = White,
+    onBackground = Black,
+    onSurface = Black
+)
+
 @Composable
 fun TatumTechTheme(
     content: @Composable () -> Unit
 ) {
     MaterialTheme(
-        colorScheme = lightColorScheme(
-            primary = colorResource(R.color.purple_200),
-            onPrimary = Color.White,
-        ),
+        colorScheme = LightColorScheme,
         typography = Typography(),
         content = content
     )

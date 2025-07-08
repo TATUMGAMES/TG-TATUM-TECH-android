@@ -3,6 +3,7 @@ import org.gradle.kotlin.dsl.implementation
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("org.jetbrains.kotlin.kapt")
     id("com.google.gms.google-services")
 }
 
@@ -42,6 +43,9 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14" //1.5.14 - for kotlin (1.9.24) // Required for Compose 1.6.6
     }
+    lint {
+        disable += "CredentialProviderPlayServicesAuthMissing"
+    }
 }
 
 dependencies {
@@ -70,4 +74,19 @@ dependencies {
 
     // Framework reference - contains all Firebase and Google SSO logic
     implementation(project(":tatumtech-framework-android"))
+
+    // MPAndroidChart dependency for charting in the Stats screen implementation
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // CameraX dependencies
+    implementation("androidx.camera:camera-camera2:1.3.0")
+    implementation("androidx.camera:camera-lifecycle:1.3.0")
+    implementation("androidx.camera:camera-view:1.3.0")
+    implementation("androidx.camera:camera-extensions:1.3.0")
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // Room dependencies
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
 }
