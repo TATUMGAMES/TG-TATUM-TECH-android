@@ -111,7 +111,7 @@ fun LinkifyText(
     url: String,
     style: TextStyle = MaterialTheme.typography.bodySmall,
     textAlign: TextAlign = TextAlign.Start,
-    color: Color = colorResource(R.color.purple_500)
+    color: Color = MaterialTheme.colorScheme.primary
 ) {
     val context = LocalContext.current
 
@@ -177,7 +177,7 @@ fun TermsAndPrivacyText(
         // add styles for "Terms"
         addStyle(
             SpanStyle(
-                color = colorResource(R.color.purple_500),
+                color = MaterialTheme.colorScheme.primary,
                 textDecoration = TextDecoration.Underline,
                 fontWeight = FontWeight.Bold
             ),
@@ -194,7 +194,7 @@ fun TermsAndPrivacyText(
         // add styles for "Privacy Policy"
         addStyle(
             SpanStyle(
-                color = colorResource(R.color.purple_500),
+                color = MaterialTheme.colorScheme.primary,
                 textDecoration = TextDecoration.Underline,
                 fontWeight = FontWeight.Bold
             ),

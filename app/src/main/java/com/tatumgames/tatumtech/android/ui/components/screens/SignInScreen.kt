@@ -215,7 +215,7 @@ fun SignInScreen(
                 width = Dimension.fillToConstraints
             }
 
-        if (isFormValid) {
+        if (true) { // isFormValid
             RoundedButton(
                 modifier = signInModifier.height(60.dp),
                 text = stringResource(R.string.sign_in),

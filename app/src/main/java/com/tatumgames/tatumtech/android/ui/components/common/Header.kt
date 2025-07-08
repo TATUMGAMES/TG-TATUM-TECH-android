@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,33 +49,33 @@ fun HeaderPreview() {
 fun Header(
     modifier: Modifier = Modifier,
     text: String = "",
+    isBackButtonVisible: Boolean = true,
     onBackClick: () -> Unit = {}
 ) {
     ConstraintLayout(
         modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
-            // this adds padding equal to the height of the status bar
             .statusBarsPadding()
     ) {
         val (backButton, title, divider) = createRefs()
 
-        // back button
-        Image(
-            modifier = Modifier
-                .size(32.dp)
-                .padding(4.dp)
-                .clickable { onBackClick() }
-                .constrainAs(backButton) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                },
-            painter = painterResource(id = R.drawable.back_arrow),
-            contentDescription = null
-        )
+        if (isBackButtonVisible) {
+            Image(
+                modifier = Modifier
+                    .size(32.dp)
+                    .padding(4.dp)
+                    .clickable { onBackClick() }
+                    .constrainAs(backButton) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    },
+                painter = painterResource(id = R.drawable.back_arrow),
+                contentDescription = stringResource(id = R.string.content_description_back_button)
+            )
+        }
 
-        // title
         TitleText(
             modifier = Modifier
                 .constrainAs(title) {
@@ -91,7 +92,6 @@ fun Header(
             )
         )
 
-        // divider
         HorizontalDivider(
             modifier = Modifier
                 .constrainAs(divider) {

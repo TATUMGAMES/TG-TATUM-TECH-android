@@ -176,7 +176,11 @@ fun SignUpScreen(
                     .onFocusChanged { if (!it.isFocused) passwordTouched = true },
                 trailingIcon = {
                     StandardText(
-                        text = if (showPassword) stringResource(R.string.hide) else stringResource(R.string.show),
+                        text = if (showPassword) {
+                            stringResource(R.string.hide)
+                        } else {
+                            stringResource(R.string.show)
+                        },
                         color = colorResource(R.color.black),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier
@@ -212,7 +216,11 @@ fun SignUpScreen(
                     .onFocusChanged { if (!it.isFocused) confirmTouched = true },
                 trailingIcon = {
                     StandardText(
-                        text = if (showConfirmPassword) stringResource(R.string.hide) else stringResource(R.string.show),
+                        text = if (showConfirmPassword) {
+                            stringResource(R.string.hide)
+                        } else {
+                            stringResource(R.string.show)
+                        },
                         color = colorResource(R.color.black),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier

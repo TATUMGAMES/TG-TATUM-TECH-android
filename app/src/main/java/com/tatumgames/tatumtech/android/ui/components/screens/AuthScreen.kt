@@ -56,6 +56,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.activity.MainActivity
+import com.tatumgames.tatumtech.android.constants.Constants.TAG
 import com.tatumgames.tatumtech.android.ui.components.common.RoundedButton
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.common.TermsAndPrivacyText
@@ -63,18 +64,15 @@ import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoute
 import com.tatumgames.tatumtech.android.ui.components.screens.AuthScreenMessages.ACTIVITY_REQUIRED_GOOGLE_AUTHENTICATION
 import com.tatumgames.tatumtech.android.ui.components.screens.AuthScreenMessages.GOOGLE_AUTHENTICATION_FAILED
 import com.tatumgames.tatumtech.android.ui.components.screens.AuthScreenMessages.GOOGLE_AUTHENTICATION_SUCCESSFUL
-import com.tatumgames.tatumtech.android.ui.components.screens.AuthScreenMessages.TAG
 import com.tatumgames.tatumtech.android.ui.theme.TatumTechTheme
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClient
-import com.tatumgames.tatumtech.framework.android.auth.configuration.GoogleAuthConfiguration
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthError
-import com.tatumgames.tatumtech.framework.android.auth.models.GoogleUser
+import com.tatumgames.tatumtech.framework.android.auth.configuration.GoogleAuthConfiguration
 import com.tatumgames.tatumtech.framework.android.auth.interfaces.GoogleAuthCallback
+import com.tatumgames.tatumtech.framework.android.auth.models.GoogleUser
 import com.tatumgames.tatumtech.framework.android.logger.Logger
 
 object AuthScreenMessages {
-    internal const val TAG = "AuthScreen"
-
     internal const val GOOGLE_AUTHENTICATION_SUCCESSFUL = "Google authentication successful"
     internal const val GOOGLE_AUTHENTICATION_FAILED = "Google authentication failed"
     internal const val ACTIVITY_REQUIRED_GOOGLE_AUTHENTICATION =
@@ -101,17 +99,15 @@ fun AuthScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
-    var user by remember { mutableStateOf<GoogleUser?>(null) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    
+
     val activity = context as? Activity
-    
+
     // Google Authentication Callback implementation
     val authCallback = remember {
         object : GoogleAuthCallback {
-            override fun onGoogleAuthSuccess(userFromAuth: GoogleUser) {
-                user = userFromAuth
-                Logger.d(TAG, "${GOOGLE_AUTHENTICATION_SUCCESSFUL}: ${userFromAuth.email}")
+            override fun onGoogleAuthSuccess(user: GoogleUser) {
+                Logger.d(TAG, "${GOOGLE_AUTHENTICATION_SUCCESSFUL}: ${user.email}")
 
                 // Navigate to main activity
                 context.startActivity(
@@ -120,14 +116,14 @@ fun AuthScreen(
                     }
                 )
             }
-            
+
             override fun onGoogleAuthFailure(error: GoogleAuthError) {
                 errorMessage = error.message
                 Logger.e(TAG, "${GOOGLE_AUTHENTICATION_FAILED}: ${error.message}")
             }
         }
     }
-    
+
     // Legacy launcher for fallback authentication
     val legacyLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -142,12 +138,12 @@ fun AuthScreen(
                 .callback(authCallback)
                 .legacyLauncher(null) // Not needed for result handling
                 .build()
-            
+
             // Handle legacy result through the framework
             GoogleAuthClient.handleLegacyResult(configuration, result.data)
         }
     }
-    
+
     // Google Sign-In click handler
     val onGoogleSignInClick = {
         errorMessage = null // Clear previous errors
