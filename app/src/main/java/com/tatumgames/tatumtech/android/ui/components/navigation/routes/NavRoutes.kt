@@ -20,8 +20,17 @@ object NavRoutes {
     const val SIGN_IN_SCREEN = "sign_in_screen"
     const val SIGN_UP_SCREEN = "sign_up_screen"
     const val FORGOT_PASSWORD_SCREEN = "forgot_password_screen"
-    const val CHANGE_PASSWORD_SCREEN = "forgot_password_screen"
+    const val CHANGE_PASSWORD_SCREEN = "change_password_screen"
 
     // main routes
     const val MAIN_SCREEN = "main_screen"
+    const val LEARN_SCREEN = "learn_screen"
+    const val UPCOMING_EVENTS_SCREEN = "upcoming_events"
+    const val CODING_CHALLENGES_SCREEN = "coding_challenges"
+    const val MY_TIMELINE_SCREEN = "my_timeline"
+    const val COMMUNITY_SCREEN = "community"
+    const val SCANNER_SCREEN = "scanner"
+    const val DONATE_SCREEN = "donate"
+    const val STATS_SCREEN = "stats"
+    const val ATTENDEES_SCREEN = "attendees_screen/{eventId}"
 }

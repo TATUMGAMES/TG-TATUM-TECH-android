@@ -21,9 +21,11 @@ import androidx.navigation.compose.composable
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
 import com.tatumgames.tatumtech.android.ui.components.screens.AuthScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.ForgotPasswordScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.LearnScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.MainScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.SignInScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.SignUpScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.*
 
 @Composable
 fun AccountSetupGraph(
@@ -58,6 +60,34 @@ fun MainGraph(
     ) {
         composable(NavRoutes.MAIN_SCREEN) {
             MainScreen(navController)
+        }
+        composable(NavRoutes.LEARN_SCREEN) {
+            LearnScreen(navController)
+        }
+        composable(NavRoutes.UPCOMING_EVENTS_SCREEN) {
+            UpcomingEventsScreen(navController)
+        }
+        composable(NavRoutes.CODING_CHALLENGES_SCREEN) {
+            CodingChallengesScreen(navController)
+        }
+        composable(NavRoutes.MY_TIMELINE_SCREEN) {
+            MyTimelineScreen(navController)
+        }
+        composable(NavRoutes.DONATE_SCREEN) {
+            CommunityScreen(navController)
+        }
+        composable(NavRoutes.COMMUNITY_SCREEN) {
+            CommunityScreen(navController)
+        }
+        composable(NavRoutes.SCANNER_SCREEN) {
+            ScannerScreen(navController)
+        }
+        composable(NavRoutes.STATS_SCREEN) {
+            StatsScreen(navController)
+        }
+        composable(NavRoutes.ATTENDEES_SCREEN) { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
+            AttendeesScreen(navController, eventId)
         }
     }
 }
