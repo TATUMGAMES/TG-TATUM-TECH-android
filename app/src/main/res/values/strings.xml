@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Tatum Tech</string>
     <string name="default_web_client_id">200853064929-k7cus4bcs41l07vvdqfuj5nimaqvk26c.apps.googleusercontent.com</string>
+    <string name="content_description_back_button">Navigate back</string>
 
     <!-- common -->
     <string name="terms">Terms</string>
@@ -44,5 +45,34 @@
     <string name="change_password">Change Password</string>
     <string name="update_password">Update Password</string>
     <string name="new_password">New Password</string>
+
+    <!-- main -->
+    <string name="greeting_generic">Hello!</string>
+    <string name="greeting_with_name">Hello, %1$s!</string>
+    <string name="recent_notifications">Recent Notifications</string>
+    <string name="upcoming_events">Upcoming Events</string>
+    <string name="coding">Coding</string>
+    <string name="my_timeline">My Timeline</string>
+    <string name="community">Community</string>
+    <string name="scanner">Scanner</string>
+    <string name="donate">Donate</string>
+    <!-- upcoming events -->
+    <string name="register">Register</string>
+    <string name="registration_closed">Registration Closed</string>
+    <string name="see_all_attendees">See All Attendees</string>
+
+    <!-- notifications -->
+    <!-- titles -->
+    <string name="coding_challenge">Coding Challenge</string>
+    <string name="event_registration">Event Registration</string>
+    <!-- descriptions -->
+    <string name="new_coding_challenge_available">New coding challenge available</string>
+    <string name="event_registration_confirmed">Event registration confirmed</string>
+
+    <!-- bottom navigation -->
+    <string name="home">Home</string>
+    <string name="learn">Learn</string>
+    <string name="timeline">Timeline</string>
+    <string name="stats">Stats</string>
 
 </resources>
