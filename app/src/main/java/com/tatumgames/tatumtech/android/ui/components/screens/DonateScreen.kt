@@ -21,10 +21,10 @@ import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 
 private val donationTiers = listOf(
-    DonationTier("Founding Supporter", "$2,500", "https://buy.stripe.com/7sI3cH8m6bmd5ck4gj"),
-    DonationTier("Silver Sponsor", "$5,000", "https://buy.stripe.com/28oaF9cCmdul7kscMO"),
-    DonationTier("Gold Sponsor", "$10,000", "https://buy.stripe.com/6oEbJd6dY0Hz8ow145"),
-    DonationTier("Premier Sponsor", "Custom", "https://buy.stripe.com/3cs28D45QgGxgV2fYY")
+    DonationTier("Founding Supporter", "Custom", "https://buy.stripe.com/7sI3cH8m6bmd5ck4gj"),
+    DonationTier("Silver Sponsor", "$2,500", "https://buy.stripe.com/28oaF9cCmdul7kscMO"),
+    DonationTier("Gold Sponsor", "$5,000", "https://buy.stripe.com/6oEbJd6dY0Hz8ow145"),
+    DonationTier("Premier Sponsor", "$10,000", "https://buy.stripe.com/3cs28D45QgGxgV2fYY")
 )
 
 data class DonationTier(val name: String, val amount: String, val url: String)
@@ -38,7 +38,10 @@ fun DonateScreen(navController: NavController) {
 
     Scaffold(
         topBar = {
-            Header(text = "Donate", onBackClick = { navController.popBackStack() })
+            Header(
+                text = "Donate",
+                onBackClick = { navController.popBackStack() }
+            )
         },
         bottomBar = {
             BottomNavigationBar(navController = navController)
@@ -75,19 +78,6 @@ fun DonateScreen(navController: NavController) {
                 }
             } else {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color(0xFFEEEEEE))
-                            .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Button(onClick = { selectedUrl = null }, shape = RoundedCornerShape(8.dp)) {
-                            Text("Back")
-                        }
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text("Secure Stripe Payment", fontWeight = FontWeight.Bold)
-                    }
                     AndroidView(
                         factory = {
                             WebView(context).apply {

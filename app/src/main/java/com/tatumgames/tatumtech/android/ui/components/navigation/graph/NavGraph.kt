@@ -74,7 +74,7 @@ fun MainGraph(
             MyTimelineScreen(navController)
         }
         composable(NavRoutes.DONATE_SCREEN) {
-            CommunityScreen(navController)
+            DonateScreen(navController)
         }
         composable(NavRoutes.COMMUNITY_SCREEN) {
             CommunityScreen(navController)

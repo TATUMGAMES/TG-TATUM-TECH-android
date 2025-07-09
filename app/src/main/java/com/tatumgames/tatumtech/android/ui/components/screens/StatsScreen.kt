@@ -1,13 +1,29 @@
 package com.tatumgames.tatumtech.android.ui.components.screens
 
-import android.graphics.Color as AndroidColor
-import android.view.ViewGroup
-import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,12 +31,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
+import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import kotlinx.coroutines.delay
-import androidx.compose.foundation.shape.CircleShape
-import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,21 +89,43 @@ fun StatsScreen(navController: NavController) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Your Progress", fontWeight = androidx.compose.ui.text.font.FontWeight.Bold, fontSize = 20.sp)
+            Text(
+                "Your Progress",
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                fontSize = 20.sp
+            )
             Spacer(modifier = Modifier.height(16.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                ProgressRing(label = "Events", value = animatedEvents, max = 20, color = Color(0xFF6200EE))
-                ProgressRing(label = "Workshops", value = animatedWorkshops, max = 10, color = Color(0xFF03DAC5))
-                ProgressRing(label = "Challenges", value = animatedChallenges, max = 30, color = Color(0xFFFFC107))
+                ProgressRing(
+                    label = "Events",
+                    value = animatedEvents,
+                    max = 20,
+                    color = Color(0xFF6200EE)
+                )
+                ProgressRing(
+                    label = "Workshops",
+                    value = animatedWorkshops,
+                    max = 10,
+                    color = Color(0xFF03DAC5)
+                )
+                ProgressRing(
+                    label = "Challenges",
+                    value = animatedChallenges,
+                    max = 30,
+                    color = Color(0xFFFFC107)
+                )
             }
             Spacer(modifier = Modifier.height(24.dp))
             Text("Percent Correct", fontWeight = androidx.compose.ui.text.font.FontWeight.Medium)
             AnimatedPercentRing(percent = animatedPercent)
             Spacer(modifier = Modifier.height(24.dp))
-            Text("Workshops Breakdown", fontWeight = androidx.compose.ui.text.font.FontWeight.Medium)
+            Text(
+                "Workshops Breakdown",
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
+            )
             BarChartView(data = workshopBreakdown, labels = workshopLabels)
             Spacer(modifier = Modifier.height(24.dp))
             Text("Achievements", fontWeight = androidx.compose.ui.text.font.FontWeight.Medium)
@@ -122,7 +158,11 @@ fun AnimatedPercentRing(percent: Int) {
             strokeWidth = 10.dp,
             modifier = Modifier.size(100.dp)
         )
-        Text("$percent%", fontWeight = androidx.compose.ui.text.font.FontWeight.Bold, fontSize = 20.sp)
+        Text(
+            "$percent%",
+            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+            fontSize = 20.sp
+        )
     }
 }
 
@@ -182,7 +222,10 @@ fun AchievementsList(achievements: List<String>) {
             .padding(12.dp)
     ) {
         achievements.forEach { achievement ->
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(vertical = 4.dp)
+            ) {
                 Box(
                     modifier = Modifier
                         .size(20.dp)

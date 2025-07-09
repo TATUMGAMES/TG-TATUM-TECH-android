@@ -20,11 +20,15 @@ import androidx.compose.ui.unit.sp
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.ui.components.screens.models.Attendee
 import com.tatumgames.tatumtech.android.utils.Utils
+import com.tatumgames.tatumtech.android.utils.Utils.generateColorFromString
 
 @Composable
-fun AttendeeDisplay(attendee: Attendee, modifier: Modifier = Modifier) {
+fun AttendeeDisplay(
+    attendee: Attendee,
+    modifier: Modifier = Modifier
+) {
     val context = LocalContext.current
-    val attendeeColor = Utils.generateColorFromString(attendee.userId)
+    val attendeeColor = generateColorFromString(attendee.userId)
     
     // Determine if this attendee should show initials
     val shouldShowInitials = attendee.profileImage == "initials" || attendee.userId.hashCode() % 5 == 0
