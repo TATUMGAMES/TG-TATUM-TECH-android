@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.tatumgames.tatumtech.android.R
-import com.tatumgames.tatumtech.android.activity.MainActivity
 import com.tatumgames.tatumtech.android.constants.Constants.URL_PRIVACY_POLICY
 import com.tatumgames.tatumtech.android.constants.Constants.URL_TERMS
 

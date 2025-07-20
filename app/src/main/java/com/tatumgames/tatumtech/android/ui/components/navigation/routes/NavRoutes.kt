@@ -24,9 +24,8 @@ object NavRoutes {
 
     // main routes
     const val MAIN_SCREEN = "main_screen"
-    const val LEARN_SCREEN = "learn_screen"
     const val UPCOMING_EVENTS_SCREEN = "upcoming_events"
-    const val CODING_CHALLENGES_SCREEN = "coding_challenges"
+    const val CODING_CHALLENGES_SCREEN = "coding_challenges_screen"
     const val MY_TIMELINE_SCREEN = "my_timeline"
     const val COMMUNITY_SCREEN = "community"
     const val SCANNER_SCREEN = "scanner"

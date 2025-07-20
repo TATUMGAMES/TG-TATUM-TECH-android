@@ -5,7 +5,12 @@
     "language": "JavaScript",
     "level": "Beginner",
     "question": "What is the output of console.log(typeof null)?",
-    "options": ["null", "object", "undefined", "function"],
+    "options": [
+      "null",
+      "object",
+      "undefined",
+      "function"
+    ],
     "correct_answer": "object",
     "explanation": "'null' is of type 'object' due to a long-standing JavaScript bug.",
     "platform": "Web"
@@ -16,7 +21,12 @@
     "language": "JavaScript",
     "level": "Beginner",
     "question": "Which of the following is a valid way to declare a variable in JavaScript?",
-    "options": ["var x = 5;", "int x = 5;", "let x == 5;", "x := 5;"],
+    "options": [
+      "var x = 5;",
+      "int x = 5;",
+      "let x == 5;",
+      "x := 5;"
+    ],
     "correct_answer": "var x = 5;",
     "explanation": "'var', 'let', and 'const' are used to declare variables in JavaScript.",
     "platform": "Web"
@@ -27,9 +37,126 @@
     "language": "JavaScript",
     "level": "Beginner",
     "question": "What does the following code output? console.log(2 + '2');",
-    "options": ["4", "22", "'4'", "'2'2"],
+    "options": [
+      "4",
+      "22",
+      "'4'",
+      "'2'2"
+    ],
     "correct_answer": "22",
     "explanation": "The number 2 is coerced to a string, so the result is string concatenation: '22'.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "js_beg_004",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "JavaScript",
+    "level": "Beginner",
+    "question": "Which symbol is used for single-line comments in JavaScript?",
+    "options": [
+      "#",
+      "//",
+      "/*",
+      "<!--"
+    ],
+    "correct_answer": "//",
+    "explanation": "Single-line comments in JavaScript start with '//'.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "js_beg_005",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "JavaScript",
+    "level": "Beginner",
+    "question": "What will console.log(5 == '5') output?",
+    "options": [
+      "false",
+      "true",
+      "undefined",
+      "error"
+    ],
+    "correct_answer": "true",
+    "explanation": "The '==' operator checks for equality with type coercion, so 5 == '5' is true.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "js_beg_006",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "JavaScript",
+    "level": "Beginner",
+    "question": "Which keyword is used to define a constant in JavaScript?",
+    "options": [
+      "let",
+      "var",
+      "const",
+      "define"
+    ],
+    "correct_answer": "const",
+    "explanation": "'const' is used to define a variable whose value cannot be reassigned.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "js_beg_007",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "JavaScript",
+    "level": "Beginner",
+    "question": "What is the correct syntax to output 'Hello World' in the console?",
+    "options": [
+      "print('Hello World');",
+      "echo 'Hello World';",
+      "console.log('Hello World');",
+      "System.out.println('Hello World');"
+    ],
+    "correct_answer": "console.log('Hello World');",
+    "explanation": "Use console.log() to print messages to the JavaScript console.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "js_beg_008",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "JavaScript",
+    "level": "Beginner",
+    "question": "Which of the following is NOT a primitive type in JavaScript?",
+    "options": [
+      "string",
+      "number",
+      "boolean",
+      "object"
+    ],
+    "correct_answer": "object",
+    "explanation": "Primitive types include string, number, boolean, null, undefined, and symbol. 'object' is not primitive.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "js_beg_009",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "JavaScript",
+    "level": "Beginner",
+    "question": "Which method is used to remove the last element of an array?",
+    "options": [
+      "shift()",
+      "pop()",
+      "splice()",
+      "remove()"
+    ],
+    "correct_answer": "pop()",
+    "explanation": "The pop() method removes the last element from an array.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "js_beg_010",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "JavaScript",
+    "level": "Beginner",
+    "question": "Which operator is used to assign a value to a variable?",
+    "options": [
+      "+",
+      "-",
+      "=",
+      "=="
+    ],
+    "correct_answer": "=",
+    "explanation": "The '=' operator is used for assignment, not comparison.",
     "platform": "Web"
   }
 ] 

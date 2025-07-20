@@ -1,3 +1,17 @@
+/**
+ * Copyright 2013-present Tatum Games, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.tatumgames.tatumtech.android.ui.components.common
 
 import androidx.compose.foundation.background
@@ -26,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.tatumgames.tatumtech.android.constants.Constants.ICON_OR_IMAGE_ERROR
 
 @Composable
 fun FeatureCard(
@@ -41,7 +56,7 @@ fun FeatureCard(
     textColor: Color = Color.Black
 ) {
     require(icon != null || image != null) {
-        "Either icon or image must be provided."
+        ICON_OR_IMAGE_ERROR
     }
 
     Card(
@@ -74,6 +89,7 @@ fun FeatureCard(
                         tint = iconTint,
                         modifier = Modifier.fillMaxSize()
                     )
+
                     image != null -> Icon(
                         painter = image,
                         contentDescription = null,
@@ -94,50 +110,3 @@ fun FeatureCard(
         }
     }
 }
-
-
-
-//@Composable
-//fun FeatureCard(
-//    icon: ImageVector,
-//    text: String,
-//    modifier: Modifier = Modifier,
-//    onClick: (() -> Unit)? = null,
-//    elevation: Dp = 4.dp,
-//    backgroundColor: Color = Color.White,
-//    iconTint: Color = colorResource(id = R.color.purple_500),
-//    textColor: Color = Color.Black
-//) {
-//    Card(
-//        modifier = modifier
-//            .height(100.dp)
-//            .clip(RoundedCornerShape(12.dp))
-//            .then(
-//                if (onClick != null) Modifier.clickable { onClick() } else Modifier
-//            ),
-//        colors = CardDefaults.cardColors(containerColor = backgroundColor),
-//        elevation = CardDefaults.cardElevation(defaultElevation = elevation)
-//    ) {
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(16.dp),
-//            horizontalAlignment = Alignment.Start,
-//            verticalArrangement = Arrangement.Center
-//        ) {
-//            Icon(
-//                imageVector = icon,
-//                contentDescription = null,
-//                tint = iconTint,
-//                modifier = Modifier.size(28.dp)
-//            )
-//            Spacer(modifier = Modifier.height(8.dp))
-//            Text(
-//                text = text,
-//                fontSize = 16.sp,
-//                fontWeight = FontWeight.Medium,
-//                color = textColor
-//            )
-//        }
-//    }
-//}

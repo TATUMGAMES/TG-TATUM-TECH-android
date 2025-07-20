@@ -27,7 +27,11 @@ sealed class GoogleAuthError(val message: String) {
     object FirebaseInitializationFailed : GoogleAuthError("Failed to initialize Firebase.")
 
     data class FirebaseError(val cause: String) : GoogleAuthError(cause)
-    data class InitializationError(val cause: String) : GoogleAuthError("Failed to initialize authentication: $cause")
-    data class LegacyResultError(val cause: String) : GoogleAuthError("Failed to handle legacy result: $cause")
+    data class InitializationError(val cause: String) :
+        GoogleAuthError("Failed to initialize authentication: $cause")
+
+    data class LegacyResultError(val cause: String) :
+        GoogleAuthError("Failed to handle legacy result: $cause")
+
     data class CredentialManagerError(val cause: String) : GoogleAuthError(cause)
 }

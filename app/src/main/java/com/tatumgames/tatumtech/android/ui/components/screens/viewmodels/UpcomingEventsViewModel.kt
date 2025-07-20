@@ -1,19 +1,19 @@
-package com.tatumgames.tatumtech.android.ui.components.screens
+package com.tatumgames.tatumtech.android.ui.components.screens.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tatumgames.tatumtech.android.database.interfaces.EventRegistrationRepository
+import com.tatumgames.tatumtech.android.database.interfaces.EventRegistrationInterface
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class UpcomingEventsViewModel(
-    private val repository: EventRegistrationRepository
+    private val repository: EventRegistrationInterface
 ) : ViewModel() {
 
-    private val _registeredEvents = MutableStateFlow<List<String>>(emptyList())
-    val registeredEvents: StateFlow<List<String>> = _registeredEvents.asStateFlow()
+    private val _registeredEvents = MutableStateFlow<List<Long>>(emptyList())
+    val registeredEvents: StateFlow<List<Long>> = _registeredEvents.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -21,17 +21,17 @@ class UpcomingEventsViewModel(
         }
     }
 
-    fun onRegister(eventId: String) {
+    fun onRegister(id: Long) {
         viewModelScope.launch {
-            repository.registerEvent(eventId)
+            repository.registerEvent(id)
             _registeredEvents.value = repository.getRegisteredEvents()
         }
     }
 
-    fun onUnregister(eventId: String) {
+    fun onUnregister(id: Long) {
         viewModelScope.launch {
-            repository.unregisterEvent(eventId)
+            repository.unregisterEvent(id)
             _registeredEvents.value = repository.getRegisteredEvents()
         }
     }
-} 
+}

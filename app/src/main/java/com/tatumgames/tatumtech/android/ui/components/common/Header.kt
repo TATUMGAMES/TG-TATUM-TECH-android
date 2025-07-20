@@ -25,6 +25,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,7 +52,8 @@ fun Header(
     modifier: Modifier = Modifier,
     text: String = "",
     isBackButtonVisible: Boolean = true,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    backArrowTint: Color? = null
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -72,7 +75,8 @@ fun Header(
                         bottom.linkTo(parent.bottom)
                     },
                 painter = painterResource(id = R.drawable.back_arrow),
-                contentDescription = stringResource(id = R.string.content_description_back_button)
+                contentDescription = stringResource(id = R.string.content_description_back_button),
+                colorFilter = backArrowTint?.let { ColorFilter.tint(it) }
             )
         }
 

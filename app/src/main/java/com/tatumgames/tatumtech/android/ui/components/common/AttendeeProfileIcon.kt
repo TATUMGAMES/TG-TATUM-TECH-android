@@ -1,9 +1,24 @@
-package com.tatumgames.tatumtech.android.ui.components.screens
+/**
+ * Copyright 2013-present Tatum Games, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.tatumgames.tatumtech.android.ui.components.common
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,24 +33,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.enums.ProfileImage
 import com.tatumgames.tatumtech.android.ui.components.screens.models.Attendee
-import com.tatumgames.tatumtech.android.utils.Utils
 import com.tatumgames.tatumtech.android.utils.Utils.generateColorFromString
+import com.tatumgames.tatumtech.android.utils.Utils.getNameInitials
 
 @Composable
-fun AttendeeDisplay(
+fun AttendeeProfileIcon(
     attendee: Attendee,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val attendeeColor = generateColorFromString(attendee.userId)
-    
-    // Determine if this attendee should show initials
-    val shouldShowInitials = attendee.profileImage == "initials" || attendee.userId.hashCode() % 5 == 0
-    
+    val attendeeColor = generateColorFromString(attendee.id.toString())
+
+    val shouldShowInitials =
+        attendee.profileImage == ProfileImage.INITIALS || attendee.id.hashCode() % 5 == 0
+
     if (shouldShowInitials) {
-        // Show initials
-        val initials = attendee.name.split(" ").take(2).joinToString("") { it.firstOrNull()?.uppercase() ?: "" }
+        val initials = getNameInitials(context, attendee.name)
+
         Box(
             modifier = modifier
                 .size(32.dp)
@@ -52,17 +68,16 @@ fun AttendeeDisplay(
             )
         }
     } else {
-        // Show profile image
         val drawableId = when (attendee.profileImage) {
-            "profile_male_placeholder_01" -> R.drawable.profile_male_placeholder_01
-            "profile_male_placeholder_02" -> R.drawable.profile_male_placeholder_02
-            "profile_male_placeholder_03" -> R.drawable.profile_male_placeholder_03
-            "profile_female_placeholder_01" -> R.drawable.profile_female_placeholder_01
-            "profile_female_placeholder_02" -> R.drawable.profile_female_placeholder_02
-            "profile_female_placeholder_03" -> R.drawable.profile_female_placeholder_03
+            ProfileImage.MALE_PLACEHOLDER_01 -> R.drawable.profile_male_placeholder_01
+            ProfileImage.MALE_PLACEHOLDER_02 -> R.drawable.profile_male_placeholder_02
+            ProfileImage.MALE_PLACEHOLDER_03 -> R.drawable.profile_male_placeholder_03
+            ProfileImage.FEMALE_PLACEHOLDER_01 -> R.drawable.profile_female_placeholder_01
+            ProfileImage.FEMALE_PLACEHOLDER_02 -> R.drawable.profile_female_placeholder_02
+            ProfileImage.FEMALE_PLACEHOLDER_03 -> R.drawable.profile_female_placeholder_03
             else -> R.drawable.profile_male_placeholder_01
         }
-        
+
         Image(
             painter = painterResource(id = drawableId),
             contentDescription = null,
@@ -73,4 +88,5 @@ fun AttendeeDisplay(
             contentScale = ContentScale.Crop
         )
     }
-} 
+}
+

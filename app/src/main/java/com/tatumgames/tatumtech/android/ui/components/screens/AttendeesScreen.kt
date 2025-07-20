@@ -1,50 +1,81 @@
+/**
+ * Copyright 2013-present Tatum Games, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.tatumgames.tatumtech.android.ui.components.screens
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.database.AppDatabase
+import com.tatumgames.tatumtech.android.database.entity.AttendeeEntity
+import com.tatumgames.tatumtech.android.database.entity.TimelineEntity
+import com.tatumgames.tatumtech.android.database.repository.AttendeeDatabaseRepository
+import com.tatumgames.tatumtech.android.database.repository.TimelineDatabaseRepository
+import com.tatumgames.tatumtech.android.enums.TimelineType
+import com.tatumgames.tatumtech.android.ui.components.common.AttendeeListEntry
+import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
-import com.tatumgames.tatumtech.android.ui.components.screens.AttendeeDisplay
-import com.tatumgames.tatumtech.android.ui.components.screens.models.Attendee
-import com.tatumgames.tatumtech.android.ui.components.screens.models.Event
-import com.tatumgames.tatumtech.android.utils.MockData
 import kotlinx.coroutines.launch
 
 @Composable
 fun AttendeesScreen(
     navController: NavController,
-    eventId: String
+    eventId: Long
 ) {
+    val context = LocalContext.current
+    val db = remember { AppDatabase.getInstance(context) }
+    val attendeeRepository = remember { AttendeeDatabaseRepository(db.attendeeDao()) }
+    val timelineRepository = remember { TimelineDatabaseRepository(db.timelineDao()) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    // Get the event from MockData
-    val event = remember { MockData.getMockEvents().find {
-        it.eventId == eventId }
-    }
+    var attendees by remember { mutableStateOf<List<AttendeeEntity>>(emptyList()) }
 
-    // Use explicit MutableState holding an immutable Map<String, Boolean>
-    val friendStates = remember {
-        mutableStateOf(
-            event?.attendees
-                ?.associate { it.userId to false }
-                ?: emptyMap()
-        )
+    LaunchedEffect(eventId) {
+        attendees = attendeeRepository.getAttendeesForEvent(eventId)
     }
 
     Scaffold(
         topBar = {
-            Header(text = "Attendees", onBackClick = { navController.popBackStack() })
+            Header(
+                text = stringResource(R.string.attendees),
+                onBackClick = { navController.popBackStack() })
+        },
+        bottomBar = {
+            BottomNavigationBar(navController = navController)
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = Color.White
@@ -54,31 +85,64 @@ fun AttendeesScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (event == null) {
+            if (attendees.isEmpty()) {
                 StandardText(
-                    text = "Event not found",
+                    text = "No attendees found",
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
-                    contentPadding = PaddingValues(16.dp)
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp)
                 ) {
-                    items(event.attendees) { attendee ->
-                        AttendeeListItem(
+                    items(attendees) { attendee ->
+                        AttendeeListEntry(
                             attendee = attendee,
-                            isFriend = friendStates.value[attendee.userId] == true,
                             onToggleFriend = {
-                                val newState = !(friendStates.value[attendee.userId] ?: false)
-                                friendStates.value = friendStates.value.toMutableMap().apply {
-                                    put(attendee.userId, newState)
-                                }
                                 scope.launch {
-                                    snackbarHostState.showSnackbar(
-                                        if (newState) "Added ${attendee.name} as a friend"
-                                        else "Removed ${attendee.name} from friends"
-                                    )
+                                    if (attendee.isFriend) {
+                                        attendeeRepository.removeFriend(attendee.id)
+
+                                        val removedText = context.getString(
+                                            R.string.snackbar_removed_friend,
+                                            attendee.name
+                                        )
+                                        snackbarHostState.showSnackbar(removedText)
+
+                                        timelineRepository.insertTimelineEvent(
+                                            TimelineEntity(
+                                                type = TimelineType.FRIEND_REMOVE.typeValue,
+                                                description = context.getString(
+                                                    R.string.timeline_removed_friend,
+                                                    attendee.name
+                                                ),
+                                                relatedId = attendee.id,
+                                                timestamp = System.currentTimeMillis()
+                                            )
+                                        )
+                                    } else {
+                                        attendeeRepository.addFriend(attendee.id)
+
+                                        val addedText = context.getString(
+                                            R.string.snackbar_added_friend,
+                                            attendee.name
+                                        )
+                                        snackbarHostState.showSnackbar(addedText)
+
+                                        timelineRepository.insertTimelineEvent(
+                                            TimelineEntity(
+                                                type = TimelineType.FRIEND_ADD.typeValue,
+                                                description = context.getString(
+                                                    R.string.timeline_added_friend,
+                                                    attendee.name
+                                                ),
+                                                relatedId = attendee.id,
+                                                timestamp = System.currentTimeMillis()
+                                            )
+                                        )
+                                    }
+                                    attendees = attendeeRepository.getAttendeesForEvent(eventId)
                                 }
                             }
                         )
@@ -88,48 +152,3 @@ fun AttendeesScreen(
         }
     }
 }
-
-@Composable
-private fun AttendeeListItem(
-    attendee: Attendee,
-    isFriend: Boolean,
-    onToggleFriend: () -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        AttendeeDisplay(
-            attendee = attendee,
-            modifier = Modifier.size(48.dp)
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        StandardText(
-            text = attendee.name,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f)
-        )
-        Button(
-            onClick = onToggleFriend,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (isFriend) {
-                    Color(0xFFD32F2F)
-                } else {
-                    colorResource(R.color.purple_200)
-                },
-                contentColor = if (isFriend) {
-                    Color.White
-                } else {
-                    Color.Black
-                }
-            ),
-            shape = MaterialTheme.shapes.small
-        ) {
-            StandardText(text = if (isFriend) {
-                "Remove Friend"
-            } else {
-                "Add Friend"
-            })
-        }
-    }
-} 

@@ -8,8 +8,16 @@
     "location": "South LA",
     "is_registration_open": true,
     "attendees": [
-      { "user_id": "user_12345", "name": "Ethan", "profile_image": "https://example.com/ethan.jpg" },
-      { "user_id": "user_67890", "name": "Ava", "profile_image": "https://example.com/ava.jpg" }
+      {
+        "user_id": "user_12345",
+        "name": "Ethan",
+        "profile_image": "https://example.com/ethan.jpg"
+      },
+      {
+        "user_id": "user_67890",
+        "name": "Ava",
+        "profile_image": "https://example.com/ava.jpg"
+      }
     ],
     "featured_image": "https://example.com/tatumtech_spring.png"
   },
@@ -22,8 +30,16 @@
     "location": "South LA",
     "is_registration_open": false,
     "attendees": [
-      { "user_id": "user_12345", "name": "Ethan", "profile_image": "https://example.com/ethan.jpg" },
-      { "user_id": "user_67890", "name": "Ava", "profile_image": "https://example.com/ava.jpg" }
+      {
+        "user_id": "user_12345",
+        "name": "Ethan",
+        "profile_image": "https://example.com/ethan.jpg"
+      },
+      {
+        "user_id": "user_67890",
+        "name": "Ava",
+        "profile_image": "https://example.com/ava.jpg"
+      }
     ],
     "featured_image": "https://example.com/tatumtech_fall.png"
   }

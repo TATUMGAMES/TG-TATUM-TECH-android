@@ -1,0 +1,162 @@
+[
+  {
+    "question_id": "js_int_001",
+    "created_at": "2025-07-01T10:05:00Z",
+    "language": "JavaScript",
+    "level": "Intermediate",
+    "question": "What is the result of the expression: [] + []?",
+    "options": [
+      "[]",
+      "0",
+      "NaN",
+      "\"\""
+    ],
+    "correct_answer": "\"\"",
+    "explanation": "Adding two arrays converts them to strings. [] + [] evaluates to an empty string.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "js_int_002",
+    "created_at": "2025-07-01T10:05:00Z",
+    "language": "JavaScript",
+    "level": "Intermediate",
+    "question": "What is the output of console.log(typeof NaN)?",
+    "options": [
+      "\"undefined\"",
+      "\"number\"",
+      "\"NaN\"",
+      "\"object\""
+    ],
+    "correct_answer": "\"number\"",
+    "explanation": "In JavaScript, NaN is of type 'number', even though it means Not a Number.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "js_int_003",
+    "created_at": "2025-07-01T10:05:00Z",
+    "language": "JavaScript",
+    "level": "Intermediate",
+    "question": "Which method is used to combine two arrays?",
+    "options": [
+      "concat()",
+      "merge()",
+      "append()",
+      "combine()"
+    ],
+    "correct_answer": "concat()",
+    "explanation": "The concat() method is used to merge two or more arrays.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "js_int_004",
+    "created_at": "2025-07-01T10:05:00Z",
+    "language": "JavaScript",
+    "level": "Intermediate",
+    "question": "How can you prevent an object from being modified?",
+    "options": [
+      "Object.freeze()",
+      "Object.seal()",
+      "Object.lock()",
+      "Object.prevent()"
+    ],
+    "correct_answer": "Object.freeze()",
+    "explanation": "Object.freeze() makes an object immutable. Its properties can't be changed or added.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "js_int_005",
+    "created_at": "2025-07-01T10:05:00Z",
+    "language": "JavaScript",
+    "level": "Intermediate",
+    "question": "Which of the following is NOT a JavaScript loop?",
+    "options": [
+      "for",
+      "foreach",
+      "while",
+      "do...while"
+    ],
+    "correct_answer": "foreach",
+    "explanation": "'foreach' is not a loop statement in JavaScript, although Array.forEach() is a method.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "js_int_006",
+    "created_at": "2025-07-01T10:05:00Z",
+    "language": "JavaScript",
+    "level": "Intermediate",
+    "question": "What will this log? console.log([] == ![])",
+    "options": [
+      "true",
+      "false",
+      "undefined",
+      "TypeError"
+    ],
+    "correct_answer": "true",
+    "explanation": "[] is truthy, so ![] is false. [] == false → true due to coercion.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "js_int_007",
+    "created_at": "2025-07-01T10:05:00Z",
+    "language": "JavaScript",
+    "level": "Intermediate",
+    "question": "Which keyword is used to create a class in JavaScript?",
+    "options": [
+      "class",
+      "function",
+      "object",
+      "struct"
+    ],
+    "correct_answer": "class",
+    "explanation": "ES6 introduced the 'class' keyword to define classes in JavaScript.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "js_int_008",
+    "created_at": "2025-07-01T10:05:00Z",
+    "language": "JavaScript",
+    "level": "Intermediate",
+    "question": "What does the 'this' keyword refer to in a regular function?",
+    "options": [
+      "The global object",
+      "The function itself",
+      "The parent object",
+      "The module"
+    ],
+    "correct_answer": "The global object",
+    "explanation": "In non-strict mode, 'this' refers to the global object in a regular function.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "js_int_009",
+    "created_at": "2025-07-01T10:05:00Z",
+    "language": "JavaScript",
+    "level": "Intermediate",
+    "question": "Which array method returns a new array with only the elements that pass a test?",
+    "options": [
+      "map()",
+      "filter()",
+      "reduce()",
+      "forEach()"
+    ],
+    "correct_answer": "filter()",
+    "explanation": "filter() returns a new array of items that return true in the callback function.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "js_int_010",
+    "created_at": "2025-07-01T10:05:00Z",
+    "language": "JavaScript",
+    "level": "Intermediate",
+    "question": "How do you handle asynchronous code more cleanly than using callbacks?",
+    "options": [
+      "setTimeout()",
+      "forEach()",
+      "Promises and async/await",
+      "loops"
+    ],
+    "correct_answer": "Promises and async/await",
+    "explanation": "Promises and async/await provide cleaner syntax and better error handling for async code.",
+    "platform": "Web"
+  }
+]

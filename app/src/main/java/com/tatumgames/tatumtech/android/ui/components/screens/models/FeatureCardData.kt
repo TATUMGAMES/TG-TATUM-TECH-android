@@ -1,9 +1,7 @@
 package com.tatumgames.tatumtech.android.ui.components.screens.models
 
-import androidx.compose.ui.graphics.vector.ImageVector
-
-data class BottomNavigationItem(
-    val icon: ImageVector,
+data class FeatureCardData(
+    val imageRes: Int,
     val label: String,
     val route: String
 )

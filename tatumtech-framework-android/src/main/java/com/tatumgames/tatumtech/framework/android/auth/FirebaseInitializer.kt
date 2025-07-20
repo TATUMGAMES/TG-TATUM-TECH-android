@@ -36,11 +36,11 @@ object FirebaseInitializerMessages {
 object FirebaseInitializer {
 
     private var isInitialized = false
-    
+
     /**
      * Initializes Firebase if not already initialized.
      * This should be called early in the application lifecycle.
-     * 
+     *
      * @param context The application context.
      */
     fun initialize(context: Context) {
@@ -58,10 +58,10 @@ object FirebaseInitializer {
             Logger.d(TAG, FIREBASE_ALREADY_INITIALIZED)
         }
     }
-    
+
     /**
      * Checks if Firebase is initialized.
-     * 
+     *
      * @return true if Firebase is initialized, false otherwise.
      */
     fun isInitialized(): Boolean {

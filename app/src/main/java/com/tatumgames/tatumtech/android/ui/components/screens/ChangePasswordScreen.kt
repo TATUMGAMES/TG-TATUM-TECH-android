@@ -182,7 +182,8 @@ fun ChangePasswordScreen(
                 }
             )
 
-            val confirmErrorVisible = confirmTouched && confirmPassword.isNotBlank() && !doPasswordsMatch
+            val confirmErrorVisible =
+                confirmTouched && confirmPassword.isNotBlank() && !doPasswordsMatch
             StandardText(
                 text = stringResource(R.string.error_passwords_do_not_match),
                 color = Color.Red,

@@ -5,7 +5,12 @@
     "language": "Kotlin",
     "level": "Beginner",
     "question": "Which keyword is used to declare a variable in Kotlin?",
-    "options": ["var", "let", "val", "def"],
+    "options": [
+      "var",
+      "let",
+      "val",
+      "def"
+    ],
     "correct_answer": "var",
     "explanation": "'var' and 'val' are used to declare variables in Kotlin. 'var' is mutable, 'val' is immutable.",
     "platform": "Mobile"
@@ -16,7 +21,12 @@
     "language": "Kotlin",
     "level": "Beginner",
     "question": "What is the output of println(1 + 2 * 3)?",
-    "options": ["7", "9", "6", "5"],
+    "options": [
+      "7",
+      "9",
+      "6",
+      "5"
+    ],
     "correct_answer": "7",
     "explanation": "Multiplication has higher precedence: 2*3=6, 1+6=7.",
     "platform": "Mobile"
@@ -27,7 +37,12 @@
     "language": "Kotlin",
     "level": "Beginner",
     "question": "Which of the following is a valid function declaration in Kotlin?",
-    "options": ["fun sum(a: Int, b: Int): Int", "def sum(a, b): Int", "function sum(a, b) { }", "sum(a: Int, b: Int): Int"],
+    "options": [
+      "fun sum(a: Int, b: Int): Int",
+      "def sum(a, b): Int",
+      "function sum(a, b) { }",
+      "sum(a: Int, b: Int): Int"
+    ],
     "correct_answer": "fun sum(a: Int, b: Int): Int",
     "explanation": "Kotlin functions are declared with the 'fun' keyword.",
     "platform": "Mobile"

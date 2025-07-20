@@ -14,9 +14,13 @@
  */
 package com.tatumgames.tatumtech.android.utils
 
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Patterns
 import androidx.compose.ui.graphics.Color
+import androidx.core.content.ContextCompat
+import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.constants.Constants.TAG
 import com.tatumgames.tatumtech.framework.android.logger.Logger
 import java.text.SimpleDateFormat
@@ -27,6 +31,25 @@ import java.util.Locale
 import java.util.TimeZone
 
 object Utils {
+
+    /**
+     * Determine whether you have been granted a particular permission.
+     *
+     * @param context Interface to global information about an application environment.
+     * @param permissions The name of the permission being checked.
+     * @return True if permissions are enabled, otherwise false.
+     */
+    fun hasPermissions(
+        context: Context,
+        vararg permissions: String
+    ): Boolean {
+        return permissions.all {
+            it.isNotEmpty() && ContextCompat.checkSelfPermission(
+                context,
+                it
+            ) == PackageManager.PERMISSION_GRANTED
+        }
+    }
 
     fun isPasswordValid(password: String): Boolean {
         val minLength = 6
@@ -50,7 +73,8 @@ object Utils {
                 val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX", Locale.getDefault())
                 format.timeZone = TimeZone.getTimeZone("UTC")
                 val date = format.parse(dateString)
-                val displayFormat = SimpleDateFormat("MMMM d, yyyy 'at' h:mm a", Locale.getDefault())
+                val displayFormat =
+                    SimpleDateFormat("MMMM d, yyyy 'at' h:mm a", Locale.getDefault())
                 displayFormat.format(date ?: Date())
             }
         } catch (e: Exception) {
@@ -59,8 +83,33 @@ object Utils {
         }
     }
 
+    fun formatTimestamp(
+        context: Context,
+        timestamp: Long
+    ): String {
+        return try {
+            val sdf = SimpleDateFormat("MMM d, yyyy h:mm a", Locale.getDefault())
+            sdf.format(Date(timestamp))
+        } catch (e: Exception) {
+            Logger.e(TAG, e.message)
+            context.getString(R.string.to_be_determined)
+        }
+    }
+
     fun drawableToUri(drawableId: Int): String {
         return "android.resource://com.tatumgames.tatumtech.android/$drawableId"
+    }
+
+    fun getNameInitials(
+        context: Context,
+        name: String
+    ): String {
+        val words = name.trim().split(Regex("\\s+")).filter { it.isNotBlank() }
+        return if (words.isEmpty()) {
+            context.getString(R.string.anonymous_name_fallback)
+        } else {
+            words.take(2).mapNotNull { it.firstOrNull()?.uppercase() }.joinToString("")
+        }
     }
 
     fun generateColorFromString(input: String): Color {

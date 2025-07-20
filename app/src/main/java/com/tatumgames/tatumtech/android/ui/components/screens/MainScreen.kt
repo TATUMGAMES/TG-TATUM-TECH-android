@@ -40,7 +40,7 @@ import androidx.navigation.compose.rememberNavController
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.FeatureCard
-import com.tatumgames.tatumtech.android.ui.components.common.Notification
+import com.tatumgames.tatumtech.android.ui.components.common.NotificationBar
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
 import com.tatumgames.tatumtech.android.utils.MockData.getDummyNotifications
@@ -181,7 +181,7 @@ fun MainScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     notifications.forEach { notification ->
                         val painter = notification.iconResId?.let { painterResource(id = it) }
-                        Notification(
+                        NotificationBar(
                             icon = notification.icon,
                             image = painter,
                             title = notification.title,

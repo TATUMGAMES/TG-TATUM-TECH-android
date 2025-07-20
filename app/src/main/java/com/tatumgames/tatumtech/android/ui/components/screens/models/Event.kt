@@ -1,9 +1,7 @@
 package com.tatumgames.tatumtech.android.ui.components.screens.models
 
-import java.time.ZonedDateTime
-
 data class Event(
-    val eventId: String,
+    val id: Long,
     val name: String,
     val host: String,
     val date: String,

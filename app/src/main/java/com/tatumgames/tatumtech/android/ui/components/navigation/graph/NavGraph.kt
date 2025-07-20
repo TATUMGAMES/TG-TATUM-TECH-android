@@ -18,14 +18,21 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.tatumgames.tatumtech.android.constants.Constants.KEY_USER_ID
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
+import com.tatumgames.tatumtech.android.ui.components.screens.AttendeesScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.AuthScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.CodingChallengesScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.CommunityScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.DonateScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.ForgotPasswordScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.LearnScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.MainScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.MyTimelineScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.ScannerScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.SignInScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.SignUpScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.*
+import com.tatumgames.tatumtech.android.ui.components.screens.StatsScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.UpcomingEventsScreen
 
 @Composable
 fun AccountSetupGraph(
@@ -61,9 +68,6 @@ fun MainGraph(
         composable(NavRoutes.MAIN_SCREEN) {
             MainScreen(navController)
         }
-        composable(NavRoutes.LEARN_SCREEN) {
-            LearnScreen(navController)
-        }
         composable(NavRoutes.UPCOMING_EVENTS_SCREEN) {
             UpcomingEventsScreen(navController)
         }
@@ -86,7 +90,7 @@ fun MainGraph(
             StatsScreen(navController)
         }
         composable(NavRoutes.ATTENDEES_SCREEN) { backStackEntry ->
-            val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
+            val eventId = backStackEntry.arguments?.getLong(KEY_USER_ID) ?: 0
             AttendeesScreen(navController, eventId)
         }
     }

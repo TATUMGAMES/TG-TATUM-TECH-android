@@ -74,6 +74,16 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.7.0") // or latest
     implementation("com.google.firebase:firebase-auth:22.3.1") // or latest
 
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+
+configurations.all {
+    resolutionStrategy {
+        force("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+        force("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.3")
+        force("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.3")
+    }
 }

@@ -1,32 +1,76 @@
+/**
+ * Copyright 2013-present Tatum Games, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.tatumgames.tatumtech.android.ui.components.screens
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.database.AppDatabase
+import com.tatumgames.tatumtech.android.database.entity.TimelineEntity
+import com.tatumgames.tatumtech.android.database.repository.TimelineDatabaseRepository
+import com.tatumgames.tatumtech.android.enums.TimelineFilter
+import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.Header
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import com.tatumgames.tatumtech.android.ui.components.common.StandardText
+import com.tatumgames.tatumtech.android.ui.components.common.TimelineFilterBar
+import com.tatumgames.tatumtech.android.ui.components.common.TimelineList
 
 @Composable
 fun MyTimelineScreen(navController: NavController) {
-    var filter by remember { mutableStateOf(TimelineFilter.WEEK) }
-    val timelineItems = remember { getMockTimelineItems(filter) }
+    val context = LocalContext.current
+    val db = remember { AppDatabase.getInstance(context) }
+    val timelineRepository = remember { TimelineDatabaseRepository(db.timelineDao()) }
+    var filter by remember { mutableStateOf(TimelineFilter.TODAY) }
+    var timelineItems by remember { mutableStateOf<List<TimelineEntity>>(emptyList()) }
+
+    LaunchedEffect(filter) {
+        val now = System.currentTimeMillis()
+        val fromTimestamp = when (filter) {
+            TimelineFilter.TODAY -> now - 24 * 60 * 60 * 1000
+            TimelineFilter.WEEK -> now - 7 * 24 * 60 * 60 * 1000
+            TimelineFilter.MONTH -> now - 30 * 24 * 60 * 60 * 1000
+        }
+        timelineItems = timelineRepository.getTimelineEventsFrom(fromTimestamp)
+    }
 
     Scaffold(
         topBar = {
-            Header(text = "My Timeline", onBackClick = { navController.popBackStack() })
+            Header(
+                text = stringResource(R.string.my_timeline),
+                onBackClick = { navController.popBackStack() })
+        },
+        bottomBar = {
+            BottomNavigationBar(navController = navController)
         },
         containerColor = Color(0xFFF0F0F0)
     ) { paddingValues ->
@@ -35,134 +79,21 @@ fun MyTimelineScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            TimelineFilterBar(filter = filter, onFilterChange = { filter = it })
-            Spacer(modifier = Modifier.height(8.dp))
-            TimelineList(items = timelineItems)
-        }
-    }
-}
-
-enum class TimelineFilter { WEEK, MONTH }
-
-@Composable
-fun TimelineFilterBar(filter: TimelineFilter, onFilterChange: (TimelineFilter) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        FilterChip(
-            selected = filter == TimelineFilter.WEEK,
-            onClick = { onFilterChange(TimelineFilter.WEEK) },
-            label = { Text("Last Week") }
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        FilterChip(
-            selected = filter == TimelineFilter.MONTH,
-            onClick = { onFilterChange(TimelineFilter.MONTH) },
-            label = { Text("Last Month") }
-        )
-    }
-}
-
-@Composable
-fun TimelineList(items: List<TimelineItem>) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 24.dp),
-        contentPadding = PaddingValues(vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        items(items) { item ->
-            AnimatedVisibility(
-                visible = true,
-                enter = androidx.compose.animation.fadeIn(animationSpec = tween(500)),
-                exit = androidx.compose.animation.fadeOut(animationSpec = tween(500))
-            ) {
-                TimelineEntry(item)
-            }
-        }
-    }
-}
-
-@Composable
-fun TimelineEntry(item: TimelineItem) {
-    Row(verticalAlignment = Alignment.Top) {
-        // Timeline indicator
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Box(
-                modifier = Modifier
-                    .size(16.dp)
-                    .background(item.color, shape = MaterialTheme.shapes.small)
+            TimelineFilterBar(
+                filter = filter,
+                onFilterChange = { filter = it }
             )
-            if (!item.isLast) {
-                Spacer(
-                    modifier = Modifier
-                        .width(4.dp)
-                        .height(48.dp)
-                        .background(Color.LightGray)
-                )
+            Spacer(modifier = Modifier.height(8.dp))
+            if (timelineItems.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    StandardText(
+                        text = "No activity yet",
+                        color = Color.Gray
+                    )
+                }
+            } else {
+                TimelineList(items = timelineItems)
             }
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-        // Content
-        Column {
-            Text(item.title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Text(item.description, color = Color.Gray, fontSize = 14.sp)
-            Text(item.date.format(DateTimeFormatter.ofPattern("MMM d, yyyy h:mm a")), fontSize = 12.sp, color = Color(0xFF6200EE))
         }
     }
 }
-
-data class TimelineItem(
-    val title: String,
-    val description: String,
-    val date: LocalDateTime,
-    val color: Color,
-    val isLast: Boolean = false
-)
-
-fun getMockTimelineItems(filter: TimelineFilter): List<TimelineItem> {
-    val now = LocalDateTime.now()
-    val base = listOf(
-        TimelineItem(
-            title = "Registered for Game Dev Summit",
-            description = "You registered for the Game Dev Summit event.",
-            date = now.minusDays(1),
-            color = Color(0xFF6200EE)
-        ),
-        TimelineItem(
-            title = "Completed 5 Coding Challenges",
-            description = "You completed your daily coding challenges.",
-            date = now.minusDays(2),
-            color = Color(0xFF03DAC5)
-        ),
-        TimelineItem(
-            title = "Checked in at Workshop Y",
-            description = "QR scan successful at Workshop Y.",
-            date = now.minusDays(3),
-            color = Color(0xFFFFC107)
-        ),
-        TimelineItem(
-            title = "Won Giveaway Z",
-            description = "You won a prize in the event giveaway!",
-            date = now.minusDays(5),
-            color = Color(0xFFE91E63)
-        ),
-        TimelineItem(
-            title = "Attended event X",
-            description = "You attended event X.",
-            date = now.minusDays(6),
-            color = Color(0xFF2196F3)
-        )
-    )
-    val filtered = when (filter) {
-        TimelineFilter.WEEK -> base.filter { it.date.isAfter(now.minusWeeks(1)) }
-        TimelineFilter.MONTH -> base.filter { it.date.isAfter(now.minusMonths(1)) }
-    }
-    return filtered.mapIndexed { idx, item ->
-        if (idx == filtered.lastIndex) item.copy(isLast = true) else item
-    }
-} 

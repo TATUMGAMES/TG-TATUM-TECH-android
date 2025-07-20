@@ -25,11 +25,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
@@ -46,17 +46,17 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.activity.MainActivity
 import com.tatumgames.tatumtech.android.ui.components.common.Header
-import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
-import com.tatumgames.tatumtech.android.utils.Utils
 import com.tatumgames.tatumtech.android.ui.components.common.OutlinedButton
 import com.tatumgames.tatumtech.android.ui.components.common.OutlinedInputField
 import com.tatumgames.tatumtech.android.ui.components.common.RoundedButton
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.common.TermsAndPrivacyText
-import com.tatumgames.tatumtech.android.R
-import com.tatumgames.tatumtech.android.activity.MainActivity
+import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
 import com.tatumgames.tatumtech.android.ui.theme.TatumTechTheme
+import com.tatumgames.tatumtech.android.utils.Utils
 
 @Preview(showBackground = true)
 @Composable
@@ -150,11 +150,13 @@ fun SignUpScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 4.dp)
-                    .alpha(if (emailErrorVisible) {
-                        1f
-                    } else {
-                        0f
-                    })
+                    .alpha(
+                        if (emailErrorVisible) {
+                            1f
+                        } else {
+                            0f
+                        }
+                    )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -230,7 +232,8 @@ fun SignUpScreen(
                 }
             )
 
-            val confirmErrorVisible = confirmTouched && confirmPassword.isNotBlank() && !doPasswordsMatch
+            val confirmErrorVisible =
+                confirmTouched && confirmPassword.isNotBlank() && !doPasswordsMatch
             StandardText(
                 text = stringResource(R.string.error_passwords_do_not_match),
                 color = Color.Red,

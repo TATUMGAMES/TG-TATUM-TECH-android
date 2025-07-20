@@ -1,10 +1,9 @@
-import org.gradle.kotlin.dsl.implementation
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("org.jetbrains.kotlin.kapt")
     id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.24"
 }
 
 android {
@@ -41,7 +40,8 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14" //1.5.14 - for kotlin (1.9.24) // Required for Compose 1.6.6
+        kotlinCompilerExtensionVersion =
+            "1.5.14" //1.5.14 - for kotlin (1.9.24) // Required for Compose 1.6.6
     }
     lint {
         disable += "CredentialProviderPlayServicesAuthMissing"
@@ -62,6 +62,8 @@ dependencies {
     implementation(libs.androidx.constraintlayout.compose)
     debugImplementation("androidx.compose.ui:ui-tooling:1.6.6")
     implementation(libs.androidx.navigation.compose)
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
     // Core Android dependencies
     implementation("androidx.core:core-splashscreen:1.0.1")
@@ -89,4 +91,12 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
+}
+
+configurations.all {
+    resolutionStrategy {
+        force("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+        force("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.3")
+        force("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.3")
+    }
 }
