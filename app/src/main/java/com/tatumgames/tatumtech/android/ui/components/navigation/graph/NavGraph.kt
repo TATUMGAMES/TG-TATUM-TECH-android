@@ -20,19 +20,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.tatumgames.tatumtech.android.constants.Constants.KEY_USER_ID
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
-import com.tatumgames.tatumtech.android.ui.components.screens.AttendeesScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.AuthScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.CodingChallengesScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.CommunityScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.DonateScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.ForgotPasswordScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.MainScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.MyTimelineScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.ScannerScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.SignInScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.SignUpScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.StatsScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.UpcomingEventsScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.events.AttendeesScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.auth.splash.AuthScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.coding.CodingChallengesScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.community.CommunityScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.donate.DonateScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.auth.ForgotPasswordScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.main.MainScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.timeline.MyTimelineScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.scanner.ScannerScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.auth.SignInScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.auth.SignUpScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.stats.StatsScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.events.UpcomingEventsScreen
 
 @Composable
 fun AccountSetupGraph(

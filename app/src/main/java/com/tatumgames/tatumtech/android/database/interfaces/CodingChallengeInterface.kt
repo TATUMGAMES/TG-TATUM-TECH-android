@@ -14,10 +14,12 @@
  */
 package com.tatumgames.tatumtech.android.database.interfaces
 
-import com.tatumgames.tatumtech.android.database.entity.TimelineEntity
+import com.tatumgames.tatumtech.android.database.entity.CodingChallengeEntity
 
-interface TimelineInterface {
-    suspend fun insertTimelineEvent(timelineEntity: TimelineEntity)
-    suspend fun getAllTimelineEvents(): List<TimelineEntity>
-    suspend fun getTimelineEventsFrom(fromTimestamp: Long): List<TimelineEntity>
+interface CodingChallengeInterface {
+    suspend fun insert(codingChallengeEntity: CodingChallengeEntity): Long
+    suspend fun update(codingChallengeEntity: CodingChallengeEntity)
+    suspend fun delete(codingChallengeEntity: CodingChallengeEntity)
+    suspend fun getAllChallengeAnswers(): List<CodingChallengeEntity>
+    suspend fun getChallengeAnswerByQuestionId(questionId: String): CodingChallengeEntity?
 } 

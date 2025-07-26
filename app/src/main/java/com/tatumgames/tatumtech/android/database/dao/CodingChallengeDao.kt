@@ -15,20 +15,28 @@
 package com.tatumgames.tatumtech.android.database.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.tatumgames.tatumtech.android.database.constants.DbConstants.TABLE_TIMELINE
-import com.tatumgames.tatumtech.android.database.entity.TimelineEntity
+import androidx.room.Update
+import com.tatumgames.tatumtech.android.database.constants.DbConstants.TABLE_CODING_CHALLENGE
+import com.tatumgames.tatumtech.android.database.entity.CodingChallengeEntity
 
 @Dao
-interface TimelineDao {
+interface CodingChallengeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTimelineEvent(timelineEntity: TimelineEntity)
+    suspend fun insert(codingChallengeEntity: CodingChallengeEntity): Long
 
-    @Query("SELECT * FROM $TABLE_TIMELINE ORDER BY timestamp DESC")
-    suspend fun getAllTimelineEvents(): List<TimelineEntity>
+    @Update
+    suspend fun update(codingChallengeEntity: CodingChallengeEntity)
 
-    @Query("SELECT * FROM $TABLE_TIMELINE WHERE timestamp >= :fromTimestamp ORDER BY timestamp DESC")
-    suspend fun getTimelineEventsFrom(fromTimestamp: Long): List<TimelineEntity>
+    @Delete
+    suspend fun delete(codingChallengeEntity: CodingChallengeEntity)
+
+    @Query("SELECT * FROM $TABLE_CODING_CHALLENGE ORDER BY timestamp DESC")
+    suspend fun getAllChallengeAnswers(): List<CodingChallengeEntity>
+
+    @Query("SELECT * FROM $TABLE_CODING_CHALLENGE  WHERE questionId = :questionId LIMIT 1")
+    suspend fun getChallengeAnswerByQuestionId(questionId: String): CodingChallengeEntity?
 } 

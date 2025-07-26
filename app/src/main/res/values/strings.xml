@@ -21,6 +21,7 @@
     <string name="content_description_google_sso">Google Sign In</string>
     <string name="error_invalid_context">Invalid context</string>">
     <string name="error_no_id_token_received">No ID token received</string>">
+    <string name="password_updated">Password updated</string>
 
     <!-- sign-in -->
     <string name="email">Email</string>
@@ -103,12 +104,13 @@
     <string name="donate_title">Donate</string>
     <string name="donation_mission_text">
         Our mission is to increase representation of minorities and women
-        in the video game industry. With only 2%% of game devs being Black
-        and 3%% Latinx, your donation helps us rewrite the future—ensuring
+        in the video game industry. With only 2% of game devs being Black
+        and 3% Latinx, your donation helps us rewrite the future ensuring
         diverse voices are empowered to create, lead, and innovate.
     </string>
     <string name="choose_donation_tier">Choose a donation tier:</string>
     <string name="donation_tier_format">%1$s – %2$s</string>
+    <string name="visited_donation_page">Visited donation page: %1$s – %2$s</string>
     <!-- donation tiers -->
     <string name="donation_founding_supporter">Founding Supporter</string>
     <string name="donation_silver_sponsor">Silver Sponsor</string>

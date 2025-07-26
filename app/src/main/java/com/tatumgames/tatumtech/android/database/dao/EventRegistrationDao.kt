@@ -19,17 +19,17 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.tatumgames.tatumtech.android.database.constants.DbConstants.TABLE_EVENT_REGISTRATIONS
+import com.tatumgames.tatumtech.android.database.constants.DbConstants.TABLE_EVENT_REGISTRATION
 import com.tatumgames.tatumtech.android.database.entity.EventRegistrationEntity
 
 @Dao
 interface EventRegistrationDao {
-    @Query("SELECT * FROM $TABLE_EVENT_REGISTRATIONS")
+    @Query("SELECT * FROM $TABLE_EVENT_REGISTRATION")
     suspend fun getAll(): List<EventRegistrationEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(registration: EventRegistrationEntity)
+    suspend fun insert(eventRegistrationEntity: EventRegistrationEntity)
 
     @Delete
-    suspend fun delete(registration: EventRegistrationEntity)
+    suspend fun delete(eventRegistrationEntity: EventRegistrationEntity)
 } 

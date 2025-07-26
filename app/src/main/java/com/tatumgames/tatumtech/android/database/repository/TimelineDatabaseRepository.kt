@@ -22,8 +22,8 @@ class TimelineDatabaseRepository(
     private val timelineDao: TimelineDao
 ) : TimelineInterface {
 
-    override suspend fun insertTimelineEvent(event: TimelineEntity) {
-        timelineDao.insertTimelineEvent(event)
+    override suspend fun insertTimelineEvent(timelineEntity: TimelineEntity) {
+        timelineDao.insertTimelineEvent(timelineEntity)
     }
 
     override suspend fun getAllTimelineEvents(): List<TimelineEntity> {

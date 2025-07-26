@@ -4,10 +4,10 @@ import android.content.Context
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.enums.AttendeeNames
 import com.tatumgames.tatumtech.android.enums.ProfileImage
-import com.tatumgames.tatumtech.android.ui.components.screens.models.Achievement
-import com.tatumgames.tatumtech.android.ui.components.screens.models.Attendee
-import com.tatumgames.tatumtech.android.ui.components.screens.models.Event
-import com.tatumgames.tatumtech.android.ui.components.screens.models.Notification
+import com.tatumgames.tatumtech.android.ui.components.screens.stats.models.Achievement
+import com.tatumgames.tatumtech.android.ui.components.screens.events.models.Attendee
+import com.tatumgames.tatumtech.android.ui.components.screens.events.models.Event
+import com.tatumgames.tatumtech.android.ui.components.screens.main.models.Notification
 import com.tatumgames.tatumtech.android.utils.Utils.drawableToUri
 
 object MockData {

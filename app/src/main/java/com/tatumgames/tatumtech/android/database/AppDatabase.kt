@@ -19,11 +19,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.tatumgames.tatumtech.android.database.dao.AttendeeDao
-import com.tatumgames.tatumtech.android.database.dao.ChallengeAnswerDao
+import com.tatumgames.tatumtech.android.database.dao.CodingChallengeDao
 import com.tatumgames.tatumtech.android.database.dao.EventRegistrationDao
 import com.tatumgames.tatumtech.android.database.dao.TimelineDao
 import com.tatumgames.tatumtech.android.database.entity.AttendeeEntity
-import com.tatumgames.tatumtech.android.database.entity.ChallengeAnswerEntity
+import com.tatumgames.tatumtech.android.database.entity.CodingChallengeEntity
 import com.tatumgames.tatumtech.android.database.entity.EventRegistrationEntity
 import com.tatumgames.tatumtech.android.database.entity.TimelineEntity
 
@@ -32,7 +32,7 @@ import com.tatumgames.tatumtech.android.database.entity.TimelineEntity
         EventRegistrationEntity::class,
         AttendeeEntity::class,
         TimelineEntity::class,
-        ChallengeAnswerEntity::class
+        CodingChallengeEntity::class
     ],
     version = 1,
     exportSchema = false
@@ -41,7 +41,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun eventRegistrationDao(): EventRegistrationDao
     abstract fun attendeeDao(): AttendeeDao
     abstract fun timelineDao(): TimelineDao
-    abstract fun challengeAnswerDao(): ChallengeAnswerDao
+    abstract fun codingChallengeDao(): CodingChallengeDao
 
     companion object {
         private const val DB_NAME = "tatum_tech.db"

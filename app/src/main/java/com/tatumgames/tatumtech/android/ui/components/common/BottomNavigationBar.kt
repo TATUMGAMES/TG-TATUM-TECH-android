@@ -32,7 +32,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
-import com.tatumgames.tatumtech.android.ui.components.screens.models.BottomNavigation
+import com.tatumgames.tatumtech.android.ui.components.screens.main.models.BottomNavigation
 
 @Composable
 fun BottomNavigationBar(

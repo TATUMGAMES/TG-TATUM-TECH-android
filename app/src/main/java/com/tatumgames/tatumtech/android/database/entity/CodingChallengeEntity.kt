@@ -14,9 +14,11 @@
  */
 package com.tatumgames.tatumtech.android.database.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.tatumgames.tatumtech.android.database.constants.DbConstants.TABLE_EVENT_REGISTRATION
+import com.tatumgames.tatumtech.android.database.constants.DbConstants.TABLE_CODING_CHALLENGE
+
 
 /**
  * Marks a class as an entity. This class will have a mapping SQLite table in the database.
@@ -24,10 +26,16 @@ import com.tatumgames.tatumtech.android.database.constants.DbConstants.TABLE_EVE
  * <p>Each entity must have at least 1 field annotated with PrimaryKey. You can also use
  * primaryKeys() attribute to define the primary key.</p>
  *
- * @property id Enumerated value associated with events and used as a foreign key for
- * relatedId in TimelineEntity.
+ * @property questionId Specific question ID for the challenge.
+ * @property answerChosen The answer chosen by the user.
+ * @property timestamp Marked timestamp for when challenges were answered.
  */
-@Entity(tableName = TABLE_EVENT_REGISTRATION)
-data class EventRegistrationEntity(
-    @PrimaryKey val id: Long
+@Entity(tableName = TABLE_CODING_CHALLENGE)
+data class CodingChallengeEntity(
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    val id: Long = 0,
+    val questionId: String,
+    val answerChosen: String,
+    val timestamp: Long
 )

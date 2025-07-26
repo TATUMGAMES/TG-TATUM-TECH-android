@@ -24,12 +24,12 @@ object NavRoutes {
 
     // main routes
     const val MAIN_SCREEN = "main_screen"
-    const val UPCOMING_EVENTS_SCREEN = "upcoming_events"
+    const val UPCOMING_EVENTS_SCREEN = "upcoming_events_screen"
     const val CODING_CHALLENGES_SCREEN = "coding_challenges_screen"
-    const val MY_TIMELINE_SCREEN = "my_timeline"
-    const val COMMUNITY_SCREEN = "community"
-    const val SCANNER_SCREEN = "scanner"
-    const val DONATE_SCREEN = "donate"
-    const val STATS_SCREEN = "stats"
+    const val MY_TIMELINE_SCREEN = "my_timeline_screen"
+    const val COMMUNITY_SCREEN = "community_screen"
+    const val SCANNER_SCREEN = "scanner_screen"
+    const val DONATE_SCREEN = "donate_screen"
+    const val STATS_SCREEN = "stats_screen"
     const val ATTENDEES_SCREEN = "attendees_screen/{eventId}"
 }
