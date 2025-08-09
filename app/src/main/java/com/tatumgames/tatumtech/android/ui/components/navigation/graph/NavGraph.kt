@@ -20,19 +20,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.tatumgames.tatumtech.android.constants.Constants.KEY_USER_ID
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
-import com.tatumgames.tatumtech.android.ui.components.screens.events.AttendeesScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.auth.ForgotPasswordScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.auth.SignInScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.auth.SignUpScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.auth.splash.AuthScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.CodingChallengesScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.community.CommunityScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.donate.DonateScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.auth.ForgotPasswordScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.main.MainScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.timeline.MyTimelineScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.scanner.ScannerScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.auth.SignInScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.auth.SignUpScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.stats.StatsScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.events.AttendeesScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.events.UpcomingEventsScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.main.MainScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.scanner.ScannerScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.stats.StatsScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.timeline.MyTimelineScreen
 
 @Composable
 fun AccountSetupGraph(
