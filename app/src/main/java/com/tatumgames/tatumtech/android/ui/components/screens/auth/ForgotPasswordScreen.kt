@@ -15,6 +15,7 @@
 package com.tatumgames.tatumtech.android.ui.components.screens.auth
 
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,8 +41,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.tatumgames.tatumtech.android.R
@@ -81,97 +81,89 @@ fun ForgotPasswordScreen(
     val isEmailValid = Utils.isEmailValid(email)
     val isFormValid = isEmailValid
 
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp)
-    ) {
-        val (header, form, resetButton, footer) = createRefs()
-
-        Header(
-            modifier = Modifier.constrainAs(header) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            },
-            text = stringResource(R.string.forgot_password),
-            onBackClick = { navController.popBackStack() }
-        )
-
+    Scaffold(
+        topBar = {
+            Header(
+                text = stringResource(R.string.forgot_password),
+                onBackClick = { navController.popBackStack() }
+            )
+        },
+        containerColor = Color(0xFFF0F0F0)
+    ) { paddingValues ->
         Column(
-            modifier = Modifier.constrainAs(form) {
-                top.linkTo(header.bottom, margin = 16.dp)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
-            }
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            StandardText(
-                text = stringResource(id = R.string.input_email_for_reset),
-                style = MaterialTheme.typography.bodyLarge,
-                color = colorResource(R.color.black),
-                modifier = Modifier.padding(top = 20.dp)
-            )
+            Column {
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.height(24.dp))
+                StandardText(
+                    text = stringResource(id = R.string.input_email_for_reset),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = colorResource(R.color.black),
+                    modifier = Modifier.padding(top = 20.dp)
+                )
 
-            OutlinedInputField(
-                value = email,
-                onValueChange = { email = it },
-                placeholder = stringResource(R.string.email),
-                keyboardType = KeyboardType.Email,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .onFocusChanged { if (!it.isFocused) emailTouched = true }
-            )
+                Spacer(modifier = Modifier.height(24.dp))
 
-            val emailErrorVisible = emailTouched && email.isNotBlank() && !isEmailValid
-            StandardText(
-                text = stringResource(R.string.error_input_valid_email),
-                color = Color.Red,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp)
-                    .alpha(if (emailErrorVisible) 1f else 0f)
-            )
-        }
+                OutlinedInputField(
+                    value = email,
+                    onValueChange = { email = it },
+                    placeholder = stringResource(R.string.email),
+                    keyboardType = KeyboardType.Email,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .onFocusChanged { if (!it.isFocused) emailTouched = true }
+                )
 
-        val resetModifier = Modifier
-            .constrainAs(resetButton) {
-                top.linkTo(form.bottom, margin = 20.dp)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
+                val emailErrorVisible = emailTouched && email.isNotBlank() && !isEmailValid
+                StandardText(
+                    text = stringResource(R.string.error_input_valid_email),
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp)
+                        .alpha(if (emailErrorVisible) 1f else 0f)
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                if (isFormValid) {
+                    RoundedButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp),
+                        text = stringResource(R.string.reset_password),
+                        onClick = {
+                            focusManager.clearFocus()
+                            // TODO: Send reset email logic here
+                            Toast.makeText(
+                                context,
+                                R.string.reset_password_email_sent,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    )
+                } else {
+                    OutlinedButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp),
+                        text = stringResource(R.string.reset_password),
+                        onClick = { /* Disabled */ }
+                    )
+                }
             }
 
-        if (isFormValid) {
-            RoundedButton(
-                modifier = resetModifier.height(60.dp),
-                text = stringResource(R.string.reset_password),
-                onClick = {
-                    focusManager.clearFocus()
-
-                    // TODO: Send reset email logic here
-                    Toast.makeText(context, "Reset email sent!", Toast.LENGTH_SHORT).show()
-                }
-            )
-        } else {
-            OutlinedButton(
-                modifier = resetModifier.height(60.dp),
-                text = stringResource(R.string.reset_password),
-                onClick = { /* Disabled */ }
+            // Terms & Privacy at Bottom
+            TermsAndPrivacyText(
+                textColor = colorResource(R.color.black)
             )
         }
-
-        TermsAndPrivacyText(
-            modifier = Modifier.constrainAs(footer) {
-                bottom.linkTo(parent.bottom, margin = 30.dp)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            },
-            textColor = colorResource(R.color.black)
-        )
     }
 }
