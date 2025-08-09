@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,7 +39,7 @@ import com.tatumgames.tatumtech.android.utils.Utils.formatTimestamp
 
 @Composable
 fun TimelineListEntry(
-    item: TimelineEntity,
+    timelineEntity: TimelineEntity,
     isLast: Boolean
 ) {
     val context = LocalContext.current
@@ -65,7 +64,7 @@ fun TimelineListEntry(
         // Content
         Column {
             StandardText(
-                text = item.description,
+                text = timelineEntity.description,
                 style = TextStyle(
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -73,7 +72,7 @@ fun TimelineListEntry(
             )
 
             StandardText(
-                text = formatTimestamp(context, item.timestamp),
+                text = formatTimestamp(context, timelineEntity.timestamp),
                 style = TextStyle(
                     fontSize = 12.sp
                 ),

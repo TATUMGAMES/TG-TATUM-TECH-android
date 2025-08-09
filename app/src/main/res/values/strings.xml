@@ -40,6 +40,7 @@
     <string name="forgot_password">Forgot Password</string>
     <string name="input_email_for_reset">Input your email to reset your password.</string>
     <string name="reset_password">Reset Password</string>
+    <string name="reset_password_email_sent">Reset password email sent</string>
 
     <!-- change password -->
     <string name="set_new_password">Set your new password.</string>
@@ -116,6 +117,25 @@
     <string name="donation_silver_sponsor">Silver Sponsor</string>
     <string name="donation_gold_sponsor">Gold Sponsor</string>
     <string name="donation_premier_sponsor">Premier Sponsor</string>
+
+    <!-- community -->
+    <string name="join_community_title">Join Our Community</string>
+    <string name="community_intro_text">Connect with other players, get updates, and join giveaways.</string>
+    <string name="join_discord">Join Discord</string>
+    <string name="support_us">Support Us</string>
+    <string name="support_our_mission">Support Our Mission</string>
+    <string name="sponsor_description">Your donations go directly toward giving kids free computers and training in tech and game development.</string>
+    <string name="become_sponsor">Become a Sponsor</string>
+    <string name="discord_invite">Discord Invite</string>
+    <string name="join_mikros_mafia">Join MIKROS Mafia</string>
+    <string name="mikros_mafia">MIKROS Mafia</string>
+    <string name="loading_server_info">Loading server info…</string>
+    <string name="content_description_server_banner">Server Banner</string>
+    <string name="content_description_server_icon">Server Icon</string>
+    <string name="content_description_share_invite">Share Invite</string>
+    <string name="content_description_members">Members</string>
+    <string name="content_description_online">Online</string>
+    <string name="content_description_boost_level">Boost Level</string>
 
     <!-- scanner -->
     <string name="camera_permission_required">Camera permission required</string>
