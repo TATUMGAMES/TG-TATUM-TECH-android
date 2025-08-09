@@ -1,0 +1,46 @@
+[
+  {
+    "event_id": "tt_apr_2025",
+    "name": "Tatum Tech Spring 2025",
+    "host": "Tatum Games",
+    "date": "2025-04-12T14:00:00Z",
+    "duration_hours": 5,
+    "location": "South LA",
+    "is_registration_open": true,
+    "attendees": [
+      {
+        "user_id": "user_12345",
+        "name": "Ethan",
+        "profile_image": "https://example.com/ethan.jpg"
+      },
+      {
+        "user_id": "user_67890",
+        "name": "Ava",
+        "profile_image": "https://example.com/ava.jpg"
+      }
+    ],
+    "featured_image": "https://example.com/tatumtech_spring.png"
+  },
+  {
+    "event_id": "tt_oct_2025",
+    "name": "Tatum Tech Fall 2025",
+    "host": "Tatum Games",
+    "date": "2025-10-18T14:00:00Z",
+    "duration_hours": 5,
+    "location": "South LA",
+    "is_registration_open": false,
+    "attendees": [
+      {
+        "user_id": "user_12345",
+        "name": "Ethan",
+        "profile_image": "https://example.com/ethan.jpg"
+      },
+      {
+        "user_id": "user_67890",
+        "name": "Ava",
+        "profile_image": "https://example.com/ava.jpg"
+      }
+    ],
+    "featured_image": "https://example.com/tatumtech_fall.png"
+  }
+] 
