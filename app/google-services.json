@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "200853064929",
+    "project_id": "tatumtech-mobile-firebase",
+    "storage_bucket": "tatumtech-mobile-firebase.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:200853064929:android:2b9224587edbf168d6fba0",
+        "android_client_info": {
+          "package_name": "com.tatumgames.tatumtech.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "200853064929-1l6d28eck2hqnslq8vue5u8livp5tie5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tatumgames.tatumtech.android",
+            "certificate_hash": "7aff32d10430426256dabf2d13a573fa0f341194"
+          }
+        },
+        {
+          "client_id": "200853064929-k7cus4bcs41l07vvdqfuj5nimaqvk26c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmwphj8WzQPIcuvVzfakY6PV_RpkvaXiI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "200853064929-k7cus4bcs41l07vvdqfuj5nimaqvk26c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

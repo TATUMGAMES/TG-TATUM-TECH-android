@@ -1,3 +1,213 @@
 <resources>
     <string name="app_name">Tatum Tech</string>
+    <string name="default_web_client_id">200853064929-k7cus4bcs41l07vvdqfuj5nimaqvk26c.apps.googleusercontent.com</string>
+    <string name="content_description_back_button">Navigate back</string>
+
+    <!-- common -->
+    <string name="terms">Terms</string>
+    <string name="show">Show</string>
+    <string name="hide">Hide</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="terms_and_policy">By continuing, you confirm that you have read, agree and
+        accept Tatum Tech\'s <b>%1$s</b> and <b>%2$s</b></string>
+
+    <!-- app -->
+    <!-- auth -->
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="OR">OR</string>
+    <string name="lets_begin_your_tatum_tech_experience">Let\'s begin your Tatum Tech experience.</string>
+    <string name="google_sso">Google SSO</string>
+    <string name="content_description_google_sso">Google Sign In</string>
+    <string name="error_invalid_context">Invalid context</string>">
+    <string name="error_no_id_token_received">No ID token received</string>">
+    <string name="password_updated">Password updated</string>
+
+    <!-- sign-in -->
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="welcome_back_sign_in_continue">Welcome back! Sign in to continue.</string>
+    <string name="error_input_valid_email">Input a valid email address.</string>">
+    <string name="error_password_minimum_six_characters">Password must be at minimum 6 characters with 1
+        uppercase letter and 1 special character.</string>
+
+    <!-- sign-up -->
+    <string name="create_your_account">Create your account.</string>
+    <string name="error_passwords_do_not_match">Passwords do not match.</string>
+    <string name="confirm_password">Confirm Password</string>
+
+    <!-- forgot password -->
+    <string name="forgot_password">Forgot Password</string>
+    <string name="input_email_for_reset">Input your email to reset your password.</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="reset_password_email_sent">Reset password email sent</string>
+
+    <!-- change password -->
+    <string name="set_new_password">Set your new password.</string>
+    <string name="change_password">Change Password</string>
+    <string name="update_password">Update Password</string>
+    <string name="new_password">New Password</string>
+
+    <!-- main -->
+    <string name="greeting_generic">Hello!</string>
+    <string name="greeting_with_name">Hello, %1$s!</string>
+    <string name="recent_notifications">Recent Notifications</string>
+    <string name="upcoming_events">Upcoming Events</string>
+    <string name="coding">Coding</string>
+    <string name="my_timeline">My Timeline</string>
+    <string name="community">Community</string>
+    <string name="scanner">Scanner</string>
+    <string name="donate">Donate</string>
+    <string name="home">Home</string>
+    <string name="learn">Learn</string>
+    <string name="timeline">Timeline</string>
+    <string name="stats">Stats</string>
+    <string name="attendees">Attendees</string>
+    <string name="events">Events</string>
+    <string name="challenges">Challenges</string>
+    <string name="qr_scans">QR Scans</string>
+
+    <!-- upcoming events -->
+    <string name="register">Register</string>
+    <string name="registration_closed">Registration Closed</string>
+    <string name="see_all_attendees">See All Attendees</string>
+    <string name="add_friend">Add Friend</string>
+    <string name="remove_friend">Remove Friend</string>
+    <string name="snackbar_removed_friend">Removed %1$s from friends</string>
+    <string name="snackbar_added_friend">Added %1$s as a friend</string>
+    <string name="timeline_removed_friend">Removed %1$s as a friend</string>
+    <string name="timeline_added_friend">Added %1$s as a friend</string>
+    <string name="timeline_registered">Registered for %1$s</string>
+    <string name="timeline_unregistered">Unregistered from %1$s</string>
+    <string name="friend_request_sent">Friend request sent to %1$s</string>
+
+    <!-- event names -->
+    <string name="anonymous_name_fallback">Anonymous</string>
+    <string name="event_name_fall_2025">Tatum Tech Fall 2025</string>
+    <string name="event_name_spring_2026">Tatum Tech Spring 2026</string>
+    <string name="event_name_fall_2026">Tatum Tech Fall 2026</string>
+    <string name="event_name_spring_2027">Tatum Tech Spring 2027</string>
+    <string name="event_name_fall_2027">Tatum Tech Fall 2027</string>
+    <!-- event host -->
+    <string name="event_host_tatum_games">Tatum Games</string>
+    <!-- event location -->
+    <string name="event_location_south_la">South Los Angeles, CA</string>
+
+    <!-- coding challenges -->
+    <string name="title_coding_challenges">Coding Challenges</string>
+    <string name="no_questions">No questions loaded yet.</string>
+    <string name="challenge_complete">Challenge Complete!</string>
+    <string name="question_number">Q%1$d: %2$s</string>
+    <string name="loading">Loading…</string>
+    <string name="to_be_determined">TBD</string>
+
+    <!-- donation -->
+    <string name="donate_title">Donate</string>
+    <string name="donation_mission_text">
+        Our mission is to increase representation of minorities and women
+        in the video game industry. With only 2% of game devs being Black
+        and 3% Latinx, your donation helps us rewrite the future ensuring
+        diverse voices are empowered to create, lead, and innovate.
+    </string>
+    <string name="choose_donation_tier">Choose a donation tier:</string>
+    <string name="donation_tier_format">%1$s – %2$s</string>
+    <string name="visited_donation_page">Visited donation page: %1$s – %2$s</string>
+    <!-- donation tiers -->
+    <string name="donation_founding_supporter">Founding Supporter</string>
+    <string name="donation_silver_sponsor">Silver Sponsor</string>
+    <string name="donation_gold_sponsor">Gold Sponsor</string>
+    <string name="donation_premier_sponsor">Premier Sponsor</string>
+
+    <!-- community -->
+    <string name="join_community_title">Join Our Community</string>
+    <string name="community_intro_text">Connect with other players, get updates, and join giveaways.</string>
+    <string name="join_discord">Join Discord</string>
+    <string name="support_us">Support Us</string>
+    <string name="support_our_mission">Support Our Mission</string>
+    <string name="sponsor_description">Your donations go directly toward giving kids free computers and training in tech and game development.</string>
+    <string name="become_sponsor">Become a Sponsor</string>
+    <string name="discord_invite">Discord Invite</string>
+    <string name="join_mikros_mafia">Join MIKROS Mafia</string>
+    <string name="mikros_mafia">MIKROS Mafia</string>
+    <string name="loading_server_info">Loading server info…</string>
+    <string name="content_description_server_banner">Server Banner</string>
+    <string name="content_description_server_icon">Server Icon</string>
+    <string name="content_description_share_invite">Share Invite</string>
+    <string name="content_description_members">Members</string>
+    <string name="content_description_online">Online</string>
+    <string name="content_description_boost_level">Boost Level</string>
+
+    <!-- scanner -->
+    <string name="camera_permission_required">Camera permission required</string>
+
+    <!-- stats -->
+    <string name="your_progress">Your Progress</string>
+    <string name="percent_correct">Percent Correct</string>
+    <string name="current_streak_days">Current Streak: %1$d days</string>
+    <string name="achievements_unlocked">Achievements Unlocked: %1$d</string>
+    <string name="category_breakdown_coming_soon">Category Breakdown (Coming Soon)</string>
+    <string name="achievements">Achievements</string>
+    <string name="bar_chart_placeholder">[Bar Chart Placeholder]</string>
+
+    <!-- notifications -->
+    <!-- titles -->
+    <string name="coding_challenge">Coding Challenge</string>
+    <string name="event_registration">Event Registration</string>
+    <!-- descriptions -->
+    <string name="new_coding_challenge_available">New coding challenge available</string>
+    <string name="event_registration_confirmed">Event registration confirmed</string>+
+
+    <!-- achievements -->
+    <!-- event registration achievements -->
+    <string name="achievement_title_first_step">First Step</string>
+    <string name="achievement_desc_first_step">Registered for your first Tatum Tech event!</string>
+    <string name="achievement_title_committed">Committed</string>
+    <string name="achievement_desc_committed">Registered for 3 Tatum Tech events.</string>
+    <string name="achievement_title_event_veteran">Event Veteran</string>
+    <string name="achievement_desc_event_veteran">Registered for 5 or more Tatum Tech events.</string>
+    <!-- event attendance achievements -->
+    <string name="achievement_title_showed_up">Showed Up</string>
+    <string name="achievement_desc_showed_up">Attended your first Tatum Tech event.</string>
+    <string name="achievement_title_loyal_attendee">Loyal Attendee</string>
+    <string name="achievement_desc_loyal_attendee">Attended 3 Tatum Tech events.</string>
+    <string name="achievement_title_all_star_attendee">All-Star Attendee</string>
+    <string name="achievement_desc_all_star_attendee">Attended 5+ Tatum Tech events.</string>
+    <!-- beginner challenge achievements -->
+    <string name="achievement_title_coder_in_training">Coder-in-Training</string>
+    <string name="achievement_desc_coder_in_training">Completed 5 beginner challenges.</string>
+    <string name="achievement_title_leveling_up">Leveling Up</string>
+    <string name="achievement_desc_leveling_up">Completed 15 beginner challenges.</string>
+    <string name="achievement_title_beginner_master">Beginner Master</string>
+    <string name="achievement_desc_beginner_master">Completed 50 beginner challenges.</string>
+    <!-- intermediate challenge achievements -->
+    <string name="achievement_title_problem_solver">Problem Solver</string>
+    <string name="achievement_desc_problem_solver">Completed 5 intermediate challenges.</string>
+    <string name="achievement_title_code_climber">Code Climber</string>
+    <string name="achievement_desc_code_climber">Completed 15 intermediate challenges.</string>
+    <string name="achievement_title_intermediate_champ">Intermediate Champ</string>
+    <string name="achievement_desc_intermediate_champ">Completed 50 intermediate challenges.</string>
+    <!-- advanced challenge achievements -->
+    <string name="achievement_title_code_warrior">Code Warrior</string>
+    <string name="achievement_desc_code_warrior">Completed 5 advanced challenges.</string>
+    <string name="achievement_title_algorithm_slayer">Algorithm Slayer</string>
+    <string name="achievement_desc_algorithm_slayer">Completed 15 advanced challenges.</string>
+    <string name="achievement_title_elite_hacker">Elite Hacker</string>
+    <string name="achievement_desc_elite_hacker">Completed 50 advanced challenges.</string>
+    <!-- qr code achievements -->
+    <string name="achievement_title_qr_curious">QR Curious</string>
+    <string name="achievement_desc_qr_curious">Scanned 1 QR code at a Tatum Tech event.</string>
+    <string name="achievement_title_qr_explorer">QR Explorer</string>
+    <string name="achievement_desc_qr_explorer">Scanned 3 QR codes.</string>
+    <string name="achievement_title_qr_adventurer">QR Adventurer</string>
+    <string name="achievement_desc_qr_adventurer">Scanned 5 QR codes.</string>
+    <string name="achievement_title_qr_hunter">QR Hunter</string>
+    <string name="achievement_desc_qr_hunter">Scanned 10 QR codes.</string>
+    <string name="achievement_title_qr_master">QR Master</string>
+    <string name="achievement_desc_qr_master">Scanned 20 QR codes.</string>
+    <string name="achievement_title_qr_legend">QR Legend</string>
+    <string name="achievement_desc_qr_legend">Scanned 50 QR codes.</string>
+    <!-- donation achievement -->
+    <string name="achievement_title_heart_giver">Heart Giver</string>
+    <string name="achievement_desc_heart_giver">Donated to a Tatum Tech cause.</string>
+
 </resources>
