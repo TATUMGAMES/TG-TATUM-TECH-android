@@ -20,4 +20,25 @@ data class Attendee(
     val id: Long,
     val name: String,
     val profileImage: ProfileImage
+)
+
+// New models for API responses
+data class EventAttendeeResponse(
+    val eventId: String,
+    val attendees: List<AttendeeUser>
+)
+
+data class AttendeeUser(
+    val user: AttendeeUserDetails
+)
+
+data class AttendeeUserDetails(
+    val userId: String,
+    val firstName: String,
+    val lastName: String,
+    val userImages: AttendeeUserImages
+)
+
+data class AttendeeUserImages(
+    val profileImage: String
 ) 

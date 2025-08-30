@@ -17,7 +17,9 @@ package com.tatumgames.tatumtech.android.ui.components.navigation.graph
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.tatumgames.tatumtech.android.constants.Constants.KEY_USER_ID
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
 import com.tatumgames.tatumtech.android.ui.components.screens.auth.ForgotPasswordScreen
@@ -27,9 +29,12 @@ import com.tatumgames.tatumtech.android.ui.components.screens.auth.splash.AuthSc
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.CodingChallengesScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.community.CommunityScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.donate.DonateScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.about.AboutScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.about.AboutContentType
 import com.tatumgames.tatumtech.android.ui.components.screens.events.AttendeesScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.events.UpcomingEventsScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.main.MainScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.main.UserProfileScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.scanner.ScannerScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.stats.StatsScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.timeline.MyTimelineScreen
@@ -89,9 +94,20 @@ fun MainGraph(
         composable(NavRoutes.STATS_SCREEN) {
             StatsScreen(navController)
         }
-        composable(NavRoutes.ATTENDEES_SCREEN) { backStackEntry ->
-            val eventId = backStackEntry.arguments?.getLong(KEY_USER_ID) ?: 0
+        composable(NavRoutes.USER_PROFILE_SCREEN) {
+            UserProfileScreen(navController)
+        }
+        composable(
+            route = NavRoutes.ATTENDEES_SCREEN,
+            arguments = listOf(navArgument("eventId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getLong("eventId") ?: 0L
             AttendeesScreen(navController, eventId)
+        }
+        composable("about_screen/{contentType}") { backStackEntry ->
+            val typeString = backStackEntry.arguments?.getString("contentType") ?: AboutContentType.ABOUT.route
+            val contentType = AboutContentType.values().find { it.route == typeString } ?: AboutContentType.ABOUT
+            AboutScreen(navController, contentType)
         }
     }
 }

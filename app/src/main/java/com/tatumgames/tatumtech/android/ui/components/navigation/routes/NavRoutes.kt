@@ -31,5 +31,14 @@ object NavRoutes {
     const val SCANNER_SCREEN = "scanner_screen"
     const val DONATE_SCREEN = "donate_screen"
     const val STATS_SCREEN = "stats_screen"
+    const val USER_PROFILE_SCREEN = "user_profile_screen"
     const val ATTENDEES_SCREEN = "attendees_screen/{eventId}"
+    
+    /**
+     * Helper function to build the attendees screen route with event ID.
+     * 
+     * @param eventId The ID of the event to display attendees for.
+     * @return The complete route string for the attendees screen.
+     */
+    fun attendeesScreenRoute(eventId: Long): String = "attendees_screen/$eventId"
 }

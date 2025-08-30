@@ -19,6 +19,8 @@ import com.tatumgames.tatumtech.android.database.entity.AttendeeEntity
 interface AttendeeInterface {
     suspend fun getAttendeesForEvent(eventId: Long): List<AttendeeEntity>
     suspend fun insertAttendees(attendees: List<AttendeeEntity>)
+    suspend fun insertAttendee(attendee: AttendeeEntity)
+    suspend fun removeAttendee(attendeeId: Long)
     suspend fun addFriend(attendeeId: Long)
     suspend fun removeFriend(attendeeId: Long)
     suspend fun getAllFriends(): List<AttendeeEntity>

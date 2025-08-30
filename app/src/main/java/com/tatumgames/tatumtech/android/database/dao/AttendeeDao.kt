@@ -15,6 +15,7 @@
 package com.tatumgames.tatumtech.android.database.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -28,6 +29,15 @@ interface AttendeeDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAttendees(attendees: List<AttendeeEntity>)
+    
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAttendee(attendee: AttendeeEntity)
+    
+    @Delete
+    suspend fun removeAttendee(attendee: AttendeeEntity)
+    
+    @Query("DELETE FROM $TABLE_ATTENDEES WHERE id = :attendeeId")
+    suspend fun removeAttendee(attendeeId: Long)
 
     @Query("UPDATE $TABLE_ATTENDEES SET isFriend = 1 WHERE id = :attendeeId")
     suspend fun addFriend(attendeeId: Long)

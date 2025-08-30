@@ -7,6 +7,10 @@ import com.tatumgames.tatumtech.android.enums.ProfileImage
 import com.tatumgames.tatumtech.android.ui.components.screens.stats.models.Achievement
 import com.tatumgames.tatumtech.android.ui.components.screens.events.models.Attendee
 import com.tatumgames.tatumtech.android.ui.components.screens.events.models.Event
+import com.tatumgames.tatumtech.android.ui.components.screens.events.models.ApiEvent
+import com.tatumgames.tatumtech.android.ui.components.screens.events.models.EventLocation
+import com.tatumgames.tatumtech.android.ui.components.screens.events.models.EventRegistration
+import com.tatumgames.tatumtech.android.ui.components.screens.events.models.EventAttendee
 import com.tatumgames.tatumtech.android.ui.components.screens.main.models.Notification
 import com.tatumgames.tatumtech.android.utils.Utils.drawableToUri
 
@@ -30,6 +34,72 @@ object MockData {
     }
 
     fun getMockEvents(
+        context: Context
+    ): List<Event> {
+        // Legacy function - keeping for backward compatibility
+        return getMockEventsLegacy(context)
+    }
+
+    fun getMockEventsApi(
+        context: Context
+    ): List<ApiEvent> {
+        return listOf(
+            ApiEvent(
+                eventId = "tt_fall_2025",
+                name = context.getString(R.string.event_name_fall_2025),
+                description = "A networking event for developers and tech enthusiasts.",
+                startTime = "2025-10-15T11:00:00Z",
+                endTime = "2025-10-15T16:00:00Z",
+                location = EventLocation(
+                    name = "Tatum HQ",
+                    address = context.getString(R.string.event_location_south_la)
+                ),
+                registration = EventRegistration(
+                    isOpen = true,
+                    deadline = "2025-10-13T23:59:59Z"
+                ),
+                isUserRegistered = false,
+                attendees = listOf(
+                    EventAttendee(
+                        userId = "user_12345",
+                        userDetailsUrl = "/user/details/user_12345"
+                    ),
+                    EventAttendee(
+                        userId = "user_67890",
+                        userDetailsUrl = "/user/details/user_67890"
+                    )
+                )
+            ),
+            ApiEvent(
+                eventId = "tt_spring_2026",
+                name = context.getString(R.string.event_name_spring_2026),
+                description = "Advanced coding workshops and industry networking.",
+                startTime = "2026-04-22T12:00:00Z",
+                endTime = "2026-04-22T17:00:00Z",
+                location = EventLocation(
+                    name = "Tatum HQ",
+                    address = context.getString(R.string.event_location_south_la)
+                ),
+                registration = EventRegistration(
+                    isOpen = true,
+                    deadline = "2026-04-20T23:59:59Z"
+                ),
+                isUserRegistered = true,
+                attendees = listOf(
+                    EventAttendee(
+                        userId = "user_12345",
+                        userDetailsUrl = "/user/details/user_12345"
+                    ),
+                    EventAttendee(
+                        userId = "user_67890",
+                        userDetailsUrl = "/user/details/user_67890"
+                    )
+                )
+            )
+        )
+    }
+
+    private fun getMockEventsLegacy(
         context: Context
     ): List<Event> {
         val allAttendees = listOf(
@@ -297,5 +367,4 @@ object MockData {
             )
         )
     }
-
 }
