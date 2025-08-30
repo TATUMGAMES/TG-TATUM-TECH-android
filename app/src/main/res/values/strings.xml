@@ -52,6 +52,32 @@
     <string name="greeting_generic">Hello!</string>
     <string name="greeting_with_name">Hello, %1$s!</string>
     <string name="recent_notifications">Recent Notifications</string>
+    <string name="menu">Menu</string>
+    <string name="profile">Profile</string>
+    <string name="about_tatum_games">About Tatum Games</string>
+    <string name="faq">FAQ</string>
+
+    <!-- About Screen -->
+    <string name="about_tatum_games_description">Tatum Games is a Google-backed startup on a mission to innovate the mobile gaming industry while creating pathways for underrepresented communities in tech. Learn more at https://www.tatumgames.com</string>
+    <string name="about_mission_title">Our Mission</string>
+    <string name="about_mission_description">We create opportunities for underrepresented communities in tech and gaming by providing free computers, training, and mentorship to build the next generation of game developers.</string>
+    <string name="about_impact_title">Our Impact</string>
+    <string name="about_impact_description" formatted="false">With only 2% of game developers being Black and 3% Latinx, we\'re working to change the future by empowering diverse voices to create, lead, and innovate in gaming.</string>
+    <string name="about_tatum_tech_title">What is Tatum Tech?</string>
+    <string name="about_tatum_tech_description">Tatum Tech is our bi-annual community event that bridges the digital divide in South LA. We give away 100+ computers and offer hands-on tech workshops led by professionals from top game studios. Learn more at https://tatumgames.com</string>
+    <string name="about_mikros_title">Powered by MIKROS</string>
+    <string name="about_mikros_description">Our flagship product, MIKROS, helps game developers acquire users, grow revenue, and gain insights through advanced analytics powered by AI and patented technology. Explore at https://wwww.developer.tatumgames.com</string>
+    <string name="about_community_title">Join the MIKROS Mafia</string>
+    <string name="about_community_description">Connect with game developers, influencers, and industry insiders. Get support, exclusive perks, and early access to opportunities. Join us on Discord: https://discord.com/invite/6FzqSUDRXQ</string>
+
+    <!-- FAQ -->
+    <string name="faq_general_questions">General Questions</string>
+    <string name="faq_what_is_tatum_tech">What is Tatum Tech?</string>
+    <string name="faq_what_is_tatum_tech_answer">Tatum Tech is a series of free events that introduce underrepresented communities to careers in tech and game development. We host hands-on workshops, coding challenges, and networking with industry professionals.</string>
+    <string name="faq_who_can_attend">Who can attend Tatum Tech events?</string>
+    <string name="faq_who_can_attend_answer">Anyone can attend! We especially welcome participants from underrepresented communities, including women, people of color, and individuals from low-income backgrounds.</string>
+    <string name="faq_how_to_register">How do I register for events?</string>
+    <string name="faq_how_to_register_answer">You can register through this app by visiting the Upcoming Events section. Just tap "Register" on any available event. Registration is completely free.</string>
     <string name="upcoming_events">Upcoming Events</string>
     <string name="coding">Coding</string>
     <string name="my_timeline">My Timeline</string>
@@ -99,11 +125,25 @@
     <string name="challenge_complete">Challenge Complete!</string>
     <string name="question_number">Q%1$d: %2$s</string>
     <string name="loading">Loading…</string>
+    <string name="select_language">Select a language</string>
+    <string name="select_level">Select a level</string>
+    <string name="daily_limit_reached">Daily Limit Reached</string>
+    <string name="daily_limit_message">You\'ve answered 7 questions today. Come back tomorrow for more challenges!</string>
+    <string name="progress">Progress</string>
+    <string name="submit">Submit</string>
+    <string name="next">Next</string>
+    <string name="challenge_results">Challenge Results</string>
+    <string name="score_format">Score: %1$d/%2$d</string>
+    <string name="percentage_format">(%1$d%%)</string>
+    <string name="correct">✓ Correct</string>
+    <string name="incorrect">✗ Incorrect</string>
+    <string name="try_again_tomorrow">Try Again Tomorrow</string>
+    <string name="app_version">Version %1$s</string>
     <string name="to_be_determined">TBD</string>
 
     <!-- donation -->
     <string name="donate_title">Donate</string>
-    <string name="donation_mission_text">
+    <string name="donation_mission_text" formatted="false">
         Our mission is to increase representation of minorities and women
         in the video game industry. With only 2% of game devs being Black
         and 3% Latinx, your donation helps us rewrite the future ensuring
@@ -142,6 +182,7 @@
 
     <!-- stats -->
     <string name="your_progress">Your Progress</string>
+    <string name="no_statistics_loaded">No statistics loaded yet.</string>
     <string name="percent_correct">Percent Correct</string>
     <string name="current_streak_days">Current Streak: %1$d days</string>
     <string name="achievements_unlocked">Achievements Unlocked: %1$d</string>
