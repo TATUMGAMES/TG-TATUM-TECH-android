@@ -1,0 +1,133 @@
+{
+  "user_id": "user_12345",
+  "total_count": 8,
+  "has_more": true,
+  "next_offset": 10,
+  "timeline_items": [
+    {
+      "timeline_id": "timeline_001",
+      "type": "event_attended",
+      "timestamp": "2025-08-25T14:00:00Z",
+      "title": "Attended Beginner Python Workshop",
+      "description": "You attended 'Intro to Python' event at Tatum Tech.",
+      "icon": "event_icon",
+      "metadata": {
+        "event_id": "event_98765",
+        "event_name": "Intro to Python",
+        "location": "Virtual",
+        "duration_minutes": 120,
+        "attendees_count": 45
+      }
+    },
+    {
+      "timeline_id": "timeline_002",
+      "type": "challenge_completed",
+      "timestamp": "2025-08-24T10:30:00Z",
+      "title": "Completed Kotlin Challenge",
+      "description": "You completed the 'Null Safety' challenge with a perfect score.",
+      "icon": "challenge_icon",
+      "metadata": {
+        "challenge_id": "challenge_12345",
+        "challenge_title": "Null Safety in Kotlin",
+        "language": "kotlin",
+        "difficulty": "intermediate",
+        "score": 100,
+        "time_taken_seconds": 45
+      }
+    },
+    {
+      "timeline_id": "timeline_003",
+      "type": "achievement_unlocked",
+      "timestamp": "2025-08-23T16:15:00Z",
+      "title": "Achievement Unlocked: First Step",
+      "description": "You registered for your first Tatum Tech event!",
+      "icon": "achievement_icon",
+      "metadata": {
+        "achievement_id": "achievement_first_step",
+        "achievement_title": "First Step",
+        "achievement_description": "Registered for your first Tatum Tech event!",
+        "points_earned": 10
+      }
+    },
+    {
+      "timeline_id": "timeline_004",
+      "type": "qr_code_scanned",
+      "timestamp": "2025-08-22T11:20:00Z",
+      "title": "QR Code Scanned",
+      "description": "You scanned a QR code at the Tatum Tech booth.",
+      "icon": "qr_icon",
+      "metadata": {
+        "qr_id": "qr_67890",
+        "location": "Tatum Tech Booth",
+        "event_name": "Tech Expo 2025",
+        "points_earned": 5
+      }
+    },
+    {
+      "timeline_id": "timeline_005",
+      "type": "friend_added",
+      "timestamp": "2025-08-21T09:45:00Z",
+      "title": "Friend Added",
+      "description": "You added Sarah Johnson as a friend.",
+      "icon": "friend_icon",
+      "metadata": {
+        "friend_id": "user_67890",
+        "friend_name": "Sarah Johnson",
+        "mutual_friends_count": 3
+      }
+    },
+    {
+      "timeline_id": "timeline_006",
+      "type": "donation_made",
+      "timestamp": "2025-08-20T14:30:00Z",
+      "title": "Donation Made",
+      "description": "You made a donation to support Tatum Tech's mission.",
+      "icon": "donation_icon",
+      "metadata": {
+        "donation_id": "donation_54321",
+        "amount": 25.00,
+        "currency": "USD",
+        "tier": "Founding Supporter",
+        "anonymous": false
+      }
+    },
+    {
+      "timeline_id": "timeline_007",
+      "type": "streak_milestone",
+      "timestamp": "2025-08-19T08:00:00Z",
+      "title": "7-Day Streak Achieved",
+      "description": "You've completed coding challenges for 7 consecutive days!",
+      "icon": "streak_icon",
+      "metadata": {
+        "streak_days": 7,
+        "total_challenges_completed": 35,
+        "points_earned": 50
+      }
+    },
+    {
+      "timeline_id": "timeline_008",
+      "type": "content_viewed",
+      "timestamp": "2025-08-18T15:20:00Z",
+      "title": "Tutorial Viewed",
+      "description": "You watched the 'Getting Started with Android Development' tutorial.",
+      "icon": "tutorial_icon",
+      "metadata": {
+        "content_id": "tutorial_android_basics",
+        "content_title": "Getting Started with Android Development",
+        "duration_minutes": 45,
+        "completion_percentage": 100
+      }
+    }
+  ],
+  "metadata": {
+    "request_id": "req_54321",
+    "generated_at": "2025-08-26T12:00:00Z",
+    "filter_applied": {
+      "date_range": "2025-08-01 to 2025-08-26",
+      "type_filter": "all"
+    }
+  }
+}
+
+
+

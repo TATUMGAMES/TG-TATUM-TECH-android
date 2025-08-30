@@ -1,46 +1,56 @@
-[
-  {
-    "event_id": "tt_apr_2025",
-    "name": "Tatum Tech Spring 2025",
-    "host": "Tatum Games",
-    "date": "2025-04-12T14:00:00Z",
-    "duration_hours": 5,
-    "location": "South LA",
-    "is_registration_open": true,
-    "attendees": [
-      {
-        "user_id": "user_12345",
-        "name": "Ethan",
-        "profile_image": "https://example.com/ethan.jpg"
+{
+  "events": [
+    {
+      "event_id": "tt_apr_2025",
+      "name": "Tatum Tech Spring 2025",
+      "description": "A networking event for developers and tech enthusiasts.",
+      "start_time": "2025-04-12T14:00:00Z",
+      "end_time": "2025-04-12T19:00:00Z",
+      "location": {
+        "name": "Tatum HQ",
+        "address": "South LA, CA"
       },
-      {
-        "user_id": "user_67890",
-        "name": "Ava",
-        "profile_image": "https://example.com/ava.jpg"
-      }
-    ],
-    "featured_image": "https://example.com/tatumtech_spring.png"
-  },
-  {
-    "event_id": "tt_oct_2025",
-    "name": "Tatum Tech Fall 2025",
-    "host": "Tatum Games",
-    "date": "2025-10-18T14:00:00Z",
-    "duration_hours": 5,
-    "location": "South LA",
-    "is_registration_open": false,
-    "attendees": [
-      {
-        "user_id": "user_12345",
-        "name": "Ethan",
-        "profile_image": "https://example.com/ethan.jpg"
+      "registration": {
+        "is_open": true,
+        "deadline": "2025-04-10T23:59:59Z"
       },
-      {
-        "user_id": "user_67890",
-        "name": "Ava",
-        "profile_image": "https://example.com/ava.jpg"
-      }
-    ],
-    "featured_image": "https://example.com/tatumtech_fall.png"
-  }
-] 
+      "is_user_registered": false,
+      "attendees": [
+        {
+          "user_id": "user_12345",
+          "user_details_url": "/user/details/user_12345"
+        },
+        {
+          "user_id": "user_67890",
+          "user_details_url": "/user/details/user_67890"
+        }
+      ]
+    },
+    {
+      "event_id": "tt_oct_2025",
+      "name": "Tatum Tech Fall 2025",
+      "description": "Advanced coding workshops and industry networking.",
+      "start_time": "2025-10-18T14:00:00Z",
+      "end_time": "2025-10-18T19:00:00Z",
+      "location": {
+        "name": "Tatum HQ",
+        "address": "South LA, CA"
+      },
+      "registration": {
+        "is_open": false,
+        "deadline": "2025-10-16T23:59:59Z"
+      },
+      "is_user_registered": true,
+      "attendees": [
+        {
+          "user_id": "user_12345",
+          "user_details_url": "/user/details/user_12345"
+        },
+        {
+          "user_id": "user_67890",
+          "user_details_url": "/user/details/user_67890"
+        }
+      ]
+    }
+  ]
+} 

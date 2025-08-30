@@ -1,0 +1,26 @@
+{
+  "event_id": "tt_apr_2025",
+  "attendees": [
+    {
+      "user": {
+        "user_id": "user_12345",
+        "first_name": "Ethan",
+        "last_name": "Park",
+        "user_images": {
+          "profile_image": "https://example.com/ethan.jpg"
+        }
+      }
+    },
+    {
+      "user": {
+        "user_id": "user_67890",
+        "first_name": "Ava",
+        "last_name": "Kim",
+        "user_images": {
+          "profile_image": "https://example.com/ava.jpg"
+        }
+      }
+    }
+  ]
+}
+
