@@ -1,0 +1,83 @@
+[
+  {
+    "question_id": "py_int_001",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "Python",
+    "level": "Intermediate",
+    "question": "What is a list comprehension in Python?",
+    "options": [
+      "A way to create lists using a compact syntax",
+      "A method to sort lists",
+      "A way to convert lists to dictionaries",
+      "A type of loop"
+    ],
+    "correct_answer": "A way to create lists using a compact syntax",
+    "explanation": "List comprehensions provide a concise way to create lists based on existing sequences.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "py_int_002",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "Python",
+    "level": "Intermediate",
+    "question": "What is the difference between a list and a tuple in Python?",
+    "options": [
+      "Lists are mutable, tuples are immutable",
+      "Tuples are mutable, lists are immutable",
+      "There is no difference",
+      "Lists can only contain numbers"
+    ],
+    "correct_answer": "Lists are mutable, tuples are immutable",
+    "explanation": "Lists can be modified after creation, while tuples cannot be changed once created.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "py_int_003",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "Python",
+    "level": "Intermediate",
+    "question": "What is a decorator in Python?",
+    "options": [
+      "A function that modifies another function",
+      "A way to add comments to code",
+      "A type of variable",
+      "A method to format strings"
+    ],
+    "correct_answer": "A function that modifies another function",
+    "explanation": "Decorators are functions that take another function as input and return a modified version.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "py_int_004",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "Python",
+    "level": "Intermediate",
+    "question": "What is the purpose of the 'with' statement in Python?",
+    "options": [
+      "To automatically handle resource management",
+      "To create loops",
+      "To define functions",
+      "To import modules"
+    ],
+    "correct_answer": "To automatically handle resource management",
+    "explanation": "The 'with' statement ensures proper cleanup of resources like file handles.",
+    "platform": "Web"
+  },
+  {
+    "question_id": "py_int_005",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "Python",
+    "level": "Intermediate",
+    "question": "What is a generator in Python?",
+    "options": [
+      "A function that yields values one at a time",
+      "A way to create random numbers",
+      "A type of class",
+      "A method to sort data"
+    ],
+    "correct_answer": "A function that yields values one at a time",
+    "explanation": "Generators use the 'yield' keyword to return values one at a time, saving memory.",
+    "platform": "Web"
+  }
+]
+

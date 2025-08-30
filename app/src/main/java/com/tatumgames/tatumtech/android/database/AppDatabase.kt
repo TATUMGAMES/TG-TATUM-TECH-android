@@ -20,19 +20,25 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.tatumgames.tatumtech.android.database.dao.AttendeeDao
 import com.tatumgames.tatumtech.android.database.dao.CodingChallengeDao
+import com.tatumgames.tatumtech.android.database.dao.CodingQuestionDao
 import com.tatumgames.tatumtech.android.database.dao.EventRegistrationDao
 import com.tatumgames.tatumtech.android.database.dao.TimelineDao
+import com.tatumgames.tatumtech.android.database.dao.UserDao
 import com.tatumgames.tatumtech.android.database.entity.AttendeeEntity
 import com.tatumgames.tatumtech.android.database.entity.CodingChallengeEntity
+import com.tatumgames.tatumtech.android.database.entity.CodingQuestionEntity
 import com.tatumgames.tatumtech.android.database.entity.EventRegistrationEntity
 import com.tatumgames.tatumtech.android.database.entity.TimelineEntity
+import com.tatumgames.tatumtech.android.database.entity.UserEntity
 
 @Database(
     entities = [
         EventRegistrationEntity::class,
         AttendeeEntity::class,
         TimelineEntity::class,
-        CodingChallengeEntity::class
+        CodingChallengeEntity::class,
+        CodingQuestionEntity::class,
+        UserEntity::class
     ],
     version = 1,
     exportSchema = false
@@ -42,6 +48,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun attendeeDao(): AttendeeDao
     abstract fun timelineDao(): TimelineDao
     abstract fun codingChallengeDao(): CodingChallengeDao
+    abstract fun codingQuestionDao(): CodingQuestionDao
+    abstract fun userDao(): UserDao
 
     companion object {
         private const val DB_NAME = "tatum_tech.db"

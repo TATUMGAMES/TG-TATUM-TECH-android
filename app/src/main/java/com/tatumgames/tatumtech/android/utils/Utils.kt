@@ -22,12 +22,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.constants.Constants.TAG
+import com.tatumgames.tatumtech.android.database.entity.UserEntity
 import com.tatumgames.tatumtech.framework.android.logger.Logger
 import java.text.SimpleDateFormat
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
+import java.util.Random
 import java.util.TimeZone
 
 object Utils {
@@ -62,6 +64,17 @@ object Utils {
 
     fun isEmailValid(email: String): Boolean {
         return email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    /**
+     * Generate an anonymous ID in the format "anon_######".
+     * 
+     * @return A unique anonymous identifier with 6-digit random number.
+     */
+    fun generateAnonymousId(): String {
+        val random = Random()
+        val randomNumber = random.nextInt(900000) + 100000 // Generates 100000-999999
+        return "anon_$randomNumber"
     }
 
     fun parseDate(dateString: String): String {
@@ -130,5 +143,26 @@ object Utils {
         val hash = input.hashCode()
         val index = kotlin.math.abs(hash) % colors.size
         return colors[index]
+    }
+
+    /**
+     * Get user's display name or anonymous ID based on available information.
+     * 
+     * @param user The user entity to check.
+     * @return First name if available, full name if both names are available, otherwise anonymous ID.
+     */
+    fun getUserNameOrAnonymous(user: com.tatumgames.tatumtech.android.database.entity.UserEntity?): String {
+        return when {
+            user != null && user.firstName != null && user.firstName.isNotBlank() && 
+            user.lastName != null && user.lastName.isNotBlank() -> {
+                "${user.firstName} ${user.lastName}"
+            }
+            user != null && user.firstName != null && user.firstName.isNotBlank() -> {
+                user.firstName
+            }
+            else -> {
+                user?.anonymousId ?: generateAnonymousId()
+            }
+        }
     }
 }

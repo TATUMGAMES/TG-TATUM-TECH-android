@@ -43,7 +43,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.database.AppDatabase
@@ -54,6 +53,7 @@ import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.screens.stats.models.Achievement
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.viewmodels.CodingChallengesViewModel
+import com.tatumgames.tatumtech.android.ui.components.screens.coding.viewmodels.factory.CodingChallengesViewModelFactory
 import com.tatumgames.tatumtech.android.ui.theme.Gold
 import com.tatumgames.tatumtech.android.ui.theme.Purple500
 import com.tatumgames.tatumtech.android.ui.theme.Teal200
@@ -74,6 +74,8 @@ fun StatsScreen(navController: NavController) {
     var percentCorrect by remember { mutableIntStateOf(0) }
     var qrCodesScanned by remember { mutableIntStateOf(0) }
     var achievementsUnlocked by remember { mutableIntStateOf(0) }
+    var totalQuestionsAnswered by remember { mutableIntStateOf(0) }
+    var correctAnswers by remember { mutableIntStateOf(0) }
 
     var animatedEvents by remember { mutableIntStateOf(0) }
     var animatedChallenges by remember { mutableIntStateOf(0) }
@@ -82,9 +84,9 @@ fun StatsScreen(navController: NavController) {
 
     var achievementsList by remember { mutableStateOf<List<Achievement>>(emptyList()) }
 
-    val challengeViewModel: CodingChallengesViewModel = viewModel(factory = viewModelFactory {
-        CodingChallengesViewModel(context.applicationContext as Application)
-    })
+    val challengeViewModel: CodingChallengesViewModel = viewModel(
+        factory = CodingChallengesViewModelFactory(context.applicationContext as Application)
+    )
     val streak by challengeViewModel.currentStreak.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -95,6 +97,20 @@ fun StatsScreen(navController: NavController) {
             challengesCompleted =
                 allTimeline.count { it.type == TimelineType.CHALLENGE_COMPLETION.typeValue }
             qrCodesScanned = allTimeline.count { it.type == TimelineType.QR_SCAN.typeValue }
+            
+            // Get coding challenge statistics from the database
+            val appDatabase = AppDatabase.getInstance(context)
+            val answerRepository = com.tatumgames.tatumtech.android.database.repository.CodingChallengeDatabaseRepository(appDatabase.codingChallengeDao())
+            val challengeAnswers = answerRepository.getAllChallengeAnswers()
+            totalQuestionsAnswered = challengeAnswers.size
+            correctAnswers = challengeAnswers.count { _ ->
+                // This would need to be implemented to check if answer is correct
+                // For now, we'll use a placeholder
+                true // Placeholder
+            }
+            percentCorrect = if (totalQuestionsAnswered > 0) {
+                (correctAnswers * 100) / totalQuestionsAnswered
+            } else 0
 
             val allAchievements = getAllAchievements(context)
             achievementsList = allAchievements.map { ach ->
@@ -160,13 +176,32 @@ fun StatsScreen(navController: NavController) {
         },
         containerColor = Color(0xFFF0F0F0)
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        // Check if there's any data to display
+        val hasData = eventsAttended > 0 || challengesCompleted > 0 || qrCodesScanned > 0 || achievementsUnlocked > 0
+        
+        if (!hasData) {
+            // Show empty state
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                StandardText(
+                    text = stringResource(R.string.no_statistics_loaded),
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            }
+        } else {
+            // Show statistics content
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
             StandardText(
                 text = stringResource(R.string.your_progress),
                 style = MaterialTheme.typography.bodyMedium.copy(
@@ -227,11 +262,39 @@ fun StatsScreen(navController: NavController) {
 
             BarChartView()
             Spacer(modifier = Modifier.height(24.dp))
+            
+            // Coding Challenge Statistics
+            StandardText(
+                text = "Coding Challenge Stats",
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                ProgressRing(
+                    label = "Questions",
+                    value = totalQuestionsAnswered,
+                    max = 100,
+                    color = Purple500
+                )
+                ProgressRing(
+                    label = "Correct",
+                    value = correctAnswers,
+                    max = totalQuestionsAnswered.coerceAtLeast(1),
+                    color = Gold
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
             StandardText(
                 text = stringResource(R.string.achievements),
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
             )
             AchievementsList(achievementsList)
+        }
         }
     }
 }

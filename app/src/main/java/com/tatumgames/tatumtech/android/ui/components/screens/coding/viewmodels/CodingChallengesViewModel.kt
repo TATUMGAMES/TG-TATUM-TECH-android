@@ -20,7 +20,9 @@ import androidx.lifecycle.viewModelScope
 import com.tatumgames.tatumtech.android.database.AppDatabase
 import com.tatumgames.tatumtech.android.database.entity.CodingChallengeEntity
 import com.tatumgames.tatumtech.android.database.repository.CodingChallengeDatabaseRepository
+import com.tatumgames.tatumtech.android.database.repository.CodingQuestionDatabaseRepository
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.models.CodingChallenges
+import com.tatumgames.tatumtech.android.utils.CodingChallengesImporter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,6 +35,7 @@ class CodingChallengesViewModel(
 ) : AndroidViewModel(application) {
     private val database = AppDatabase.Companion.getInstance(application)
     private val answerRepository = CodingChallengeDatabaseRepository(database.codingChallengeDao())
+    private val questionRepository = CodingQuestionDatabaseRepository(database.codingQuestionDao())
 
     private val _questions = MutableStateFlow<List<CodingChallenges>>(emptyList())
     val questions: StateFlow<List<CodingChallenges>> = _questions
@@ -49,6 +52,18 @@ class CodingChallengesViewModel(
     private val _currentStreak = MutableStateFlow(0)
     val currentStreak: StateFlow<Int> = _currentStreak.asStateFlow()
 
+    private val _todayAnswerCount = MutableStateFlow(0)
+    val todayAnswerCount: StateFlow<Int> = _todayAnswerCount.asStateFlow()
+
+    private val _correctAnswers = MutableStateFlow(0)
+    val correctAnswers: StateFlow<Int> = _correctAnswers.asStateFlow()
+
+    private val _showResults = MutableStateFlow(false)
+    val showResults: StateFlow<Boolean> = _showResults.asStateFlow()
+
+    private val _questionResults = MutableStateFlow<Map<String, Boolean>>(emptyMap())
+    val questionResults: StateFlow<Map<String, Boolean>> = _questionResults.asStateFlow()
+
     fun setQuestions(list: List<CodingChallenges>) {
         _questions.value = list
         _currentIndex.value = 0
@@ -56,9 +71,55 @@ class CodingChallengesViewModel(
         _showSummary.value = false
     }
 
+    /**
+     * Load questions from the database with randomization.
+     * 
+     * @param language Optional language filter.
+     * @param level Optional level filter.
+     */
+    fun loadQuestions(language: String? = null, level: String? = null) {
+        viewModelScope.launch {
+            try {
+                val entities = when {
+                    language != null && level != null -> {
+                        questionRepository.getQuestionsByLanguageAndLevel(language, level)
+                    }
+                    language != null -> {
+                        questionRepository.getQuestionsByLanguage(language)
+                    }
+                    else -> {
+                        questionRepository.getAllQuestions()
+                    }
+                }
+                
+                val questions = CodingChallengesImporter.convertEntitiesToModels(entities)
+                // Randomize questions for each session
+                val randomizedQuestions = questions.shuffled()
+                setQuestions(randomizedQuestions)
+            } catch (e: Exception) {
+                // If database is empty, try to import from assets
+                CodingChallengesImporter.importFromAssetsIfDbEmpty(getApplication())
+                // Retry loading after import
+                val entities = questionRepository.getAllQuestions()
+                val questions = CodingChallengesImporter.convertEntitiesToModels(entities)
+                val randomizedQuestions = questions.shuffled()
+                setQuestions(randomizedQuestions)
+            }
+        }
+    }
+
     fun answerCurrentQuestion(answer: String) {
         val q = _questions.value.getOrNull(_currentIndex.value) ?: return
         _answers.value[q.id] = answer
+        
+        // Check if answer is correct
+        val isCorrect = answer == q.correctAnswer
+        _questionResults.value = _questionResults.value + (q.id to isCorrect)
+        
+        if (isCorrect) {
+            _correctAnswers.value = _correctAnswers.value + 1
+        }
+        
         viewModelScope.launch {
             answerRepository.insert(
                 CodingChallengeEntity(
@@ -74,7 +135,7 @@ class CodingChallengesViewModel(
         if (_currentIndex.value < _questions.value.size - 1) {
             _currentIndex.value++
         } else {
-            _showSummary.value = true
+            _showResults.value = true
         }
     }
 
@@ -88,6 +149,15 @@ class CodingChallengesViewModel(
         _currentIndex.value = 0
         _answers.value = mutableMapOf()
         _showSummary.value = false
+        _showResults.value = false
+        _correctAnswers.value = 0
+        _questionResults.value = emptyMap()
+    }
+
+    fun resetForNewDay() {
+        reset()
+        // Reload questions with randomization for new day
+        loadQuestions()
     }
 
     private fun getStartOfToday(): Long {
@@ -121,13 +191,9 @@ class CodingChallengesViewModel(
         onResult: (Boolean) -> Unit
     ) {
         viewModelScope.launch {
-            val limit = when (level) {
-                "Beginner" -> 5
-                "Intermediate" -> 7
-                "Advanced" -> 10
-                else -> 5
-            }
+            val limit = 7 // Fixed limit of 7 questions per day for all difficulties
             val count = getTodayAnswerCount(language, level, platform)
+            _todayAnswerCount.value = count
             onResult(count < limit)
         }
     }
@@ -142,6 +208,27 @@ class CodingChallengesViewModel(
         canAnswerMoreToday(language, level, platform) { canAnswer ->
             if (canAnswer) {
                 answerCurrentQuestion(answer)
+                goToNextQuestion()
+            } else {
+                onLimitReached()
+            }
+        }
+    }
+
+    fun goToNextQuestionWithLimit(
+        language: String,
+        level: String,
+        platform: String,
+        onLimitReached: () -> Unit
+    ) {
+        canAnswerMoreToday(language, level, platform) { canAnswer ->
+            if (canAnswer) {
+                // Count as answered even if no answer selected
+                val currentQuestion = _questions.value.getOrNull(_currentIndex.value)
+                if (currentQuestion != null) {
+                    _answers.value[currentQuestion.id] = "skipped"
+                    _questionResults.value = _questionResults.value + (currentQuestion.id to false)
+                }
                 goToNextQuestion()
             } else {
                 onLimitReached()

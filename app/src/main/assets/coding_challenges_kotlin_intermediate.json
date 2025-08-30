@@ -1,0 +1,83 @@
+[
+  {
+    "question_id": "kt_int_001",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "Kotlin",
+    "level": "Intermediate",
+    "question": "What is the purpose of the 'let' function in Kotlin?",
+    "options": [
+      "To handle nulls safely",
+      "To perform type conversion",
+      "To create lambdas",
+      "To define constants"
+    ],
+    "correct_answer": "To handle nulls safely",
+    "explanation": "The 'let' function is a scope function that executes a block of code only if the object is not null.",
+    "platform": "Mobile"
+  },
+  {
+    "question_id": "kt_int_002",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "Kotlin",
+    "level": "Intermediate",
+    "question": "How do you declare an extension function in Kotlin?",
+    "options": [
+      "fun String.customFunction()",
+      "extension fun String.customFunction()",
+      "fun customFunction(String)",
+      "String.fun customFunction()"
+    ],
+    "correct_answer": "fun String.customFunction()",
+    "explanation": "Extension functions are declared by prefixing the function name with the receiver type.",
+    "platform": "Mobile"
+  },
+  {
+    "question_id": "kt_int_003",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "Kotlin",
+    "level": "Intermediate",
+    "question": "What is the difference between '==' and '===' in Kotlin?",
+    "options": [
+      "'==' checks value equality, '===' checks reference equality",
+      "'==' checks reference equality, '===' checks value equality",
+      "There is no difference",
+      "'===' is deprecated"
+    ],
+    "correct_answer": "'==' checks value equality, '===' checks reference equality",
+    "explanation": "'==' calls the equals() method, while '===' checks if two references point to the same object.",
+    "platform": "Mobile"
+  },
+  {
+    "question_id": "kt_int_004",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "Kotlin",
+    "level": "Intermediate",
+    "question": "What is a data class in Kotlin?",
+    "options": [
+      "A class that automatically generates toString(), equals(), and hashCode()",
+      "A class that can only store data",
+      "A class that cannot be inherited",
+      "A class that is immutable"
+    ],
+    "correct_answer": "A class that automatically generates toString(), equals(), and hashCode()",
+    "explanation": "Data classes automatically provide toString(), equals(), hashCode(), and copy() methods.",
+    "platform": "Mobile"
+  },
+  {
+    "question_id": "kt_int_005",
+    "created_at": "2025-07-01T10:00:00Z",
+    "language": "Kotlin",
+    "level": "Intermediate",
+    "question": "What is the purpose of the 'when' expression in Kotlin?",
+    "options": [
+      "To replace if-else chains",
+      "To handle exceptions",
+      "To create loops",
+      "To define constants"
+    ],
+    "correct_answer": "To replace if-else chains",
+    "explanation": "The 'when' expression is Kotlin's replacement for switch statements and can be used as an expression.",
+    "platform": "Mobile"
+  }
+]
+
