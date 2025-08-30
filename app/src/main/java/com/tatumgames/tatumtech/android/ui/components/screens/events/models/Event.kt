@@ -14,6 +14,7 @@
  */
 package com.tatumgames.tatumtech.android.ui.components.screens.events.models
 
+// Legacy Event model for backward compatibility
 data class Event(
     val id: Long,
     val name: String,
@@ -24,4 +25,32 @@ data class Event(
     val isRegistrationOpen: Boolean,
     val attendees: List<Attendee>,
     val featuredImage: String
+)
+
+// New API Event model
+data class ApiEvent(
+    val eventId: String,
+    val name: String,
+    val description: String,
+    val startTime: String,
+    val endTime: String,
+    val location: EventLocation,
+    val registration: EventRegistration,
+    val isUserRegistered: Boolean,
+    val attendees: List<EventAttendee>
+)
+
+data class EventLocation(
+    val name: String,
+    val address: String
+)
+
+data class EventRegistration(
+    val isOpen: Boolean,
+    val deadline: String
+)
+
+data class EventAttendee(
+    val userId: String,
+    val userDetailsUrl: String
 )

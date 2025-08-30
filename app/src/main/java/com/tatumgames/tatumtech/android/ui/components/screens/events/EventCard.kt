@@ -55,6 +55,9 @@ import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.ui.components.common.ClickableText
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.screens.events.models.Event
+import com.tatumgames.tatumtech.android.ui.theme.SpringPurple
+import com.tatumgames.tatumtech.android.ui.theme.SpringPurple2
+import com.tatumgames.tatumtech.android.ui.theme.Teal700
 import com.tatumgames.tatumtech.android.utils.Utils.parseDate
 
 @Composable
@@ -80,13 +83,13 @@ fun EventCard(
         Column(modifier = Modifier.padding(16.dp)) {
             val backgroundModifier = Modifier
                 .fillMaxWidth()
-                .height(160.dp)
+                .height(220.dp) // Increased from 160dp to 220dp for better visual balance
                 .clip(RoundedCornerShape(12.dp))
 
             if (isColorBackground) {
                 val color = when (event.featuredImage) {
-                    "color://spring_purple" -> Color(0xFFD1C4E9)
-                    "color://spring_purple2" -> Color(0xFFB39DDB)
+                    "color://spring_purple" -> SpringPurple
+                    "color://spring_purple2" -> SpringPurple2
                     else -> Color.LightGray
                 }
                 Box(modifier = backgroundModifier.background(color))
@@ -199,7 +202,7 @@ fun EventCard(
                         },
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isRegistered) Color(0xFF018786) else colorResource(
+                            containerColor = if (isRegistered) Teal700 else colorResource(
                                 R.color.purple_200
                             )
                         )
