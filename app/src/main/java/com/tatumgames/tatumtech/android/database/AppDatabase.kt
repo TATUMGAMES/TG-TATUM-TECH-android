@@ -21,13 +21,25 @@ import androidx.room.RoomDatabase
 import com.tatumgames.tatumtech.android.database.dao.AttendeeDao
 import com.tatumgames.tatumtech.android.database.dao.CodingChallengeDao
 import com.tatumgames.tatumtech.android.database.dao.CodingQuestionDao
+import com.tatumgames.tatumtech.android.database.dao.ConnectionDao
+import com.tatumgames.tatumtech.android.database.dao.ContactCardDao
+import com.tatumgames.tatumtech.android.database.dao.DemographicDataDao
+import com.tatumgames.tatumtech.android.database.dao.EngagementCounterDao
 import com.tatumgames.tatumtech.android.database.dao.EventRegistrationDao
+import com.tatumgames.tatumtech.android.database.dao.QuizAnswerEventDao
+import com.tatumgames.tatumtech.android.database.dao.QuizProgressDao
 import com.tatumgames.tatumtech.android.database.dao.TimelineDao
 import com.tatumgames.tatumtech.android.database.dao.UserDao
 import com.tatumgames.tatumtech.android.database.entity.AttendeeEntity
 import com.tatumgames.tatumtech.android.database.entity.CodingChallengeEntity
 import com.tatumgames.tatumtech.android.database.entity.CodingQuestionEntity
+import com.tatumgames.tatumtech.android.database.entity.ConnectionEntity
+import com.tatumgames.tatumtech.android.database.entity.ContactCardEntity
+import com.tatumgames.tatumtech.android.database.entity.DemographicDataEntity
+import com.tatumgames.tatumtech.android.database.entity.EngagementCounterEntity
 import com.tatumgames.tatumtech.android.database.entity.EventRegistrationEntity
+import com.tatumgames.tatumtech.android.database.entity.QuizAnswerEventEntity
+import com.tatumgames.tatumtech.android.database.entity.QuizProgressEntity
 import com.tatumgames.tatumtech.android.database.entity.TimelineEntity
 import com.tatumgames.tatumtech.android.database.entity.UserEntity
 
@@ -38,9 +50,15 @@ import com.tatumgames.tatumtech.android.database.entity.UserEntity
         TimelineEntity::class,
         CodingChallengeEntity::class,
         CodingQuestionEntity::class,
-        UserEntity::class
+        QuizProgressEntity::class,
+        QuizAnswerEventEntity::class,
+        UserEntity::class,
+        DemographicDataEntity::class,
+        ContactCardEntity::class,
+        ConnectionEntity::class,
+        EngagementCounterEntity::class
     ],
-    version = 1,
+    version = 8,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -49,10 +67,17 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun timelineDao(): TimelineDao
     abstract fun codingChallengeDao(): CodingChallengeDao
     abstract fun codingQuestionDao(): CodingQuestionDao
+    abstract fun quizProgressDao(): QuizProgressDao
+    abstract fun quizAnswerEventDao(): QuizAnswerEventDao
     abstract fun userDao(): UserDao
+    abstract fun demographicDataDao(): DemographicDataDao
+    abstract fun contactCardDao(): ContactCardDao
+    abstract fun connectionDao(): ConnectionDao
+    abstract fun engagementCounterDao(): EngagementCounterDao
 
     companion object {
         private const val DB_NAME = "tatum_tech.db"
+
         @Volatile
         private var instance: AppDatabase? = null
 

@@ -22,29 +22,76 @@ import androidx.room.Query
 import com.tatumgames.tatumtech.android.database.constants.DbConstants.TABLE_ATTENDEES
 import com.tatumgames.tatumtech.android.database.entity.AttendeeEntity
 
+/**
+ * Data Access Object for AttendeeEntity operations.
+ * 
+ * Provides methods to interact with the attendees table in the database.
+ */
 @Dao
 interface AttendeeDao {
+
+    /**
+     * Get all attendees for a specific event.
+     * 
+     * @param eventId The ID of the event to get attendees for.
+     * @return List of attendees for the event, ordered by name.
+     */
     @Query("SELECT * FROM $TABLE_ATTENDEES WHERE eventId = :eventId ORDER BY name ASC")
     suspend fun getAttendeesForEvent(eventId: Long): List<AttendeeEntity>
 
+    /**
+     * Insert multiple attendees or replace if they exist.
+     * 
+     * @param attendees List of attendee entities to insert.
+     */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAttendees(attendees: List<AttendeeEntity>)
-    
+
+    /**
+     * Insert a single attendee or replace if exists.
+     * 
+     * @param attendee The attendee entity to insert.
+     */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAttendee(attendee: AttendeeEntity)
-    
+
+    /**
+     * Remove an attendee from the database.
+     * 
+     * @param attendee The attendee entity to remove.
+     */
     @Delete
     suspend fun removeAttendee(attendee: AttendeeEntity)
-    
+
+    /**
+     * Remove an attendee by ID from the database.
+     * 
+     * @param attendeeId The ID of the attendee to remove.
+     */
     @Query("DELETE FROM $TABLE_ATTENDEES WHERE id = :attendeeId")
     suspend fun removeAttendee(attendeeId: Long)
 
+    /**
+     * Mark an attendee as a friend.
+     * 
+     * @param attendeeId The ID of the attendee to mark as friend.
+     */
     @Query("UPDATE $TABLE_ATTENDEES SET isFriend = 1 WHERE id = :attendeeId")
     suspend fun addFriend(attendeeId: Long)
 
+    /**
+     * Remove friend status from an attendee.
+     * 
+     * @param attendeeId The ID of the attendee to remove friend status from.
+     */
     @Query("UPDATE $TABLE_ATTENDEES SET isFriend = 0 WHERE id = :attendeeId")
     suspend fun removeFriend(attendeeId: Long)
 
+    /**
+     * Get all attendees marked as friends.
+     * 
+     * @return List of all friend attendees, ordered by name.
+     */
     @Query("SELECT * FROM $TABLE_ATTENDEES WHERE isFriend = 1 ORDER BY name ASC")
     suspend fun getAllFriends(): List<AttendeeEntity>
 } 
