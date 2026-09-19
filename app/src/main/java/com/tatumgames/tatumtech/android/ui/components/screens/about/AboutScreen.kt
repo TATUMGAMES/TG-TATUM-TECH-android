@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,18 +26,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
+import com.tatumgames.tatumtech.android.ui.components.common.ClickableText
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.common.TitleText
+import com.tatumgames.tatumtech.android.ui.theme.ScreenScaffoldLight
 
 /**
  * About Screen composable that displays either "About Tatum Games" or "FAQ" content.
@@ -66,7 +65,7 @@ fun AboutScreen(
         bottomBar = {
             BottomNavigationBar(navController = navController)
         },
-        containerColor = Color(0xFFF0F0F0)
+        containerColor = ScreenScaffoldLight
     ) { paddingValues ->
         when (contentType) {
             AboutContentType.ABOUT -> {
@@ -80,12 +79,12 @@ fun AboutScreen(
                 ) {
                     // Tatum Games Description
                     item {
-                        StandardText(
+                        ClickableText(
                             text = stringResource(R.string.about_tatum_games_description),
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
-                    
+
                     // Our Mission
                     item {
                         Column {
@@ -99,7 +98,7 @@ fun AboutScreen(
                             )
                         }
                     }
-                    
+
                     // Our Impact
                     item {
                         Column {
@@ -113,7 +112,7 @@ fun AboutScreen(
                             )
                         }
                     }
-                    
+
                     // What is Tatum Tech?
                     item {
                         Column {
@@ -121,13 +120,13 @@ fun AboutScreen(
                                 text = stringResource(R.string.about_tatum_tech_title)
                             )
                             Spacer(modifier = Modifier.height(8.dp))
-                            StandardText(
+                            ClickableText(
                                 text = stringResource(R.string.about_tatum_tech_description),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
                     }
-                    
+
                     // Powered by MIKROS
                     item {
                         Column {
@@ -135,13 +134,13 @@ fun AboutScreen(
                                 text = stringResource(R.string.about_mikros_title)
                             )
                             Spacer(modifier = Modifier.height(8.dp))
-                            StandardText(
+                            ClickableText(
                                 text = stringResource(R.string.about_mikros_description),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
                     }
-                    
+
                     // Join the MIKROS Mafia
                     item {
                         Column {
@@ -149,7 +148,7 @@ fun AboutScreen(
                                 text = stringResource(R.string.about_community_title)
                             )
                             Spacer(modifier = Modifier.height(8.dp))
-                            StandardText(
+                            ClickableText(
                                 text = stringResource(R.string.about_community_description),
                                 style = MaterialTheme.typography.bodyMedium
                             )
@@ -157,6 +156,7 @@ fun AboutScreen(
                     }
                 }
             }
+
             AboutContentType.FAQ -> {
                 // FAQ Content
                 val faqs = listOf(
@@ -164,7 +164,7 @@ fun AboutScreen(
                     R.string.faq_who_can_attend to R.string.faq_who_can_attend_answer,
                     R.string.faq_how_to_register to R.string.faq_how_to_register_answer
                 )
-                
+
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()

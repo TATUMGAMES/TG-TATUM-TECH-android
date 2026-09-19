@@ -24,5 +24,3 @@ enum class AboutContentType(val route: String) {
     FAQ("faq")
 }
 
-
-
