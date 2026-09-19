@@ -18,61 +18,60 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
-import com.tatumgames.tatumtech.android.ui.components.screens.stats.models.Achievement
+import com.tatumgames.tatumtech.android.ui.models.Achievement
+import com.tatumgames.tatumtech.android.ui.theme.Black
+import com.tatumgames.tatumtech.android.ui.theme.Grey500
 
 @Composable
 fun AchievementsListEntry(achievement: Achievement) {
+    val context = LocalContext.current
+    val iconRes = AchievementIconResolver.resolve(context, achievement.icon)
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(vertical = 4.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp)
     ) {
         Image(
-            painter = painterResource(id = achievement.iconRes),
-            contentDescription = achievement.name,
-            modifier = Modifier.size(32.dp),
-            alpha = if (achievement.unlocked) {
-                1f
-            } else {
-                0.3f
-            }
+            painter = painterResource(id = iconRes),
+            contentDescription = achievement.title,
+            modifier = Modifier.size(40.dp),
+            alpha = if (achievement.isUnlocked) 1f else 0.3f
         )
-        Spacer(modifier = Modifier.width(8.dp))
-        Column {
+        Spacer(modifier = Modifier.width(12.dp))
+        Column(modifier = Modifier.weight(1f)) {
             StandardText(
-                text = achievement.name,
-                style = TextStyle(
-                    fontWeight = if (achievement.unlocked) {
-                        FontWeight.Bold
-                    } else {
-                        FontWeight.Normal
-                    }
-                )
+                text = achievement.title,
+                style = MaterialTheme.typography.titleSmall.copy(
+                    fontWeight = if (achievement.isUnlocked) FontWeight.Bold else FontWeight.Medium
+                ),
+                textAlign = TextAlign.Start
             )
             StandardText(
                 text = achievement.description,
-                style = TextStyle(
-                    fontSize = 13.sp
-                ),
-                color = if (achievement.unlocked) {
-                    Color.Black
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (achievement.isUnlocked) {
+                    Black
                 } else {
-                    Color.Gray
-                }
+                    Grey500
+                },
+                textAlign = TextAlign.Start
             )
         }
     }
-} 
+}
