@@ -1,9 +1,20 @@
 {
-  "language": "kotlin",
-  "difficulty_level": "intermediate",
-  "total_count": 42,
+  "languages": [
+    "kotlin",
+    "javascript",
+    "python",
+    "java",
+    "csharp"
+  ],
+  "difficulty_levels": [
+    "beginner",
+    "intermediate",
+    "advanced"
+  ],
+  "total_count": 150,
   "has_more": true,
   "next_offset": 20,
+  "batch_size": 7,
   "challenges": [
     {
       "challenge_id": "challenge_12345",
@@ -15,57 +26,67 @@
         "To create lambdas",
         "To define constants"
       ],
-      "correct_answer": "To handle nulls safely",
+      "correctAnswer": "To handle nulls safely",
       "explanation": "The 'let' function is a scope function that executes a block of code only if the object is not null. It's commonly used for null-safe operations.",
       "difficulty": "intermediate",
       "language": "kotlin",
       "platform": "android",
       "created_at": "2025-01-15T10:00:00Z",
-      "tags": ["null-safety", "scope-functions", "kotlin-basics"]
+      "tags": [
+        "null-safety",
+        "scope-functions",
+        "kotlin-basics"
+      ]
     },
     {
       "challenge_id": "challenge_12346",
-      "title": "Extension Functions",
-      "description": "How do you declare an extension function in Kotlin?",
+      "title": "JavaScript Closures",
+      "description": "What is a closure in JavaScript?",
       "options": [
-        "fun String.customFunction() { }",
-        "extension fun String.customFunction() { }",
-        "fun customFunction(String) { }",
-        "String.fun customFunction() { }"
+        "A function that has access to variables in its outer scope",
+        "A function that returns another function",
+        "A way to create private variables",
+        "All of the above"
       ],
-      "correct_answer": "fun String.customFunction() { }",
-      "explanation": "Extension functions are declared by prefixing the function name with the receiver type. The syntax is 'fun ReceiverType.functionName()'.",
+      "correctAnswer": "All of the above",
+      "explanation": "A closure is a function that has access to variables in its outer scope, even after the outer function has returned. It's commonly used to create private variables and return functions.",
       "difficulty": "intermediate",
-      "language": "kotlin",
-      "platform": "android",
+      "language": "javascript",
+      "platform": "web",
       "created_at": "2025-01-15T10:00:00Z",
-      "tags": ["extension-functions", "kotlin-features", "syntax"]
+      "tags": [
+        "closures",
+        "scope",
+        "javascript-basics"
+      ]
     },
     {
       "challenge_id": "challenge_12347",
-      "title": "Data Classes",
-      "description": "What is automatically generated for a Kotlin data class?",
+      "title": "Python List Comprehensions",
+      "description": "What is the output of this list comprehension: [x**2 for x in range(5) if x % 2 == 0]?",
       "options": [
-        "Only toString()",
-        "toString(), equals(), hashCode()",
-        "toString(), equals(), hashCode(), copy()",
-        "toString(), equals(), hashCode(), copy(), componentN() functions"
+        "[0, 4, 16]",
+        "[1, 9, 25]",
+        "[0, 1, 4, 9, 16]",
+        "[0, 4]"
       ],
-      "correct_answer": "toString(), equals(), hashCode(), copy(), componentN() functions",
-      "explanation": "Data classes automatically generate toString(), equals(), hashCode(), copy(), and componentN() functions for destructuring declarations.",
+      "correctAnswer": "[0, 4, 16]",
+      "explanation": "The list comprehension squares even numbers from 0 to 4: 0²=0, 2²=4, 4²=16. Odd numbers are filtered out by the condition.",
       "difficulty": "intermediate",
-      "language": "kotlin",
-      "platform": "android",
+      "language": "python",
+      "platform": "general",
       "created_at": "2025-01-15T10:00:00Z",
-      "tags": ["data-classes", "destructuring", "kotlin-features"]
+      "tags": [
+        "list-comprehensions",
+        "python-features",
+        "filtering"
+      ]
     }
   ],
   "metadata": {
     "request_id": "req_67890",
     "generated_at": "2025-01-15T14:30:00Z",
-    "cache_status": "fresh"
+    "cache_status": "fresh",
+    "multi_language_batch": true
   }
 }
-
-
-

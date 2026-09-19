@@ -1,12 +1,20 @@
 {
-  "language": "kotlin",
-  "difficulty_level": "intermediate",
+  "languages": [
+    "kotlin",
+    "javascript",
+    "python",
+    "java",
+    "csharp"
+  ],
+  "difficulty_levels": [
+    "beginner",
+    "intermediate",
+    "advanced"
+  ],
   "limit": 20,
   "offset": 0,
   "platform": "android",
   "include_explanations": true,
-  "randomize": false
+  "randomize": true,
+  "batch_size": 7
 }
-
-
-

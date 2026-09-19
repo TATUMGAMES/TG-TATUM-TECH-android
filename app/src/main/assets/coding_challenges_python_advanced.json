@@ -1,58 +1,108 @@
 [
   {
-    "id": "py_beg_001",
-    "created_at": "2025-07-01T10:00:00Z",
-    "language": "Python",
-    "level": "Beginner",
-    "question": "What is the output of print(type(None))?",
+    "id": "py_adv_001",
+    "question": "What is the output of the following Python code?\n\n```python\nclass Meta(type):\n    def __new__(cls, name, bases, attrs):\n        attrs['_instance_count'] = 0\n        return super().__new__(cls, name, bases, attrs)\n\nclass MyClass(metaclass=Meta):\n    def __init__(self):\n        MyClass._instance_count += 1\n        self.id = MyClass._instance_count\n\nobj1 = MyClass()\nobj2 = MyClass()\nprint(obj1.id, obj2.id)\n```",
     "options": [
-      "<class 'NoneType'>",
-      "None",
-      "<type 'None'>",
-      "'NoneType'"
+      "1 2",
+      "0 1",
+      "1 1",
+      "Error"
     ],
-    "correctAnswer": "<class 'NoneType'>",
-    "explanation": "The type of None in Python is <class 'NoneType'>.",
-    "platform": "Web"
+    "correctAnswer": "1 2",
+    "language": "Python",
+    "level": "Advanced",
+    "platform": "General"
   },
   {
-    "id": "py_beg_002",
-    "created_at": "2025-07-01T10:00:00Z",
-    "language": "Python",
-    "level": "Beginner",
-    "question": "Which of the following is a valid variable name in Python?",
+    "id": "py_adv_002",
+    "question": "What is the purpose of the `__slots__` attribute in Python classes?",
     "options": [
-      "2variable",
-      "variable_2",
-      "variable-2",
-      "variable 2"
+      "To define which attributes a class can have",
+      "To optimize memory usage by preventing dynamic attribute creation",
+      "To create read-only properties",
+      "To enable multiple inheritance"
     ],
-    "correctAnswer": "variable_2",
-    "explanation": "Variable names cannot start with a digit or contain spaces/hyphens.",
-    "platform": "Web"
+    "correctAnswer": "To optimize memory usage by preventing dynamic attribute creation",
+    "language": "Python",
+    "level": "Advanced",
+    "platform": "General"
   },
   {
-    "id": "py_beg_003",
-    "created_at": "2025-07-01T10:00:00Z",
-    "language": "Python",
-    "level": "Beginner",
-    "question": "Wnhat does the following code output? prit(2 * '2')",
+    "id": "py_adv_003",
+    "question": "What will be the output of this code?\n\n```python\nimport asyncio\n\nasync def async_func():\n    print('1')\n    await asyncio.sleep(0)\n    print('2')\n\nasync def main():\n    print('3')\n    await async_func()\n    print('4')\n\nasyncio.run(main())\n```",
     "options": [
-      "4",
-      "'22'",
-      "'4'",
-      "'2'2'"
+      "3, 1, 2, 4",
+      "1, 2, 3, 4",
+      "3, 1, 4, 2",
+      "1, 3, 2, 4"
     ],
-    "correctAnswer": "'22'",
-    "explanation": "Multiplying a string by 2 repeats it: '2' * 2 = '22' in Python.",
-    "platform": "Web"
+    "correctAnswer": "3, 1, 2, 4",
+    "language": "Python",
+    "level": "Advanced",
+    "platform": "General"
   },
   {
-    "id": "py_beg_004",
+    "id": "py_adv_004",
+    "question": "What is the difference between `__getattr__` and `__getattribute__` in Python?",
+    "options": [
+      "`__getattr__` is called for missing attributes, `__getattribute__` for all attributes",
+      "`__getattr__` is faster, `__getattribute__` is slower",
+      "`__getattr__` works with properties, `__getattribute__` doesn't",
+      "There is no difference"
+    ],
+    "correctAnswer": "`__getattr__` is called for missing attributes, `__getattribute__` for all attributes",
+    "language": "Python",
+    "level": "Advanced",
+    "platform": "General"
+  },
+  {
+    "id": "py_adv_005",
+    "question": "Which of the following is NOT a valid way to create a context manager in Python?",
+    "options": [
+      "Using `@contextmanager` decorator",
+      "Implementing `__enter__` and `__exit__` methods",
+      "Using `with` statement",
+      "Using `contextlib.contextmanager`"
+    ],
+    "correctAnswer": "Using `with` statement",
+    "language": "Python",
+    "level": "Advanced",
+    "platform": "General"
+  },
+  {
+    "id": "py_adv_006",
+    "question": "What is the output of this code?\n\n```python\nfrom functools import partial\n\ndef multiply(x, y):\n    return x * y\n\ndouble = partial(multiply, 2)\nprint(double(5))\n```",
+    "options": [
+      "10",
+      "7",
+      "Error",
+      "25"
+    ],
+    "correctAnswer": "10",
+    "language": "Python",
+    "level": "Advanced",
+    "platform": "General"
+  },
+  {
+    "id": "py_adv_007",
+    "question": "What is the purpose of the `__call__` method in Python?",
+    "options": [
+      "To make an object callable like a function",
+      "To define the constructor",
+      "To enable operator overloading",
+      "To create iterators"
+    ],
+    "correctAnswer": "To make an object callable like a function",
+    "language": "Python",
+    "level": "Advanced",
+    "platform": "General"
+  },
+  {
+    "id": "py_adv_008",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "In Python, lists are? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "In Python, lists are? Under advanced constraints, which is correct?",
     "options": [
       "Mutable sequences",
       "Immutable tuples",
@@ -64,27 +114,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_005",
+    "id": "py_adv_009",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "In Python, lists are? Which choice matches core introductory knowledge?",
-    "options": [
-      "Mutable sequences",
-      "Immutable tuples",
-      "Only hashable",
-      "Only sorted"
-    ],
-    "correctAnswer": "Mutable sequences",
-    "explanation": "list supports in-place mutation.",
-    "platform": "General"
-  },
-  {
-    "id": "py_beg_006",
-    "created_at": "2026-01-15T10:00:00Z",
-    "language": "Python",
-    "level": "Beginner",
-    "question": "What does `def` declare? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "What does `def` declare? Which statement is most precise for advanced use?",
     "options": [
       "A function",
       "A class only",
@@ -96,11 +130,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_007",
+    "id": "py_adv_010",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "What does `def` declare? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "What does `def` declare? Select the rigorously correct advanced answer.",
     "options": [
       "A function",
       "A class only",
@@ -112,59 +146,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_008",
+    "id": "py_adv_011",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "What does `def` declare? Which option is most accurate for an introductory scenario?",
-    "options": [
-      "A function",
-      "A class only",
-      "A module only",
-      "A decorator only"
-    ],
-    "correctAnswer": "A function",
-    "explanation": "def defines a function.",
-    "platform": "General"
-  },
-  {
-    "id": "py_beg_009",
-    "created_at": "2026-01-15T10:00:00Z",
-    "language": "Python",
-    "level": "Beginner",
-    "question": "What does `def` declare? Pick the fundamental concept that applies.",
-    "options": [
-      "A function",
-      "A class only",
-      "A module only",
-      "A decorator only"
-    ],
-    "correctAnswer": "A function",
-    "explanation": "def defines a function.",
-    "platform": "General"
-  },
-  {
-    "id": "py_beg_010",
-    "created_at": "2026-01-15T10:00:00Z",
-    "language": "Python",
-    "level": "Beginner",
-    "question": "What does `def` declare? Which choice matches core introductory knowledge?",
-    "options": [
-      "A function",
-      "A class only",
-      "A module only",
-      "A decorator only"
-    ],
-    "correctAnswer": "A function",
-    "explanation": "def defines a function.",
-    "platform": "General"
-  },
-  {
-    "id": "py_beg_011",
-    "created_at": "2026-01-15T10:00:00Z",
-    "language": "Python",
-    "level": "Beginner",
-    "question": "`None` represents? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "`None` represents? Under advanced constraints, which is correct?",
     "options": [
       "Absence of a value",
       "Integer zero",
@@ -176,11 +162,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_012",
+    "id": "py_adv_012",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`None` represents? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "`None` represents? Which option best matches expert-level understanding?",
     "options": [
       "Absence of a value",
       "Integer zero",
@@ -192,11 +178,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_013",
+    "id": "py_adv_013",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`None` represents? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "`None` represents? In a high-scale design, what applies?",
     "options": [
       "Absence of a value",
       "Integer zero",
@@ -208,11 +194,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_014",
+    "id": "py_adv_014",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`None` represents? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "`None` represents? Which statement is most precise for advanced use?",
     "options": [
       "Absence of a value",
       "Integer zero",
@@ -224,11 +210,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_015",
+    "id": "py_adv_015",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`None` represents? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "`None` represents? Select the rigorously correct advanced answer.",
     "options": [
       "Absence of a value",
       "Integer zero",
@@ -240,11 +226,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_016",
+    "id": "py_adv_016",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "List comprehension `[x for x in xs if x]` is? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "List comprehension `[x for x in xs if x]` is? Under advanced constraints, which is correct?",
     "options": [
       "A filtered mapping expression",
       "A generator always",
@@ -256,11 +242,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_017",
+    "id": "py_adv_017",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "List comprehension `[x for x in xs if x]` is? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "List comprehension `[x for x in xs if x]` is? Which option best matches expert-level understanding?",
     "options": [
       "A filtered mapping expression",
       "A generator always",
@@ -272,11 +258,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_018",
+    "id": "py_adv_018",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "List comprehension `[x for x in xs if x]` is? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "List comprehension `[x for x in xs if x]` is? In a high-scale design, what applies?",
     "options": [
       "A filtered mapping expression",
       "A generator always",
@@ -288,11 +274,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_019",
+    "id": "py_adv_019",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "List comprehension `[x for x in xs if x]` is? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "List comprehension `[x for x in xs if x]` is? Which statement is most precise for advanced use?",
     "options": [
       "A filtered mapping expression",
       "A generator always",
@@ -304,11 +290,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_020",
+    "id": "py_adv_020",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "List comprehension `[x for x in xs if x]` is? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "List comprehension `[x for x in xs if x]` is? Select the rigorously correct advanced answer.",
     "options": [
       "A filtered mapping expression",
       "A generator always",
@@ -320,11 +306,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_021",
+    "id": "py_adv_021",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`*args` collects? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "`*args` collects? Under advanced constraints, which is correct?",
     "options": [
       "Extra positional arguments",
       "Only keywords",
@@ -336,11 +322,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_022",
+    "id": "py_adv_022",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`*args` collects? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "`*args` collects? Which option best matches expert-level understanding?",
     "options": [
       "Extra positional arguments",
       "Only keywords",
@@ -352,11 +338,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_023",
+    "id": "py_adv_023",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`*args` collects? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "`*args` collects? In a high-scale design, what applies?",
     "options": [
       "Extra positional arguments",
       "Only keywords",
@@ -368,11 +354,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_024",
+    "id": "py_adv_024",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`*args` collects? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "`*args` collects? Which statement is most precise for advanced use?",
     "options": [
       "Extra positional arguments",
       "Only keywords",
@@ -384,11 +370,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_025",
+    "id": "py_adv_025",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`*args` collects? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "`*args` collects? Select the rigorously correct advanced answer.",
     "options": [
       "Extra positional arguments",
       "Only keywords",
@@ -400,11 +386,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_026",
+    "id": "py_adv_026",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`**kwargs` collects? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "`**kwargs` collects? Under advanced constraints, which is correct?",
     "options": [
       "Extra keyword arguments",
       "Only positionals",
@@ -416,11 +402,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_027",
+    "id": "py_adv_027",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`**kwargs` collects? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "`**kwargs` collects? Which option best matches expert-level understanding?",
     "options": [
       "Extra keyword arguments",
       "Only positionals",
@@ -432,11 +418,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_028",
+    "id": "py_adv_028",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`**kwargs` collects? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "`**kwargs` collects? In a high-scale design, what applies?",
     "options": [
       "Extra keyword arguments",
       "Only positionals",
@@ -448,11 +434,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_029",
+    "id": "py_adv_029",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`**kwargs` collects? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "`**kwargs` collects? Which statement is most precise for advanced use?",
     "options": [
       "Extra keyword arguments",
       "Only positionals",
@@ -464,11 +450,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_030",
+    "id": "py_adv_030",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`**kwargs` collects? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "`**kwargs` collects? Select the rigorously correct advanced answer.",
     "options": [
       "Extra keyword arguments",
       "Only positionals",
@@ -480,11 +466,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_031",
+    "id": "py_adv_031",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "What does `with` manage? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "What does `with` manage? Under advanced constraints, which is correct?",
     "options": [
       "Context managers / resource lifetimes",
       "Only loops",
@@ -496,11 +482,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_032",
+    "id": "py_adv_032",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "What does `with` manage? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "What does `with` manage? Which option best matches expert-level understanding?",
     "options": [
       "Context managers / resource lifetimes",
       "Only loops",
@@ -512,11 +498,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_033",
+    "id": "py_adv_033",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "What does `with` manage? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "What does `with` manage? In a high-scale design, what applies?",
     "options": [
       "Context managers / resource lifetimes",
       "Only loops",
@@ -528,11 +514,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_034",
+    "id": "py_adv_034",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "What does `with` manage? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "What does `with` manage? Which statement is most precise for advanced use?",
     "options": [
       "Context managers / resource lifetimes",
       "Only loops",
@@ -544,11 +530,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_035",
+    "id": "py_adv_035",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "What does `with` manage? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "What does `with` manage? Select the rigorously correct advanced answer.",
     "options": [
       "Context managers / resource lifetimes",
       "Only loops",
@@ -560,11 +546,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_036",
+    "id": "py_adv_036",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`dict` keys must be? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "`dict` keys must be? Under advanced constraints, which is correct?",
     "options": [
       "Hashable",
       "Always strings",
@@ -576,11 +562,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_037",
+    "id": "py_adv_037",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`dict` keys must be? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "`dict` keys must be? Which option best matches expert-level understanding?",
     "options": [
       "Hashable",
       "Always strings",
@@ -592,11 +578,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_038",
+    "id": "py_adv_038",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`dict` keys must be? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "`dict` keys must be? In a high-scale design, what applies?",
     "options": [
       "Hashable",
       "Always strings",
@@ -608,11 +594,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_039",
+    "id": "py_adv_039",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`dict` keys must be? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "`dict` keys must be? Which statement is most precise for advanced use?",
     "options": [
       "Hashable",
       "Always strings",
@@ -624,11 +610,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_040",
+    "id": "py_adv_040",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`dict` keys must be? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "`dict` keys must be? Select the rigorously correct advanced answer.",
     "options": [
       "Hashable",
       "Always strings",
@@ -640,11 +626,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_041",
+    "id": "py_adv_041",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`__init__` is? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "`__init__` is? Under advanced constraints, which is correct?",
     "options": [
       "Instance initializer",
       "Class destructor only",
@@ -656,11 +642,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_042",
+    "id": "py_adv_042",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`__init__` is? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "`__init__` is? Which option best matches expert-level understanding?",
     "options": [
       "Instance initializer",
       "Class destructor only",
@@ -672,11 +658,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_043",
+    "id": "py_adv_043",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`__init__` is? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "`__init__` is? In a high-scale design, what applies?",
     "options": [
       "Instance initializer",
       "Class destructor only",
@@ -688,11 +674,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_044",
+    "id": "py_adv_044",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`__init__` is? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "`__init__` is? Which statement is most precise for advanced use?",
     "options": [
       "Instance initializer",
       "Class destructor only",
@@ -704,11 +690,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_045",
+    "id": "py_adv_045",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`__init__` is? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "`__init__` is? Select the rigorously correct advanced answer.",
     "options": [
       "Instance initializer",
       "Class destructor only",
@@ -720,11 +706,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_046",
+    "id": "py_adv_046",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "Generators use? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "Generators use? Under advanced constraints, which is correct?",
     "options": [
       "yield",
       "return only",
@@ -736,11 +722,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_047",
+    "id": "py_adv_047",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "Generators use? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "Generators use? Which option best matches expert-level understanding?",
     "options": [
       "yield",
       "return only",
@@ -752,11 +738,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_048",
+    "id": "py_adv_048",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "Generators use? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "Generators use? In a high-scale design, what applies?",
     "options": [
       "yield",
       "return only",
@@ -768,11 +754,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_049",
+    "id": "py_adv_049",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "Generators use? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "Generators use? Which statement is most precise for advanced use?",
     "options": [
       "yield",
       "return only",
@@ -784,11 +770,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_050",
+    "id": "py_adv_050",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "Generators use? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "Generators use? Select the rigorously correct advanced answer.",
     "options": [
       "yield",
       "return only",
@@ -800,11 +786,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_051",
+    "id": "py_adv_051",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`isinstance(x, list)` checks? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "`isinstance(x, list)` checks? Under advanced constraints, which is correct?",
     "options": [
       "Type membership",
       "Truthiness",
@@ -816,11 +802,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_052",
+    "id": "py_adv_052",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`isinstance(x, list)` checks? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "`isinstance(x, list)` checks? Which option best matches expert-level understanding?",
     "options": [
       "Type membership",
       "Truthiness",
@@ -832,11 +818,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_053",
+    "id": "py_adv_053",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`isinstance(x, list)` checks? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "`isinstance(x, list)` checks? In a high-scale design, what applies?",
     "options": [
       "Type membership",
       "Truthiness",
@@ -848,11 +834,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_054",
+    "id": "py_adv_054",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`isinstance(x, list)` checks? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "`isinstance(x, list)` checks? Which statement is most precise for advanced use?",
     "options": [
       "Type membership",
       "Truthiness",
@@ -864,11 +850,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_055",
+    "id": "py_adv_055",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`isinstance(x, list)` checks? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "`isinstance(x, list)` checks? Select the rigorously correct advanced answer.",
     "options": [
       "Type membership",
       "Truthiness",
@@ -880,11 +866,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_056",
+    "id": "py_adv_056",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "Virtual environments help? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "Virtual environments help? Under advanced constraints, which is correct?",
     "options": [
       "Isolate project dependencies",
       "Speed the CPU",
@@ -896,11 +882,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_057",
+    "id": "py_adv_057",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "Virtual environments help? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "Virtual environments help? Which option best matches expert-level understanding?",
     "options": [
       "Isolate project dependencies",
       "Speed the CPU",
@@ -912,11 +898,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_058",
+    "id": "py_adv_058",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "Virtual environments help? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "Virtual environments help? In a high-scale design, what applies?",
     "options": [
       "Isolate project dependencies",
       "Speed the CPU",
@@ -928,11 +914,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_059",
+    "id": "py_adv_059",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "Virtual environments help? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "Virtual environments help? Which statement is most precise for advanced use?",
     "options": [
       "Isolate project dependencies",
       "Speed the CPU",
@@ -944,11 +930,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_060",
+    "id": "py_adv_060",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "Virtual environments help? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "Virtual environments help? Select the rigorously correct advanced answer.",
     "options": [
       "Isolate project dependencies",
       "Speed the CPU",
@@ -960,11 +946,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_061",
+    "id": "py_adv_061",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`pip install` installs? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "`pip install` installs? Under advanced constraints, which is correct?",
     "options": [
       "Packages from indexes/wheels",
       "Only stdlib",
@@ -976,11 +962,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_062",
+    "id": "py_adv_062",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`pip install` installs? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "`pip install` installs? Which option best matches expert-level understanding?",
     "options": [
       "Packages from indexes/wheels",
       "Only stdlib",
@@ -992,11 +978,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_063",
+    "id": "py_adv_063",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`pip install` installs? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "`pip install` installs? In a high-scale design, what applies?",
     "options": [
       "Packages from indexes/wheels",
       "Only stdlib",
@@ -1008,11 +994,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_064",
+    "id": "py_adv_064",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`pip install` installs? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "`pip install` installs? Which statement is most precise for advanced use?",
     "options": [
       "Packages from indexes/wheels",
       "Only stdlib",
@@ -1024,11 +1010,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_065",
+    "id": "py_adv_065",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`pip install` installs? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "`pip install` installs? Select the rigorously correct advanced answer.",
     "options": [
       "Packages from indexes/wheels",
       "Only stdlib",
@@ -1040,11 +1026,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_066",
+    "id": "py_adv_066",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "EAFP style prefers? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "EAFP style prefers? Under advanced constraints, which is correct?",
     "options": [
       "Trying and handling exceptions",
       "Always checking types first",
@@ -1056,11 +1042,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_067",
+    "id": "py_adv_067",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "EAFP style prefers? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "EAFP style prefers? Which option best matches expert-level understanding?",
     "options": [
       "Trying and handling exceptions",
       "Always checking types first",
@@ -1072,11 +1058,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_068",
+    "id": "py_adv_068",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "EAFP style prefers? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "EAFP style prefers? In a high-scale design, what applies?",
     "options": [
       "Trying and handling exceptions",
       "Always checking types first",
@@ -1088,11 +1074,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_069",
+    "id": "py_adv_069",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "EAFP style prefers? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "EAFP style prefers? Which statement is most precise for advanced use?",
     "options": [
       "Trying and handling exceptions",
       "Always checking types first",
@@ -1104,11 +1090,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_070",
+    "id": "py_adv_070",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "EAFP style prefers? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "EAFP style prefers? Select the rigorously correct advanced answer.",
     "options": [
       "Trying and handling exceptions",
       "Always checking types first",
@@ -1120,11 +1106,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_071",
+    "id": "py_adv_071",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`@property` creates? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "`@property` creates? Under advanced constraints, which is correct?",
     "options": [
       "Managed attributes",
       "Only static methods",
@@ -1136,11 +1122,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_072",
+    "id": "py_adv_072",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`@property` creates? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "`@property` creates? Which option best matches expert-level understanding?",
     "options": [
       "Managed attributes",
       "Only static methods",
@@ -1152,11 +1138,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_073",
+    "id": "py_adv_073",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`@property` creates? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "`@property` creates? In a high-scale design, what applies?",
     "options": [
       "Managed attributes",
       "Only static methods",
@@ -1168,11 +1154,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_074",
+    "id": "py_adv_074",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`@property` creates? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "`@property` creates? Which statement is most precise for advanced use?",
     "options": [
       "Managed attributes",
       "Only static methods",
@@ -1184,11 +1170,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_075",
+    "id": "py_adv_075",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`@property` creates? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "`@property` creates? Select the rigorously correct advanced answer.",
     "options": [
       "Managed attributes",
       "Only static methods",
@@ -1200,11 +1186,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_076",
+    "id": "py_adv_076",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`dataclasses` reduce? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "`dataclasses` reduce? Under advanced constraints, which is correct?",
     "options": [
       "Boilerplate for data containers",
       "Import time only",
@@ -1216,11 +1202,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_077",
+    "id": "py_adv_077",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`dataclasses` reduce? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "`dataclasses` reduce? Which option best matches expert-level understanding?",
     "options": [
       "Boilerplate for data containers",
       "Import time only",
@@ -1232,11 +1218,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_078",
+    "id": "py_adv_078",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`dataclasses` reduce? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "`dataclasses` reduce? In a high-scale design, what applies?",
     "options": [
       "Boilerplate for data containers",
       "Import time only",
@@ -1248,11 +1234,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_079",
+    "id": "py_adv_079",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`dataclasses` reduce? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "`dataclasses` reduce? Which statement is most precise for advanced use?",
     "options": [
       "Boilerplate for data containers",
       "Import time only",
@@ -1264,11 +1250,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_080",
+    "id": "py_adv_080",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`dataclasses` reduce? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "`dataclasses` reduce? Select the rigorously correct advanced answer.",
     "options": [
       "Boilerplate for data containers",
       "Import time only",
@@ -1280,11 +1266,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_081",
+    "id": "py_adv_081",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`asyncio` is for? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "`asyncio` is for? Under advanced constraints, which is correct?",
     "options": [
       "Concurrent IO-bound tasks",
       "Only CPU-bound GIL escape",
@@ -1296,11 +1282,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_082",
+    "id": "py_adv_082",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`asyncio` is for? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "`asyncio` is for? Which option best matches expert-level understanding?",
     "options": [
       "Concurrent IO-bound tasks",
       "Only CPU-bound GIL escape",
@@ -1312,11 +1298,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_083",
+    "id": "py_adv_083",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`asyncio` is for? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "`asyncio` is for? In a high-scale design, what applies?",
     "options": [
       "Concurrent IO-bound tasks",
       "Only CPU-bound GIL escape",
@@ -1328,11 +1314,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_084",
+    "id": "py_adv_084",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`asyncio` is for? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "`asyncio` is for? Which statement is most precise for advanced use?",
     "options": [
       "Concurrent IO-bound tasks",
       "Only CPU-bound GIL escape",
@@ -1344,11 +1330,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_085",
+    "id": "py_adv_085",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`asyncio` is for? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "`asyncio` is for? Select the rigorously correct advanced answer.",
     "options": [
       "Concurrent IO-bound tasks",
       "Only CPU-bound GIL escape",
@@ -1360,11 +1346,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_086",
+    "id": "py_adv_086",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`pathlib.Path` helps with? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "`pathlib.Path` helps with? Under advanced constraints, which is correct?",
     "options": [
       "Filesystem paths",
       "Only URLs",
@@ -1376,11 +1362,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_087",
+    "id": "py_adv_087",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`pathlib.Path` helps with? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "`pathlib.Path` helps with? Which option best matches expert-level understanding?",
     "options": [
       "Filesystem paths",
       "Only URLs",
@@ -1392,11 +1378,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_088",
+    "id": "py_adv_088",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`pathlib.Path` helps with? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "`pathlib.Path` helps with? In a high-scale design, what applies?",
     "options": [
       "Filesystem paths",
       "Only URLs",
@@ -1408,11 +1394,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_089",
+    "id": "py_adv_089",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`pathlib.Path` helps with? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "`pathlib.Path` helps with? Which statement is most precise for advanced use?",
     "options": [
       "Filesystem paths",
       "Only URLs",
@@ -1424,11 +1410,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_090",
+    "id": "py_adv_090",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`pathlib.Path` helps with? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "`pathlib.Path` helps with? Select the rigorously correct advanced answer.",
     "options": [
       "Filesystem paths",
       "Only URLs",
@@ -1440,11 +1426,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_091",
+    "id": "py_adv_091",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "What does `zip(a, b)` do? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "What does `zip(a, b)` do? Under advanced constraints, which is correct?",
     "options": [
       "Pairs items from iterables",
       "Compresses files always",
@@ -1456,11 +1442,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_092",
+    "id": "py_adv_092",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "What does `zip(a, b)` do? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "What does `zip(a, b)` do? Which option best matches expert-level understanding?",
     "options": [
       "Pairs items from iterables",
       "Compresses files always",
@@ -1472,11 +1458,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_093",
+    "id": "py_adv_093",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "What does `zip(a, b)` do? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "What does `zip(a, b)` do? In a high-scale design, what applies?",
     "options": [
       "Pairs items from iterables",
       "Compresses files always",
@@ -1488,11 +1474,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_094",
+    "id": "py_adv_094",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "What does `zip(a, b)` do? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "What does `zip(a, b)` do? Which statement is most precise for advanced use?",
     "options": [
       "Pairs items from iterables",
       "Compresses files always",
@@ -1504,11 +1490,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_095",
+    "id": "py_adv_095",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "What does `zip(a, b)` do? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "What does `zip(a, b)` do? Select the rigorously correct advanced answer.",
     "options": [
       "Pairs items from iterables",
       "Compresses files always",
@@ -1520,11 +1506,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_096",
+    "id": "py_adv_096",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`enumerate(xs)` yields? Choose the best beginner-level answer.",
+    "level": "Advanced",
+    "question": "`enumerate(xs)` yields? Under advanced constraints, which is correct?",
     "options": [
       "(index, value) pairs",
       "Only values",
@@ -1536,11 +1522,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_097",
+    "id": "py_adv_097",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`enumerate(xs)` yields? For newcomers, which statement is correct?",
+    "level": "Advanced",
+    "question": "`enumerate(xs)` yields? Which option best matches expert-level understanding?",
     "options": [
       "(index, value) pairs",
       "Only values",
@@ -1552,11 +1538,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_098",
+    "id": "py_adv_098",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`enumerate(xs)` yields? Which option is most accurate for an introductory scenario?",
+    "level": "Advanced",
+    "question": "`enumerate(xs)` yields? In a high-scale design, what applies?",
     "options": [
       "(index, value) pairs",
       "Only values",
@@ -1568,11 +1554,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_099",
+    "id": "py_adv_099",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`enumerate(xs)` yields? Pick the fundamental concept that applies.",
+    "level": "Advanced",
+    "question": "`enumerate(xs)` yields? Which statement is most precise for advanced use?",
     "options": [
       "(index, value) pairs",
       "Only values",
@@ -1584,11 +1570,11 @@
     "platform": "General"
   },
   {
-    "id": "py_beg_100",
+    "id": "py_adv_100",
     "created_at": "2026-01-15T10:00:00Z",
     "language": "Python",
-    "level": "Beginner",
-    "question": "`enumerate(xs)` yields? Which choice matches core introductory knowledge?",
+    "level": "Advanced",
+    "question": "`enumerate(xs)` yields? Select the rigorously correct advanced answer.",
     "options": [
       "(index, value) pairs",
       "Only values",
