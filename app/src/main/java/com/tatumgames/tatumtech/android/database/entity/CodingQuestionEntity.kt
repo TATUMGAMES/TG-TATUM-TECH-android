@@ -34,6 +34,8 @@ import com.tatumgames.tatumtech.android.database.constants.DbConstants.TABLE_COD
  * @property correctAnswer The correct answer.
  * @property explanation Explanation of the correct answer.
  * @property platform Target platform for the question.
+ * @property pattern Optional algorithm pattern label (e.g. LeetCode teaching mode).
+ * @property codeSnippet Optional code block text from JSON field "code".
  */
 @Entity(tableName = TABLE_CODING_QUESTIONS)
 data class CodingQuestionEntity(
@@ -48,6 +50,8 @@ data class CodingQuestionEntity(
     val options: String, // JSON string of options
     val correctAnswer: String,
     val explanation: String,
-    val platform: String
+    val platform: String,
+    val pattern: String = "",
+    val codeSnippet: String = ""
 )
 

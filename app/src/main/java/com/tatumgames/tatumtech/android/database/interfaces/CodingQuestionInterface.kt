@@ -23,7 +23,7 @@ import com.tatumgames.tatumtech.android.database.entity.CodingQuestionEntity
  * creation, retrieval, and validation of coding questions.
  */
 interface CodingQuestionInterface {
-    
+
     /**
      * Insert a single question into the database.
      * 
@@ -31,21 +31,21 @@ interface CodingQuestionInterface {
      * @return The ID of the inserted question.
      */
     suspend fun insertQuestion(question: CodingQuestionEntity): Long
-    
+
     /**
      * Insert multiple questions into the database.
      * 
      * @param questions List of question entities to insert.
      */
     suspend fun insertQuestions(questions: List<CodingQuestionEntity>)
-    
+
     /**
      * Get all questions from the database.
      * 
      * @return List of all questions.
      */
     suspend fun getAllQuestions(): List<CodingQuestionEntity>
-    
+
     /**
      * Get questions by language and level.
      * 
@@ -53,8 +53,11 @@ interface CodingQuestionInterface {
      * @param level Difficulty level.
      * @return List of questions matching the criteria.
      */
-    suspend fun getQuestionsByLanguageAndLevel(language: String, level: String): List<CodingQuestionEntity>
-    
+    suspend fun getQuestionsByLanguageAndLevel(
+        language: String,
+        level: String
+    ): List<CodingQuestionEntity>
+
     /**
      * Get questions by language.
      * 
@@ -62,14 +65,14 @@ interface CodingQuestionInterface {
      * @return List of questions for the specified language.
      */
     suspend fun getQuestionsByLanguage(language: String): List<CodingQuestionEntity>
-    
+
     /**
      * Get the total count of questions in the database.
      * 
      * @return Number of questions.
      */
     suspend fun getQuestionCount(): Int
-    
+
     /**
      * Check if a question exists by questionId.
      * 
@@ -77,7 +80,13 @@ interface CodingQuestionInterface {
      * @return True if the question exists, false otherwise.
      */
     suspend fun questionExists(questionId: String): Boolean
+
+    /**
+     * Loads questions whose IDs are in the given set (caller may reorder).
+     */
+    suspend fun getQuestionsByQuestionIds(questionIds: List<String>): List<CodingQuestionEntity>
 }
+
 
 
 

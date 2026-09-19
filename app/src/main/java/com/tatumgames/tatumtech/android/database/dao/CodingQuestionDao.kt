@@ -28,7 +28,7 @@ import com.tatumgames.tatumtech.android.database.entity.CodingQuestionEntity
  */
 @Dao
 interface CodingQuestionDao {
-    
+
     /**
      * Insert a new question or replace if exists.
      * 
@@ -36,7 +36,7 @@ interface CodingQuestionDao {
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertQuestion(question: CodingQuestionEntity): Long
-    
+
     /**
      * Insert multiple questions.
      * 
@@ -44,7 +44,7 @@ interface CodingQuestionDao {
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertQuestions(questions: List<CodingQuestionEntity>)
-    
+
     /**
      * Get all questions from the database.
      * 
@@ -52,7 +52,7 @@ interface CodingQuestionDao {
      */
     @Query("SELECT * FROM $TABLE_CODING_QUESTIONS ORDER BY language, level, questionId")
     suspend fun getAllQuestions(): List<CodingQuestionEntity>
-    
+
     /**
      * Get questions by language and level.
      * 
@@ -61,8 +61,11 @@ interface CodingQuestionDao {
      * @return List of questions matching the criteria.
      */
     @Query("SELECT * FROM $TABLE_CODING_QUESTIONS WHERE language = :language AND level = :level ORDER BY questionId")
-    suspend fun getQuestionsByLanguageAndLevel(language: String, level: String): List<CodingQuestionEntity>
-    
+    suspend fun getQuestionsByLanguageAndLevel(
+        language: String,
+        level: String
+    ): List<CodingQuestionEntity>
+
     /**
      * Get questions by language.
      * 
@@ -71,7 +74,7 @@ interface CodingQuestionDao {
      */
     @Query("SELECT * FROM $TABLE_CODING_QUESTIONS WHERE language = :language ORDER BY level, questionId")
     suspend fun getQuestionsByLanguage(language: String): List<CodingQuestionEntity>
-    
+
     /**
      * Get the total count of questions in the database.
      * 
@@ -79,7 +82,7 @@ interface CodingQuestionDao {
      */
     @Query("SELECT COUNT(*) FROM $TABLE_CODING_QUESTIONS")
     suspend fun getQuestionCount(): Int
-    
+
     /**
      * Check if a question exists by questionId.
      * 
@@ -88,7 +91,10 @@ interface CodingQuestionDao {
      */
     @Query("SELECT EXISTS(SELECT 1 FROM $TABLE_CODING_QUESTIONS WHERE questionId = :questionId)")
     suspend fun questionExists(questionId: String): Boolean
+
+    /**
+     * Loads questions for a set of IDs (order is not preserved by SQL; reorder in the caller).
+     */
+    @Query("SELECT * FROM $TABLE_CODING_QUESTIONS WHERE questionId IN (:questionIds)")
+    suspend fun getQuestionsByQuestionIds(questionIds: List<String>): List<CodingQuestionEntity>
 }
-
-
-

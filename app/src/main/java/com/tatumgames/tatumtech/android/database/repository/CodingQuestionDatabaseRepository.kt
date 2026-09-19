@@ -24,30 +24,37 @@ import com.tatumgames.tatumtech.android.database.interfaces.CodingQuestionInterf
  * Provides a clean interface for accessing coding question data from the database.
  */
 class CodingQuestionDatabaseRepository(
-    private val dao: CodingQuestionDao
+    private val codingQuestionDao: CodingQuestionDao
 ) : CodingQuestionInterface {
 
     override suspend fun insertQuestion(question: CodingQuestionEntity): Long =
-        dao.insertQuestion(question)
+        codingQuestionDao.insertQuestion(question)
 
     override suspend fun insertQuestions(questions: List<CodingQuestionEntity>) =
-        dao.insertQuestions(questions)
+        codingQuestionDao.insertQuestions(questions)
 
     override suspend fun getAllQuestions(): List<CodingQuestionEntity> =
-        dao.getAllQuestions()
+        codingQuestionDao.getAllQuestions()
 
-    override suspend fun getQuestionsByLanguageAndLevel(language: String, level: String): List<CodingQuestionEntity> =
-        dao.getQuestionsByLanguageAndLevel(language, level)
+    override suspend fun getQuestionsByLanguageAndLevel(
+        language: String,
+        level: String
+    ): List<CodingQuestionEntity> =
+        codingQuestionDao.getQuestionsByLanguageAndLevel(language, level)
 
     override suspend fun getQuestionsByLanguage(language: String): List<CodingQuestionEntity> =
-        dao.getQuestionsByLanguage(language)
+        codingQuestionDao.getQuestionsByLanguage(language)
 
     override suspend fun getQuestionCount(): Int =
-        dao.getQuestionCount()
+        codingQuestionDao.getQuestionCount()
 
     override suspend fun questionExists(questionId: String): Boolean =
-        dao.questionExists(questionId)
+        codingQuestionDao.questionExists(questionId)
+
+    override suspend fun getQuestionsByQuestionIds(questionIds: List<String>): List<CodingQuestionEntity> =
+        codingQuestionDao.getQuestionsByQuestionIds(questionIds)
 }
+
 
 
 
