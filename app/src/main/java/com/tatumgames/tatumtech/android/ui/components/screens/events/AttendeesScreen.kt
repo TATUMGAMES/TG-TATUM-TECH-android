@@ -22,34 +22,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import android.util.Log
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.database.AppDatabase
 import com.tatumgames.tatumtech.android.database.entity.AttendeeEntity
-import com.tatumgames.tatumtech.android.database.entity.TimelineEntity
 import com.tatumgames.tatumtech.android.database.repository.AttendeeDatabaseRepository
-import com.tatumgames.tatumtech.android.database.repository.TimelineDatabaseRepository
-import com.tatumgames.tatumtech.android.enums.TimelineType
 import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
-import kotlinx.coroutines.launch
+import com.tatumgames.tatumtech.android.ui.theme.White
+import com.tatumgames.tatumtech.framework.android.logger.Logger
 
 @Composable
 fun AttendeesScreen(
@@ -59,15 +52,12 @@ fun AttendeesScreen(
     val context = LocalContext.current
     val db = remember { AppDatabase.getInstance(context) }
     val attendeeRepository = remember { AttendeeDatabaseRepository(db.attendeeDao()) }
-    val timelineRepository = remember { TimelineDatabaseRepository(db.timelineDao()) }
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
     var attendees by remember { mutableStateOf<List<AttendeeEntity>>(emptyList()) }
 
     LaunchedEffect(eventId) {
-        Log.d("AttendeesScreen", "Event ID: $eventId")
+        Logger.d("AttendeesScreen", "Event ID: $eventId")
         attendees = attendeeRepository.getAttendeesForEvent(eventId)
-        Log.d("AttendeesScreen", "Found ${attendees.size} attendees for event $eventId")
+        Logger.d("AttendeesScreen", "Found ${attendees.size} attendees for event $eventId")
     }
 
     Scaffold(
@@ -79,8 +69,7 @@ fun AttendeesScreen(
         bottomBar = {
             BottomNavigationBar(navController = navController)
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = Color.White
+        containerColor = White
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -98,56 +87,11 @@ fun AttendeesScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp)
                 ) {
-                    items(attendees) { attendee ->
-                        AttendeeListEntry(
-                            attendee = attendee,
-                            onToggleFriend = {
-                                scope.launch {
-                                    if (attendee.isFriend) {
-                                        attendeeRepository.removeFriend(attendee.id)
-
-                                        val removedText = context.getString(
-                                            R.string.snackbar_removed_friend,
-                                            attendee.name
-                                        )
-                                        snackbarHostState.showSnackbar(removedText)
-
-                                        timelineRepository.insertTimelineEvent(
-                                            TimelineEntity(
-                                                type = TimelineType.FRIEND_REMOVE.typeValue,
-                                                description = context.getString(
-                                                    R.string.timeline_removed_friend,
-                                                    attendee.name
-                                                ),
-                                                relatedId = attendee.id,
-                                                timestamp = System.currentTimeMillis()
-                                            )
-                                        )
-                                    } else {
-                                        attendeeRepository.addFriend(attendee.id)
-
-                                        val addedText = context.getString(
-                                            R.string.snackbar_added_friend,
-                                            attendee.name
-                                        )
-                                        snackbarHostState.showSnackbar(addedText)
-
-                                        timelineRepository.insertTimelineEvent(
-                                            TimelineEntity(
-                                                type = TimelineType.FRIEND_ADD.typeValue,
-                                                description = context.getString(
-                                                    R.string.timeline_added_friend,
-                                                    attendee.name
-                                                ),
-                                                relatedId = attendee.id,
-                                                timestamp = System.currentTimeMillis()
-                                            )
-                                        )
-                                    }
-                                    attendees = attendeeRepository.getAttendeesForEvent(eventId)
-                                }
-                            }
-                        )
+                    items(
+                        items = attendees,
+                        key = { it.id }
+                    ) { attendee ->
+                        AttendeeListEntry(attendee = attendee)
                     }
                 }
             }
