@@ -26,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tatumgames.tatumtech.android.database.entity.TimelineEntity
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
+import com.tatumgames.tatumtech.android.ui.theme.Grey300
 import com.tatumgames.tatumtech.android.ui.theme.Purple500
 import com.tatumgames.tatumtech.android.utils.Utils.formatTimestamp
 
@@ -56,7 +56,7 @@ fun TimelineListEntry(
                     modifier = Modifier
                         .width(4.dp)
                         .height(48.dp)
-                        .background(Color.LightGray)
+                        .background(Grey300)
                 )
             }
         }

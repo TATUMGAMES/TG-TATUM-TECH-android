@@ -16,8 +16,33 @@ package com.tatumgames.tatumtech.android.database.interfaces
 
 import com.tatumgames.tatumtech.android.database.entity.TimelineEntity
 
+/**
+ * Interface defining timeline-related database operations.
+ * 
+ * Provides a contract for timeline event management operations including
+ * creation and retrieval of timeline events.
+ */
 interface TimelineInterface {
+
+    /**
+     * Insert a timeline event into the database.
+     * 
+     * @param timelineEntity The timeline entity to insert.
+     */
     suspend fun insertTimelineEvent(timelineEntity: TimelineEntity)
+
+    /**
+     * Get all timeline events from the database.
+     * 
+     * @return List of all timeline events.
+     */
     suspend fun getAllTimelineEvents(): List<TimelineEntity>
+
+    /**
+     * Get timeline events from a specific timestamp onwards.
+     * 
+     * @param fromTimestamp The timestamp to get events from (inclusive).
+     * @return List of timeline events from the timestamp.
+     */
     suspend fun getTimelineEventsFrom(fromTimestamp: Long): List<TimelineEntity>
 } 
