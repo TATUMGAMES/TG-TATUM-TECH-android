@@ -14,8 +14,32 @@
  */
 package com.tatumgames.tatumtech.android.database.interfaces
 
+/**
+ * Interface defining event registration-related database operations.
+ * 
+ * Provides a contract for event registration management operations including
+ * registration, unregistration, and retrieval of registered events.
+ */
 interface EventRegistrationInterface {
+
+    /**
+     * Get all registered event IDs.
+     * 
+     * @return List of registered event IDs.
+     */
     suspend fun getRegisteredEvents(): List<Long>
+
+    /**
+     * Register for an event.
+     * 
+     * @param id The ID of the event to register for.
+     */
     suspend fun registerEvent(id: Long)
+
+    /**
+     * Unregister from an event.
+     * 
+     * @param id The ID of the event to unregister from.
+     */
     suspend fun unregisterEvent(id: Long)
 }

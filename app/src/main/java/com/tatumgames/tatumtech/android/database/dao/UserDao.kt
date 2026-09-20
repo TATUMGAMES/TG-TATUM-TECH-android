@@ -28,7 +28,7 @@ import com.tatumgames.tatumtech.android.database.entity.UserEntity
  */
 @Dao
 interface UserDao {
-    
+
     /**
      * Insert a new user or replace if exists.
      * 
@@ -36,7 +36,7 @@ interface UserDao {
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUser(user: UserEntity)
-    
+
     /**
      * Update an existing user.
      * 
@@ -44,7 +44,7 @@ interface UserDao {
      */
     @Update
     suspend fun updateUser(user: UserEntity)
-    
+
     /**
      * Get the current user.
      * 
@@ -52,7 +52,7 @@ interface UserDao {
      */
     @Query("SELECT * FROM users WHERE id = 1")
     suspend fun getCurrentUser(): UserEntity?
-    
+
     /**
      * Check if a user exists.
      * 

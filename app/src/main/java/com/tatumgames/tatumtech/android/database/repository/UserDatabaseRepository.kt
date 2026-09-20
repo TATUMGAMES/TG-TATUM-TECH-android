@@ -29,7 +29,7 @@ import com.tatumgames.tatumtech.android.database.interfaces.UserInterface
 class UserDatabaseRepository(
     private val userDao: UserDao
 ) : UserInterface {
-    
+
     /**
      * Insert or update a user in the database.
      * 
@@ -38,7 +38,7 @@ class UserDatabaseRepository(
     override suspend fun insertUser(user: UserEntity) {
         userDao.insertUser(user)
     }
-    
+
     /**
      * Update an existing user in the database.
      * 
@@ -47,7 +47,7 @@ class UserDatabaseRepository(
     override suspend fun updateUser(user: UserEntity) {
         userDao.updateUser(user)
     }
-    
+
     /**
      * Get the current user from the database.
      * 
@@ -56,7 +56,7 @@ class UserDatabaseRepository(
     override suspend fun getCurrentUser(): UserEntity? {
         return userDao.getCurrentUser()
     }
-    
+
     /**
      * Check if a user exists in the database.
      * 

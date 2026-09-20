@@ -20,15 +20,46 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.tatumgames.tatumtech.android.database.constants.DbConstants.TABLE_TIMELINE
 import com.tatumgames.tatumtech.android.database.entity.TimelineEntity
+import kotlinx.coroutines.flow.Flow
 
+/**
+ * Data Access Object for TimelineEntity operations.
+ * 
+ * Provides methods to interact with the timeline table in the database.
+ */
 @Dao
 interface TimelineDao {
+
+    /**
+     * Insert a timeline event or replace if exists.
+     * 
+     * @param timelineEntity The timeline entity to insert.
+     */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTimelineEvent(timelineEntity: TimelineEntity)
 
+    /**
+     * Get all timeline events from the database.
+     * 
+     * @return List of all timeline events, ordered by timestamp descending.
+     */
     @Query("SELECT * FROM $TABLE_TIMELINE ORDER BY timestamp DESC")
     suspend fun getAllTimelineEvents(): List<TimelineEntity>
 
+    /**
+     * Get timeline events from a specific timestamp onwards.
+     *
+     * @param fromTimestamp The timestamp to get events from (inclusive).
+     * @return List of timeline events from the timestamp, ordered by timestamp descending.
+     */
     @Query("SELECT * FROM $TABLE_TIMELINE WHERE timestamp >= :fromTimestamp ORDER BY timestamp DESC")
     suspend fun getTimelineEventsFrom(fromTimestamp: Long): List<TimelineEntity>
+
+    @Query(
+        "SELECT * FROM $TABLE_TIMELINE WHERE type = :type AND relatedId = :relatedId LIMIT 1"
+    )
+    suspend fun getByTypeAndRelatedId(type: String, relatedId: Long): TimelineEntity?
+
+    @Query("SELECT * FROM $TABLE_TIMELINE WHERE timestamp >= :fromTimestamp ORDER BY timestamp DESC")
+    fun observeTimelineEventsFrom(fromTimestamp: Long): Flow<List<TimelineEntity>>
 } 
