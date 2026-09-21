@@ -14,7 +14,6 @@
  */
 package com.tatumgames.tatumtech.android.ui.components.screens.main
 
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -38,7 +37,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -46,12 +44,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-
 import com.tatumgames.tatumtech.android.R
-import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.common.TermsAndPrivacyText
+import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
 import com.tatumgames.tatumtech.android.ui.components.screens.about.AboutContentType
+import com.tatumgames.tatumtech.android.ui.theme.Grey500
+import com.tatumgames.tatumtech.android.ui.theme.White
 
 /**
  * User Profile Drawer composable that displays a right-side drawer with menu options.
@@ -67,7 +66,7 @@ fun UserProfileDrawer(
     val context = LocalContext.current
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val drawerWidth = screenWidth * 0.75f
-    
+
     AnimatedVisibility(
         visible = true,
         enter = slideInHorizontally(
@@ -83,7 +82,7 @@ fun UserProfileDrawer(
             modifier = Modifier
                 .fillMaxHeight()
                 .width(drawerWidth)
-                .background(Color.White)
+                .background(White)
         ) {
             Column(
                 modifier = Modifier
@@ -103,9 +102,9 @@ fun UserProfileDrawer(
                             .padding(top = 48.dp),
                         alignment = Alignment.Center
                     )
-                    
+
                     Spacer(modifier = Modifier.height(32.dp))
-                    
+
                     // Menu Options with full-width clickable areas
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -126,7 +125,24 @@ fun UserProfileDrawer(
                                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
                             )
                         }
-                        
+
+                        // Demographic Info Option
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    navController.navigate(NavRoutes.DEMOGRAPHIC_SCREEN)
+                                    onClose()
+                                }
+                                .padding(vertical = 12.dp, horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            StandardText(
+                                text = stringResource(R.string.demographic_info),
+                                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+                            )
+                        }
+
                         // About Tatum Games Option
                         Row(
                             modifier = Modifier
@@ -143,7 +159,7 @@ fun UserProfileDrawer(
                                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
                             )
                         }
-                        
+
                         // FAQ Option
                         Row(
                             modifier = Modifier
@@ -162,30 +178,33 @@ fun UserProfileDrawer(
                         }
                     }
                 }
-                
+
                 // Bottom Section
                 Column {
                     Spacer(modifier = Modifier.height(32.dp))
-                    
+
                     HorizontalDivider(
                         modifier = Modifier.padding(vertical = 16.dp),
-                        color = Color.Gray.copy(alpha = 0.3f)
+                        color = Grey500.copy(alpha = 0.3f)
                     )
-                    
+
                     // App Version
                     val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
                     StandardText(
-                        text = stringResource(R.string.app_version, packageInfo.versionName ?: "1.0"),
+                        text = stringResource(
+                            R.string.app_version,
+                            packageInfo.versionName ?: "1.0"
+                        ),
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray,
+                        color = Grey500,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
-                    
+
                     // Terms and Privacy Policy Text
                     TermsAndPrivacyText(
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
-                    
+
                     // Extra padding to ensure content is not hidden by bottom navigation
                     Spacer(modifier = Modifier.height(80.dp))
                 }

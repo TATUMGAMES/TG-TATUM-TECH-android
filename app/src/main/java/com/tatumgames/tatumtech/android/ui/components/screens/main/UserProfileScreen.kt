@@ -23,16 +23,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,20 +39,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.database.AppDatabase
-import com.tatumgames.tatumtech.android.database.entity.UserEntity
 import com.tatumgames.tatumtech.android.database.repository.UserDatabaseRepository
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.RoundedButton
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
+import com.tatumgames.tatumtech.android.ui.theme.White
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -67,13 +63,13 @@ fun UserProfileScreen(
     val db = remember { AppDatabase.getInstance(context) }
     val userRepository = remember { UserDatabaseRepository(db.userDao()) }
     val snackbarHostState = remember { SnackbarHostState() }
-    
+
     var username by remember { mutableStateOf("") }
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(true) }
-    
+
     // Load user data
     LaunchedEffect(Unit) {
         val currentUser = userRepository.getCurrentUser()
@@ -85,7 +81,7 @@ fun UserProfileScreen(
         }
         isLoading = false
     }
-    
+
     Scaffold(
         topBar = {
             Header(
@@ -94,7 +90,7 @@ fun UserProfileScreen(
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = Color.White
+        containerColor = White
     ) { padding ->
         Column(
             modifier = Modifier
@@ -126,7 +122,7 @@ fun UserProfileScreen(
                     enabled = false,
                     readOnly = true
                 )
-                
+
                 // First Name
                 OutlinedTextField(
                     value = firstName,
@@ -142,7 +138,7 @@ fun UserProfileScreen(
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
                 )
-                
+
                 // Last Name
                 OutlinedTextField(
                     value = lastName,
@@ -158,9 +154,8 @@ fun UserProfileScreen(
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
                 )
-                
 
-                
+
                 // Email (editable)
                 OutlinedTextField(
                     value = email,
@@ -176,9 +171,9 @@ fun UserProfileScreen(
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
                 )
-                
+
                 Spacer(modifier = Modifier.height(24.dp))
-                
+
                 // Save Button
                 RoundedButton(
                     text = "Save",
@@ -197,7 +192,7 @@ fun UserProfileScreen(
                                     // Keep the original username unchanged
                                 )
                                 userRepository.updateUser(updatedUser)
-                                
+
                                 // Show success message on main thread
                                 withContext(kotlinx.coroutines.Dispatchers.Main) {
                                     snackbarHostState.showSnackbar("Profile updated successfully!")

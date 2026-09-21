@@ -23,28 +23,28 @@ import com.tatumgames.tatumtech.android.database.entity.UserEntity
  * creation, updates, and retrieval of user information.
  */
 interface UserInterface {
-    
+
     /**
      * Insert or update a user in the database.
      * 
      * @param user The user entity to save.
      */
     suspend fun insertUser(user: UserEntity)
-    
+
     /**
      * Update an existing user in the database.
      * 
      * @param user The user entity to update.
      */
     suspend fun updateUser(user: UserEntity)
-    
+
     /**
      * Get the current user from the database.
      * 
      * @return The current user entity or null if not found.
      */
     suspend fun getCurrentUser(): UserEntity?
-    
+
     /**
      * Check if a user exists in the database.
      * 

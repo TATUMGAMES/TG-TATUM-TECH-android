@@ -15,14 +15,17 @@
 package com.tatumgames.tatumtech.android.utils
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Patterns
+import android.widget.Toast
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.constants.Constants.TAG
-import com.tatumgames.tatumtech.android.database.entity.UserEntity
+import com.tatumgames.tatumtech.android.ui.theme.StringHashPalette
 import com.tatumgames.tatumtech.framework.android.logger.Logger
 import java.text.SimpleDateFormat
 import java.time.ZonedDateTime
@@ -96,6 +99,21 @@ object Utils {
         }
     }
 
+    /**
+     * Formats an ISO calendar date string (yyyy-MM-dd) for display (MMM d, yyyy).
+     */
+    fun formatIsoDateOnly(dateString: String): String {
+        return try {
+            val inFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val date = inFormat.parse(dateString) ?: return dateString
+            val outFormat = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
+            outFormat.format(date)
+        } catch (e: Exception) {
+            Logger.e(TAG, e.message)
+            dateString
+        }
+    }
+
     fun formatTimestamp(
         context: Context,
         timestamp: Long
@@ -126,23 +144,9 @@ object Utils {
     }
 
     fun generateColorFromString(input: String): Color {
-        val colors = listOf(
-            Color(0xFFE57373), // Red
-            Color(0xFF81C784), // Green
-            Color(0xFF64B5F6), // Blue
-            Color(0xFFFFB74D), // Orange
-            Color(0xFFBA68C8), // Purple
-            Color(0xFF4DB6AC), // Teal
-            Color(0xFFFF8A65), // Deep Orange
-            Color(0xFF9575CD), // Deep Purple
-            Color(0xFF4FC3F7), // Light Blue
-            Color(0xFF81C784), // Light Green
-            Color(0xFFFFD54F), // Yellow
-            Color(0xFFA1887F)  // Brown
-        )
         val hash = input.hashCode()
-        val index = kotlin.math.abs(hash) % colors.size
-        return colors[index]
+        val index = kotlin.math.abs(hash) % StringHashPalette.size
+        return StringHashPalette[index]
     }
 
     /**
@@ -153,16 +157,37 @@ object Utils {
      */
     fun getUserNameOrAnonymous(user: com.tatumgames.tatumtech.android.database.entity.UserEntity?): String {
         return when {
-            user != null && user.firstName != null && user.firstName.isNotBlank() && 
-            user.lastName != null && user.lastName.isNotBlank() -> {
+            user != null && user.firstName != null && user.firstName.isNotBlank() &&
+                    user.lastName != null && user.lastName.isNotBlank() -> {
                 "${user.firstName} ${user.lastName}"
             }
+
             user != null && user.firstName != null && user.firstName.isNotBlank() -> {
                 user.firstName
             }
+
             else -> {
                 user?.anonymousId ?: generateAnonymousId()
             }
+        }
+    }
+
+    /**
+     * Opens an http(s) URL in an external browser / associated app.
+     * Does nothing for blank URLs; shows [failureMessageRes] on failure.
+     */
+    fun openUrl(
+        context: Context,
+        url: String?,
+        failureMessageRes: Int = R.string.open_url_failed
+    ) {
+        val trimmed = url?.trim().orEmpty()
+        if (trimmed.isEmpty()) return
+        runCatching {
+            context.startActivity(Intent(Intent.ACTION_VIEW, trimmed.toUri()))
+        }.onFailure {
+            Logger.e(TAG, it.message)
+            Toast.makeText(context, context.getString(failureMessageRes), Toast.LENGTH_SHORT).show()
         }
     }
 }
