@@ -312,7 +312,7 @@ fun ChallengeQuizScreen(
                                             shape = RoundedCornerShape(8.dp),
                                             color = MaterialTheme.colorScheme.secondaryContainer
                                         ) {
-                                            Text(
+                                            StandardText(
                                                 text = stringResource(
                                                     R.string.leetcode_pattern_label,
                                                     question.pattern
