@@ -401,7 +401,6 @@
     <string name="stats_correct">Correct</string>
     <string name="view_all">View All</string>
     <string name="achievements">Achievements</string>
-    <string name="bar_chart_placeholder">[Bar Chart Placeholder]</string>
     <string name="timeline_no_activity_period">No activity during this period</string>
     <string name="visit">Visit →</string>
     <string name="loading_resources">Loading resources…</string>
