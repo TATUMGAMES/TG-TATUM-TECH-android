@@ -14,7 +14,7 @@
  */
 package com.tatumgames.tatumtech.android.ui.components.screens.community.apiclient
 
-import com.tatumgames.tatumtech.android.constants.Constants.TAG
+import com.tatumgames.tatumtech.android.constants.Constants
 import com.tatumgames.tatumtech.framework.android.logger.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -49,48 +49,51 @@ class DiscordApiClient {
         .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
-    suspend fun fetchDiscordServerInfo(inviteCode: String): ApiResult<DiscordServerInfo> = withContext(Dispatchers.IO) {
-        try {
-            val url = "https://discord.com/api/v9/invites/$inviteCode?with_counts=true&with_expiration=true"
-            val request = Request.Builder()
-                .url(url)
-                .addHeader("User-Agent", "TatumTech-Android/1.0")
-                .build()
+    suspend fun fetchDiscordServerInfo(inviteCode: String): ApiResult<DiscordServerInfo> =
+        withContext(Dispatchers.IO) {
+            try {
+                // Use Constants.DISCORD_API_URL pattern with the provided invite code
+                val url =
+                    "https://discord.com/api/v9/invites/$inviteCode?with_counts=true&with_expiration=true"
+                val request = Request.Builder()
+                    .url(url)
+                    .addHeader("User-Agent", "TatumTech-Android/1.0")
+                    .build()
 
-            val response = client.newCall(request).execute()
-            
-            if (!response.isSuccessful) {
-                return@withContext ApiResult.Error("HTTP ${response.code}: ${response.message}")
+                val response = client.newCall(request).execute()
+
+                if (!response.isSuccessful) {
+                    return@withContext ApiResult.Error("HTTP ${response.code}: ${response.message}")
+                }
+
+                val responseBody = response.body?.string()
+                if (responseBody.isNullOrEmpty()) {
+                    return@withContext ApiResult.Error("Empty response from server")
+                }
+
+                val json = JSONObject(responseBody)
+                val guild = json.optJSONObject("guild")
+
+                val serverInfo = DiscordServerInfo(
+                    memberCount = json.optInt("approximate_member_count").takeIf { it > 0 },
+                    onlineCount = json.optInt("approximate_presence_count").takeIf { it > 0 },
+                    serverName = guild?.optString("name"),
+                    serverIcon = guild?.optString("icon"),
+                    serverBanner = guild?.optString("banner"),
+                    serverDescription = guild?.optString("description"),
+                    vanityUrl = guild?.optString("vanity_url_code"),
+                    boostLevel = guild?.optInt("premium_tier")?.takeIf { it > 0 },
+                    boostCount = guild?.optInt("premium_subscription_count")?.takeIf { it > 0 },
+                    guildId = guild?.optString("id")
+                )
+
+                ApiResult.Success(serverInfo)
+            } catch (e: IOException) {
+                Logger.e(Constants.TAG, "Network error: ${e.message}")
+                ApiResult.Error("Network error: ${e.message}", e)
+            } catch (e: Exception) {
+                Logger.e(Constants.TAG, "API error: ${e.message}")
+                ApiResult.Error("API error: ${e.message}", e)
             }
-
-            val responseBody = response.body?.string()
-            if (responseBody.isNullOrEmpty()) {
-                return@withContext ApiResult.Error("Empty response from server")
-            }
-
-            val json = JSONObject(responseBody)
-            val guild = json.optJSONObject("guild")
-            
-            val serverInfo = DiscordServerInfo(
-                memberCount = json.optInt("approximate_member_count").takeIf { it > 0 },
-                onlineCount = json.optInt("approximate_presence_count").takeIf { it > 0 },
-                serverName = guild?.optString("name"),
-                serverIcon = guild?.optString("icon"),
-                serverBanner = guild?.optString("banner"),
-                serverDescription = guild?.optString("description"),
-                vanityUrl = guild?.optString("vanity_url_code"),
-                boostLevel = guild?.optInt("premium_tier")?.takeIf { it > 0 },
-                boostCount = guild?.optInt("premium_subscription_count")?.takeIf { it > 0 },
-                guildId = guild?.optString("id")
-            )
-
-            ApiResult.Success(serverInfo)
-        } catch (e: IOException) {
-            Logger.e(TAG, "Network error: ${e.message}")
-            ApiResult.Error("Network error: ${e.message}", e)
-        } catch (e: Exception) {
-            Logger.e(TAG, "API error: ${e.message}")
-            ApiResult.Error("API error: ${e.message}", e)
         }
-    }
 }

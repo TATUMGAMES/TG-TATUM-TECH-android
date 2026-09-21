@@ -54,7 +54,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -71,11 +70,17 @@ import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.RoundedButton
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
-import com.tatumgames.tatumtech.android.ui.components.common.TitleText
-import com.tatumgames.tatumtech.android.ui.theme.Purple200
-import com.tatumgames.tatumtech.android.ui.components.screens.community.apiclient.DiscordApiClient
 import com.tatumgames.tatumtech.android.ui.components.screens.community.apiclient.ApiResult
+import com.tatumgames.tatumtech.android.ui.components.screens.community.apiclient.DiscordApiClient
 import com.tatumgames.tatumtech.android.ui.components.screens.community.apiclient.DiscordServerInfo
+import com.tatumgames.tatumtech.android.ui.theme.DiscordBlurple
+import com.tatumgames.tatumtech.android.ui.theme.DiscordGold
+import com.tatumgames.tatumtech.android.ui.theme.DiscordGreen
+import com.tatumgames.tatumtech.android.ui.theme.DiscordPink
+import com.tatumgames.tatumtech.android.ui.theme.Grey300
+import com.tatumgames.tatumtech.android.ui.theme.Purple200
+import com.tatumgames.tatumtech.android.ui.theme.ScreenScaffoldLight
+import com.tatumgames.tatumtech.android.ui.theme.White
 
 @Composable
 fun CommunityScreen(
@@ -94,12 +99,12 @@ fun CommunityScreen(
 
     // Fetch Discord server info using the new API client
     LaunchedEffect(Unit) {
-        val result = apiClient.fetchDiscordServerInfo(fallbackInviteCode)
-        when (result) {
+        when (val result = apiClient.fetchDiscordServerInfo(fallbackInviteCode)) {
             is ApiResult.Success -> {
                 serverInfo = result.data
                 isLoading = false
             }
+
             is ApiResult.Error -> {
                 errorMessage = result.message
                 isLoading = false
@@ -117,7 +122,7 @@ fun CommunityScreen(
         bottomBar = {
             BottomNavigationBar(navController = navController)
         },
-        containerColor = Color(0xFFF0F0F0)
+        containerColor = ScreenScaffoldLight
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -154,9 +159,11 @@ fun CommunityScreen(
                         .clip(RoundedCornerShape(4.dp))
                         .border(2.dp, Purple200, RoundedCornerShape(4.dp))
 
-                    val hasValidBanner = !info.serverBanner.isNullOrBlank() && info.serverBanner != "null"
+                    val hasValidBanner =
+                        !info.serverBanner.isNullOrBlank() && info.serverBanner != "null"
                     if (hasValidBanner && !info.guildId.isNullOrBlank()) {
-                        val bannerUrl = "https://cdn.discordapp.com/banners/${info.guildId}/${info.serverBanner}.png"
+                        val bannerUrl =
+                            "https://cdn.discordapp.com/banners/${info.guildId}/${info.serverBanner}.png"
                         Image(
                             painter = rememberAsyncImagePainter(bannerUrl),
                             contentDescription = stringResource(R.string.content_description_server_banner),
@@ -179,14 +186,15 @@ fun CommunityScreen(
                     ) {
                         // Server Icon
                         if (!info.serverIcon.isNullOrBlank() && !info.guildId.isNullOrBlank()) {
-                            val iconUrl = "https://cdn.discordapp.com/icons/${info.guildId}/${info.serverIcon}.png"
+                            val iconUrl =
+                                "https://cdn.discordapp.com/icons/${info.guildId}/${info.serverIcon}.png"
                             Image(
                                 painter = rememberAsyncImagePainter(iconUrl),
                                 contentDescription = stringResource(R.string.content_description_server_icon),
                                 modifier = Modifier
                                     .size(64.dp)
                                     .clip(CircleShape)
-                                    .background(Color.White)
+                                    .background(White)
                             )
                         } else {
                             // Fallback icon
@@ -194,7 +202,7 @@ fun CommunityScreen(
                                 modifier = Modifier
                                     .size(64.dp)
                                     .clip(CircleShape)
-                                    .background(Color.LightGray),
+                                    .background(Grey300),
                                 contentAlignment = Alignment.Center
                             ) {
                                 StandardText(
@@ -215,17 +223,18 @@ fun CommunityScreen(
                             )
 
                             // Invite Link with fallback
-                            val inviteCode = if (info.vanityUrl.isNullOrBlank() || info.vanityUrl == "null") {
-                                fallbackInviteCode
-                            } else {
-                                info.vanityUrl
-                            }
+                            val inviteCode =
+                                if (info.vanityUrl.isNullOrBlank() || info.vanityUrl == "null") {
+                                    fallbackInviteCode
+                                } else {
+                                    info.vanityUrl
+                                }
                             val inviteLabel = stringResource(R.string.discord_invite)
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 StandardText(
                                     text = "discord.gg/$inviteCode",
                                     style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFF5865F2),
+                                    color = DiscordBlurple,
                                     modifier = Modifier.clickable {
                                         val clip = ClipData.newPlainText(
                                             inviteLabel,
@@ -255,7 +264,7 @@ fun CommunityScreen(
                                                 )
                                             )
                                         },
-                                    tint = Color(0xFF5865F2)
+                                    tint = DiscordBlurple
                                 )
                             }
                         }
@@ -270,7 +279,7 @@ fun CommunityScreen(
                             Icon(
                                 Icons.Default.Face,
                                 contentDescription = stringResource(R.string.content_description_members),
-                                tint = Color(0xFF5865F2)
+                                tint = DiscordBlurple
                             )
                             StandardText(
                                 text = "${info.memberCount ?: "-"} Members",
@@ -281,7 +290,7 @@ fun CommunityScreen(
                             Icon(
                                 Icons.Default.ThumbUp,
                                 contentDescription = stringResource(R.string.content_description_online),
-                                tint = Color(0xFF43B581)
+                                tint = DiscordGreen
                             )
                             StandardText(
                                 text = "${info.onlineCount ?: "-"} Online",
@@ -292,7 +301,7 @@ fun CommunityScreen(
                             Icon(
                                 Icons.Default.Star,
                                 contentDescription = stringResource(R.string.content_description_boost_level),
-                                tint = Color(0xFFF47FFF)
+                                tint = DiscordPink
                             )
                             StandardText(
                                 text = "Boost Lv. ${info.boostLevel ?: "-"}",
@@ -332,10 +341,10 @@ fun CommunityScreen(
                                         .clip(CircleShape)
                                         .background(
                                             when (idx % 4) {
-                                                0 -> Color(0xFF5865F2)
-                                                1 -> Color(0xFF43B581)
-                                                2 -> Color(0xFFF47FFF)
-                                                else -> Color(0xFFFAA61A)
+                                                0 -> DiscordBlurple
+                                                1 -> DiscordGreen
+                                                2 -> DiscordPink
+                                                else -> DiscordGold
                                             }
                                         ),
                                     contentAlignment = Alignment.Center
@@ -343,7 +352,7 @@ fun CommunityScreen(
                                     StandardText(
                                         text = "👤",
                                         textAlign = TextAlign.Center,
-                                        color = Color.White
+                                        color = White
                                     )
                                 }
                                 Spacer(modifier = Modifier.width(8.dp))
