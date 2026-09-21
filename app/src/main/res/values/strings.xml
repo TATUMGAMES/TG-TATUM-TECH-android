@@ -52,6 +52,126 @@
     <string name="greeting_generic">Hello!</string>
     <string name="greeting_with_name">Hello, %1$s!</string>
     <string name="recent_notifications">Recent Notifications</string>
+    <string name="cd_notifications_section_expanded">Collapse recent notifications</string>
+    <string name="cd_notifications_section_collapsed">Expand recent notifications</string>
+    <string name="title_partners">Partners</string>
+    <string name="title_career">Career</string>
+    <string name="title_resources">Resources</string>
+    <string name="title_games_resources">Games Resources</string>
+    <string name="games_resources_empty">No game development resources are available right now.</string>
+    <string name="career_loading">Loading career opportunities…</string>
+    <string name="career_no_listings">No open listings right now. Check back soon.</string>
+    <string name="career_apply_now">Apply →</string>
+    <string name="career_search_hint">Search jobs, companies, or technologies</string>
+    <string name="career_job_category">Job Category</string>
+    <string name="career_employment_type">Employment Type</string>
+    <string name="career_clear_filters">Clear filters</string>
+    <string name="career_no_jobs_found">No jobs found</string>
+    <string name="career_no_jobs_found_hint">Try changing your search or filters.</string>
+    <string name="title_ai_llm_challenges">AI &amp; LLMs</string>
+    <string name="title_leet_code_challenges">Leet Code</string>
+    <string name="title_mock_interview_challenges">Mock Interviews</string>
+    <string name="cd_answer_correct">Answer correct</string>
+    <string name="cd_answer_incorrect">Answer incorrect</string>
+    <string name="leetcode_pattern_label">Pattern: %1$s</string>
+    <string name="leetcode_code_block">Code snippet</string>
+    <string name="partner_since_label">Partner Since %1$s</string>
+    <string name="label_website">Website</string>
+    <string name="label_press_release">Press release</string>
+    <string name="partners_loading">Loading partners…</string>
+    <string name="partners_empty">No partners available yet.</string>
+    <string name="partners_no_match">No partners in this category.</string>
+    <string name="partners_featured_badge">Featured Partner</string>
+    <string name="partners_visit_website">Visit Website →</string>
+    <string name="partners_contact">Contact</string>
+    <string name="partners_donate">Donate</string>
+    <string name="partners_call">Call</string>
+    <string name="partners_wishlist">Wishlist</string>
+    <string name="partners_wishlist_named">Wishlist %1$s</string>
+    <string name="partners_view_product">View %1$s</string>
+    <string name="partners_view_product_generic">View Product</string>
+    <string name="partners_product_label">Product: %1$s</string>
+    <string name="partners_logo_cd">%1$s logo</string>
+    <string name="partners_contact_picker_title">Contact %1$s</string>
+    <string name="partners_social_x">X</string>
+    <string name="partners_social_linkedin">LinkedIn</string>
+    <string name="partners_social_tiktok">TikTok</string>
+    <string name="partners_social_instagram">Instagram</string>
+    <string name="partners_social_meta">Facebook</string>
+    <string name="partners_social_discord">Discord</string>
+    <string name="partners_social_youtube">YouTube</string>
+    <string name="partners_open_failed">Unable to open link</string>
+    <string name="partners_email_failed">No email app available</string>
+    <string name="partners_call_failed">Unable to start phone dialer</string>
+    <string name="menu">Menu</string>
+    <string name="profile">Profile</string>
+    <string name="demographic_info">Demographic Info</string>
+    <string name="cancel">Cancel</string>
+    <string name="about_tatum_games">About Tatum Games</string>
+    <string name="faq">FAQ</string>
+
+    <!-- demographic info -->
+    <string name="demographic_section_title">Demographic Information</string>
+    <string name="demographic_section_description">The information below is optional and helps us improve our events, understand attendee engagement, and prepare aggregate reporting. Providing this information is voluntary and will not affect your ability to attend or participate.</string>
+    <string name="demographic_dialog_title">Before You Begin</string>
+    <string name="demographic_dialog_description">We collect optional demographic information to help improve future events, better understand attendee participation, and prepare aggregate reports. Individual responses are not publicly displayed.\n\nTo continue, you must confirm that you are at least 13 years old. If you are under 18, you should have permission from a parent or legal guardian before providing information.</string>
+    <string name="demographic_dialog_confirm">I Am 13 Or Older</string>
+    <string name="demographic_consent_age">I confirm that I am at least 13 years old.</string>
+    <string name="demographic_consent_parent">If I am under 18 years old, I confirm that I have permission from a parent or legal guardian to provide this information.</string>
+    <string name="demographic_consent_data_usage">I understand that the information I provide may be used for event analytics, attendee research, surveys, and aggregate reporting as described in the Privacy Policy.</string>
+    <string name="demographic_label_age_range">Age Range</string>
+    <string name="demographic_label_sex">Sex</string>
+    <string name="demographic_label_occupation">Occupation</string>
+    <string name="demographic_label_salary_range">Salary Range</string>
+    <string name="demographic_label_school">School or School District</string>
+    <string name="demographic_data_usage_title">Data Usage Acknowledgement</string>
+    <string name="demographic_save_button">Save Demographic Information</string>
+    <string name="demographic_save_success">Thank you. Your information has been saved.</string>
+    <string-array name="demographic_age_ranges">
+        <item>13-17</item>
+        <item>18-24</item>
+        <item>25-34</item>
+        <item>35-44</item>
+        <item>45-54</item>
+        <item>55-64</item>
+        <item>65+</item>
+    </string-array>
+    <string-array name="demographic_sex_options">
+        <item>Male</item>
+        <item>Female</item>
+        <item>Prefer Not To Say</item>
+    </string-array>
+    <string-array name="demographic_salary_ranges">
+        <item>Under $25,000</item>
+        <item>$25,000 - $49,999</item>
+        <item>$50,000 - $74,999</item>
+        <item>$75,000 - $99,999</item>
+        <item>$100,000 - $149,999</item>
+        <item>$150,000 - $199,999</item>
+        <item>$200,000+</item>
+    </string-array>
+
+    <!-- About Screen -->
+    <string name="about_tatum_games_description">Tatum Games is a Google-backed startup on a mission to innovate the mobile gaming industry while creating pathways for underrepresented communities in tech. Learn more at https://www.tatumgames.com</string>
+    <string name="about_mission_title">Our Mission</string>
+    <string name="about_mission_description">We create opportunities for underrepresented communities in tech and gaming by providing free computers, training, and mentorship to build the next generation of game developers.</string>
+    <string name="about_impact_title">Our Impact</string>
+    <string name="about_impact_description" formatted="false">With only 2% of game developers being Black and 3% Latinx, we\'re working to change the future by empowering diverse voices to create, lead, and innovate in gaming.</string>
+    <string name="about_tatum_tech_title">What is Tatum Tech?</string>
+    <string name="about_tatum_tech_description">Tatum Tech is our bi-annual community event that bridges the digital divide in South LA. We give away 100+ computers and offer hands-on tech workshops led by professionals from top game studios. Learn more at https://tatumgames.com</string>
+    <string name="about_mikros_title">Powered by MIKROS</string>
+    <string name="about_mikros_description">Our flagship product, MIKROS, helps game developers acquire users, grow revenue, and gain insights through advanced analytics powered by AI and patented technology. Explore at https://wwww.developer.tatumgames.com</string>
+    <string name="about_community_title">Join the MIKROS Mafia</string>
+    <string name="about_community_description">Connect with game developers, influencers, and industry insiders. Get support, exclusive perks, and early access to opportunities. Join us on Discord: https://discord.com/invite/6FzqSUDRXQ</string>
+
+    <!-- FAQ -->
+    <string name="faq_general_questions">General Questions</string>
+    <string name="faq_what_is_tatum_tech">What is Tatum Tech?</string>
+    <string name="faq_what_is_tatum_tech_answer">Tatum Tech is a series of free events that introduce underrepresented communities to careers in tech and game development. We host hands-on workshops, coding challenges, and networking with industry professionals.</string>
+    <string name="faq_who_can_attend">Who can attend Tatum Tech events?</string>
+    <string name="faq_who_can_attend_answer">Anyone can attend! We especially welcome participants from underrepresented communities, including women, people of color, and individuals from low-income backgrounds.</string>
+    <string name="faq_how_to_register">How do I register for events?</string>
+    <string name="faq_how_to_register_answer">You can register through this app by visiting the Upcoming Events section. Just tap "Register" on any available event. Registration is completely free.</string>
     <string name="upcoming_events">Upcoming Events</string>
     <string name="coding">Coding</string>
     <string name="my_timeline">My Timeline</string>
@@ -64,12 +184,73 @@
     <string name="stats">Stats</string>
     <string name="attendees">Attendees</string>
     <string name="events">Events</string>
+    <string name="games">Games</string>
     <string name="challenges">Challenges</string>
     <string name="qr_scans">QR Scans</string>
+    <string name="apply_for_jobs">Apply for Jobs</string>
+    <string name="discover">Discover</string>
+
+    <!-- games / discover -->
+    <string name="discover_games">Discover Games</string>
+    <string name="something_went_wrong">Something went wrong.</string>
+    <string name="games_tab_featured">Featured</string>
+    <string name="games_tab_games">Games</string>
+    <string name="games_featured_empty">No featured games right now. Check back soon.</string>
+    <string name="games_sections_empty">No games match your filters.</string>
+    <string name="games_section_just_too_fun">Just Too Fun</string>
+    <string name="games_section_tatum_favorites">Tatum Games Favorites</string>
+    <string name="games_section_apps_in_development">Apps in Development</string>
+    <string name="games_section_casual_gamer">Casual Gamer</string>
+    <string name="games_section_core_gamer">Core Gamer</string>
+    <string name="play_now">Play now</string>
+    <string name="games_view_details">View details</string>
+    <string name="games_status_featured">Featured</string>
+    <string name="games_status_available">Available</string>
+    <string name="games_status_coming_soon">Coming Soon</string>
+    <string name="games_platforms_ios_android">iOS / Android</string>
+    <string name="games_logo_cd">%1$s logo</string>
+    <string name="games_showcase_card_cd">%1$s, %2$s, %3$s</string>
+    <string name="games_screenshot_cd">%1$s screenshot</string>
+    <string name="games_video_cd">%1$s video</string>
+    <string name="games_download_android">Download for Android</string>
+    <string name="games_download_ios">Download for iOS</string>
+    <string name="games_visit_website">Visit Website</string>
+    <string name="games_join_discord">Join Discord</string>
+    <string name="games_tags">Tags</string>
+    <string name="games_videos">Videos</string>
+    <string name="games_screenshots">Screenshots</string>
+    <string name="games_get_the_game">Get the game</string>
+    <string name="games_details_title">Game Details</string>
+    <string name="games_about">About</string>
+    <string name="games_not_found">Game not found.</string>
+    <string name="games_coming_soon_notice">This game is not available yet. Check back for the iOS and Android release.</string>
+    <string name="games_screenshot_viewer_close_cd">Close screenshot viewer</string>
+    <string name="mikros_cta_title">Want your game featured here?</string>
+    <string name="mikros_cta_subtitle">Get your game discovered through MIKROS</string>
+    <string name="mikros_cta_body">MIKROS gives indie developers and small studios a pathway to marketing, community, and visibility across the Tatum Games ecosystem.</string>
+    <string name="mikros_cta_learn_more">Learn More</string>
+    <string name="mikros_dialog_title">Get Your Game Discovered</string>
+    <string name="mikros_dialog_body">MIKROS is the ecosystem for developers and studios looking to connect their games with Tatum Games\' marketing, community, and technology network.\n\nWhat participating developers may access:\n\n• Influencer activation — opportunities to reach audiences through our partnered influencer network (3.2M+).\n\n• Content &amp; social promotion — writing and social-media marketing capabilities to help games build awareness.\n\n• Community — exposure through the MIKROS / Tatum Games community, including a 250K+ Discord network.\n\n• Tatum Tech — eligible games can be considered for inclusion in the Discover Games showcase.\n\n• Events — eligible participating developers may have opportunities to showcase games through Tatum Games events and programs.</string>
+    <string name="mikros_dialog_open_site">Learn More About MIKROS</string>
+    <string name="mikros_explainer_video">Explainer Video</string>
+    <string name="close">Close</string>
+    <string name="search_games">Search games</string>
+    <string name="genre">Genre</string>
+    <string name="gameplay">Gameplay</string>
+    <string name="filter_all">All</string>
+    <string name="gameplay_casual">Casual</string>
+    <string name="gameplay_non_casual">Non-Casual</string>
 
     <!-- upcoming events -->
     <string name="register">Register</string>
     <string name="registration_closed">Registration Closed</string>
+    <string name="virtual_speakers">Virtual Speakers</string>
+    <string name="virtual_speakers_join">Join</string>
+    <string name="virtual_speakers_empty">No virtual speakers for this event</string>
+    <string name="virtual_speakers_timezone">Time zone: %1$s</string>
+    <string name="open_url_failed">Unable to open link</string>
+    <string name="cd_speaker_photo">Photo of %1$s</string>
+    <string name="cd_speaker_photo_placeholder">Speaker photo placeholder</string>
     <string name="see_all_attendees">See All Attendees</string>
     <string name="add_friend">Add Friend</string>
     <string name="remove_friend">Remove Friend</string>
@@ -81,6 +262,56 @@
     <string name="timeline_unregistered">Unregistered from %1$s</string>
     <string name="friend_request_sent">Friend request sent to %1$s</string>
 
+    <!-- digital networking / contact cards -->
+    <string name="networking_share_contact_info">Share your contact info with friends</string>
+    <string name="networking_create">Create</string>
+    <string name="networking_edit">Edit</string>
+    <string name="networking_share">Share</string>
+    <string name="networking_scan">Scan</string>
+    <string name="contact_card_editor_title">Tatum Tech Card</string>
+    <string name="contact_card_save">Save</string>
+    <string name="contact_card_section_profile">Profile</string>
+    <string name="contact_card_section_contact">Contact</string>
+    <string name="contact_card_section_links">Links</string>
+    <string name="contact_card_name">Name</string>
+    <string name="contact_card_job_title">Job title</string>
+    <string name="contact_card_company">Company</string>
+    <string name="contact_card_description">Description</string>
+    <string name="contact_card_email">Email</string>
+    <string name="contact_card_phone">Phone Number</string>
+    <string name="contact_card_alternate_email">Alternate email</string>
+    <string name="contact_card_website">Website</string>
+    <string name="contact_card_linkedin">LinkedIn</string>
+    <string name="contact_card_twitter">Twitter / X</string>
+    <string name="contact_card_custom_link">Custom link</string>
+    <string name="contact_card_calendly">Calendly</string>
+    <string name="contact_card_photo">Profile photo</string>
+    <string name="contact_card_take_photo">Take photo</string>
+    <string name="contact_card_choose_photo">Choose photo</string>
+    <string name="contact_card_name_required">Name is required</string>
+    <string name="contact_card_email_required">Email is required</string>
+    <string name="contact_card_email_invalid">Enter a valid email address</string>
+    <string name="contact_card_fix_invalid">Please fix the highlighted fields</string>
+    <string name="contact_card_saved">Contact card saved</string>
+    <string name="contact_card_my_qr_title">My Tatum Tech Card</string>
+    <string name="contact_card_scan_instruction">Have someone scan this code to save your contact information.</string>
+    <string name="contact_card_qr_error">Unable to generate QR code</string>
+    <string name="contact_found_title">Connecting With New Friend</string>
+    <string name="contact_save">Save Contact</string>
+    <string name="contact_cancel">Cancel</string>
+    <string name="contact_saved">Saved connection with %1$s</string>
+    <string name="contact_already_saved">Updated connection with %1$s</string>
+    <string name="contact_cannot_save_own">You cannot save your own card</string>
+    <string name="contact_invalid_qr">This QR code is not a valid Tatum Tech contact card</string>
+    <string name="contact_android_open_failed">Unable to open Android Contacts</string>
+    <string name="contact_unsupported_qr">This contact card QR version is not supported</string>
+    <string name="timeline_contact_card_created">Created a Tatum Tech contact card</string>
+    <string name="timeline_contact_card_shared">Shared Tatum Tech contact card</string>
+    <string name="timeline_connection_made">Connected with %1$s</string>
+    <string name="camera_unavailable">Camera is unavailable on this device</string>
+    <string name="camera_permission_for_photo">Camera permission is needed to take a profile photo</string>
+    <string name="photo_capture_cancelled">Photo capture cancelled</string>
+
     <!-- event names -->
     <string name="anonymous_name_fallback">Anonymous</string>
     <string name="event_name_fall_2025">Tatum Tech Fall 2025</string>
@@ -88,6 +319,8 @@
     <string name="event_name_fall_2026">Tatum Tech Fall 2026</string>
     <string name="event_name_spring_2027">Tatum Tech Spring 2027</string>
     <string name="event_name_fall_2027">Tatum Tech Fall 2027</string>
+    <string name="event_name_spring_2028">Tatum Tech Spring 2028</string>
+    <string name="event_name_fall_2028">Tatum Tech Fall 2028</string>
     <!-- event host -->
     <string name="event_host_tatum_games">Tatum Games</string>
     <!-- event location -->
@@ -99,11 +332,26 @@
     <string name="challenge_complete">Challenge Complete!</string>
     <string name="question_number">Q%1$d: %2$s</string>
     <string name="loading">Loading…</string>
+    <string name="select_language">Select a language</string>
+    <string name="select_level">Select a level</string>
+    <string name="daily_limit_reached">Daily Limit Reached</string>
+    <string name="daily_limit_message">You\'ve answered 30 questions today for this language and difficulty. Come back tomorrow for more challenges!</string>
+    <string name="progress">Progress</string>
+    <string name="submit">Submit</string>
+    <string name="next">Next</string>
+    <string name="challenge_results">Challenge Results</string>
+    <string name="score_format">Score: %1$d/%2$d</string>
+    <string name="percentage_format">(%1$d%%)</string>
+    <string name="correct">✓ Correct</string>
+    <string name="incorrect">✗ Incorrect</string>
+    <string name="do_another_challenge">Do Another Challenge</string>
+    <string name="try_again_tomorrow">Try Again Tomorrow</string>
+    <string name="app_version">Version %1$s</string>
     <string name="to_be_determined">TBD</string>
 
     <!-- donation -->
     <string name="donate_title">Donate</string>
-    <string name="donation_mission_text">
+    <string name="donation_mission_text" formatted="false">
         Our mission is to increase representation of minorities and women
         in the video game industry. With only 2% of game devs being Black
         and 3% Latinx, your donation helps us rewrite the future ensuring
@@ -142,12 +390,24 @@
 
     <!-- stats -->
     <string name="your_progress">Your Progress</string>
+    <string name="no_statistics_loaded">No statistics loaded yet.</string>
     <string name="percent_correct">Percent Correct</string>
     <string name="current_streak_days">Current Streak: %1$d days</string>
     <string name="achievements_unlocked">Achievements Unlocked: %1$d</string>
-    <string name="category_breakdown_coming_soon">Category Breakdown (Coming Soon)</string>
+    <string name="category_breakdown">Category Breakdown</string>
+    <string name="category_breakdown_empty">Complete a challenge to see your category breakdown</string>
+    <string name="coding_challenge_stats">Coding Challenge Stats</string>
+    <string name="stats_questions">Questions</string>
+    <string name="stats_correct">Correct</string>
+    <string name="view_all">View All</string>
     <string name="achievements">Achievements</string>
-    <string name="bar_chart_placeholder">[Bar Chart Placeholder]</string>
+    <string name="timeline_no_activity_period">No activity during this period</string>
+    <string name="visit">Visit →</string>
+    <string name="loading_resources">Loading resources…</string>
+    <string name="resources_filter_label">Technology</string>
+    <string name="resources_none_available">No learning resources are available right now.</string>
+    <string name="resources_category_empty">Come back later. We are currently looking for the best ways to help you learn. We will update you with more vetted resources soon.</string>
+    <string name="loading_achievements">Loading achievements…</string>
 
     <!-- notifications -->
     <!-- titles -->
@@ -155,7 +415,7 @@
     <string name="event_registration">Event Registration</string>
     <!-- descriptions -->
     <string name="new_coding_challenge_available">New coding challenge available</string>
-    <string name="event_registration_confirmed">Event registration confirmed</string>+
+    <string name="event_registration_confirmed">Event registration confirmed</string>
 
     <!-- achievements -->
     <!-- event registration achievements -->
@@ -206,6 +466,15 @@
     <string name="achievement_desc_qr_master">Scanned 20 QR codes.</string>
     <string name="achievement_title_qr_legend">QR Legend</string>
     <string name="achievement_desc_qr_legend">Scanned 50 QR codes.</string>
+    <!-- networking connection achievements (migrated from friend semantics) -->
+    <string name="achievement_title_first_connection">First Connection</string>
+    <string name="achievement_desc_first_connection">Saved your first Tatum Tech contact card connection.</string>
+    <string name="achievement_title_network_builder">Network Builder</string>
+    <string name="achievement_desc_network_builder">Made 3 unique networking connections.</string>
+    <string name="achievement_title_connector">Connector</string>
+    <string name="achievement_desc_connector">Made 5 unique networking connections.</string>
+    <string name="achievement_title_community_linker">Community Linker</string>
+    <string name="achievement_desc_community_linker">Made 10 unique networking connections.</string>
     <!-- donation achievement -->
     <string name="achievement_title_heart_giver">Heart Giver</string>
     <string name="achievement_desc_heart_giver">Donated to a Tatum Tech cause.</string>

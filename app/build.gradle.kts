@@ -3,7 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("org.jetbrains.kotlin.kapt")
     id("com.google.gms.google-services")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.24"
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -39,10 +40,6 @@ android {
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion =
-            "1.5.14" //1.5.14 - for kotlin (1.9.24) // Required for Compose 1.6.6
-    }
     lint {
         disable += "CredentialProviderPlayServicesAuthMissing"
     }
@@ -57,11 +54,13 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.10.1")
     implementation("androidx.compose.ui:ui:1.6.6")
     implementation("androidx.compose.foundation:foundation:1.6.6")
+    implementation("com.google.accompanist:accompanist-pager:0.34.0")
     implementation("androidx.compose.ui:ui-tooling-preview:1.6.6")
     implementation(libs.androidx.material3.android)
     implementation(libs.androidx.constraintlayout.compose)
     debugImplementation("androidx.compose.ui:ui-tooling:1.6.6")
     implementation(libs.androidx.navigation.compose)
+    implementation("androidx.compose.foundation:foundation-layout:1.6.6")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
@@ -87,10 +86,17 @@ dependencies {
     implementation("androidx.camera:camera-extensions:1.3.0")
     implementation("io.coil-kt:coil-compose:2.4.0")
 
-    // Room dependencies
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
+    // QR encode/decode for digital contact cards
+    implementation("com.google.zxing:core:3.5.3")
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
+
+    // Room dependencies (2.8.x required for Kotlin 2.2+ metadata)
+    implementation(libs.androidx.room.runtime)
+    kapt(libs.androidx.room.compiler)
+    kapt("org.jetbrains.kotlin:kotlin-metadata-jvm:${libs.versions.kotlin.get()}")
+
+    // JSON parsing
+    implementation("com.google.code.gson:gson:2.10.1")
 }
 
 configurations.all {

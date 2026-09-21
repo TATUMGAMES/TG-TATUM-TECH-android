@@ -33,4 +33,10 @@ class TimelineDatabaseRepository(
     override suspend fun getTimelineEventsFrom(fromTimestamp: Long): List<TimelineEntity> {
         return timelineDao.getTimelineEventsFrom(fromTimestamp)
     }
+
+    suspend fun getByTypeAndRelatedId(type: String, relatedId: Long): TimelineEntity? =
+        timelineDao.getByTypeAndRelatedId(type, relatedId)
+
+    fun observeTimelineEventsFrom(fromTimestamp: Long) =
+        timelineDao.observeTimelineEventsFrom(fromTimestamp)
 }

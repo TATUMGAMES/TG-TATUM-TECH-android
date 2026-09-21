@@ -20,18 +20,27 @@ object Constants {
     // Terms and privacy policy URLs
     const val URL_TERMS = "https://developer.tatumgames.com/terms"
     const val URL_PRIVACY_POLICY = "https://developer.tatumgames.com/privacy"
+
+    // MIKROS / Discover
+    const val URL_MIKROS_DEVELOPER = "https://developer.tatumgames.com/"
+    const val URL_MIKROS_EXPLAINER_VIDEO = "https://youtu.be/pz2iMZ-mjFM"
+
     // Donation & Community URLs
     // used to retrieve server information from Discord API
-    const val DISCORD_API_URL = "https://discord.com/api/v9/invites/6FzqSUDRXQ?with_counts=true&with_expiration=true"
+    const val DISCORD_API_URL =
+        "https://discord.com/api/v9/invites/6FzqSUDRXQ?with_counts=true&with_expiration=true"
+
     // used to retrieve vanity server information from Discord API
     const val DISCORD_BASE_URL = "https://discord.gg"
+
     // used to retrieve banners and icons from Discord API.
     // Just append DISCORD_BANNER_PATH and DISCORD_ICON_PATH
     const val DISCORD_APP_BASE_URL = "https://cdn.discordapp.com"
     const val DISCORD_BANNER_PATH = "/banners/1066030704091447336/"
     const val DISCORD_ICON_PATH = "/icons/1066030704091447336/"
     const val URI_DISCORD = "discord://invite/6FzqSUDRXQ"
-    const val URL_DISCORD_PAYROLE = "https://payrole.io/app/store?id=65e729cff968f40012f47835&nojoin"
+    const val URL_DISCORD_PAYROLE =
+        "https://payrole.io/app/store?id=65e729cff968f40012f47835&nojoin"
     const val URL_DISCORD_INVITE = "https://discord.com/invite/6FzqSUDRXQ"
     const val URL_DISCORD_LOGIN = "https://discord.com/invite/6FzqSUDRXQ/login"
     const val URL_STRIPE_CUSTOM = "https://buy.stripe.com/7sI3cH8m6bmd5ck4gj"

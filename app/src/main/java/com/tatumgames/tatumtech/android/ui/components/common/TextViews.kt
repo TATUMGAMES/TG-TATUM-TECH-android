@@ -33,6 +33,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,13 +48,17 @@ fun StandardText(
     text: String,
     style: TextStyle = MaterialTheme.typography.bodyMedium,
     textAlign: TextAlign = TextAlign.Start,
-    color: Color = colorResource(R.color.black)
+    color: Color = colorResource(R.color.black),
+    maxLines: Int = Int.MAX_VALUE,
+    overflow: TextOverflow = TextOverflow.Clip
 ) {
     Text(
         text = text,
         style = style,
         textAlign = textAlign,
         color = color,
+        maxLines = maxLines,
+        overflow = overflow,
         modifier = modifier
     )
 }

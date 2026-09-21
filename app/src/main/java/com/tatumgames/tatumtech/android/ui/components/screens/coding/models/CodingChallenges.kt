@@ -26,5 +26,7 @@ data class CodingChallenges(
     val options: List<String>,
     val correctAnswer: String,
     val explanation: String,
-    val platform: String
+    val platform: String,
+    val pattern: String = "",
+    val codeSnippet: String = ""
 )

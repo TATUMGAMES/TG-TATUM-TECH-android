@@ -22,14 +22,35 @@ import androidx.room.Query
 import com.tatumgames.tatumtech.android.database.constants.DbConstants.TABLE_EVENT_REGISTRATION
 import com.tatumgames.tatumtech.android.database.entity.EventRegistrationEntity
 
+/**
+ * Data Access Object for EventRegistrationEntity operations.
+ * 
+ * Provides methods to interact with the event_registration table in the database.
+ */
 @Dao
 interface EventRegistrationDao {
+
+    /**
+     * Get all event registrations from the database.
+     * 
+     * @return List of all event registration entities.
+     */
     @Query("SELECT * FROM $TABLE_EVENT_REGISTRATION")
     suspend fun getAll(): List<EventRegistrationEntity>
 
+    /**
+     * Insert an event registration or replace if exists.
+     * 
+     * @param eventRegistrationEntity The event registration entity to insert.
+     */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(eventRegistrationEntity: EventRegistrationEntity)
 
+    /**
+     * Delete an event registration from the database.
+     * 
+     * @param eventRegistrationEntity The event registration entity to delete.
+     */
     @Delete
     suspend fun delete(eventRegistrationEntity: EventRegistrationEntity)
 } 

@@ -18,144 +18,417 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.tatumgames.tatumtech.android.database.AppDatabase
-import com.tatumgames.tatumtech.android.database.entity.CodingChallengeEntity
-import com.tatumgames.tatumtech.android.database.repository.CodingChallengeDatabaseRepository
+import com.tatumgames.tatumtech.android.database.QuizProgressEntityHelper
+import com.tatumgames.tatumtech.android.database.entity.QuizAnswerEventEntity
+import com.tatumgames.tatumtech.android.database.entity.QuizProgressEntity
+import com.tatumgames.tatumtech.android.database.repository.CodingQuestionDatabaseRepository
+import com.tatumgames.tatumtech.android.database.repository.QuizAnswerEventDatabaseRepository
+import com.tatumgames.tatumtech.android.database.repository.QuizProgressDatabaseRepository
+import com.tatumgames.tatumtech.android.database.repository.TimelineDatabaseRepository
+import com.tatumgames.tatumtech.android.ui.components.screens.coding.ChallengeCompletionTracker
+import com.tatumgames.tatumtech.android.ui.components.screens.coding.QuizSessionBuilder
+import com.tatumgames.tatumtech.android.ui.components.screens.coding.models.AnswerFeedback
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.models.CodingChallenges
+import com.tatumgames.tatumtech.android.utils.CodingChallengesImporter
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.util.Calendar
 import java.util.TimeZone
 
+/**
+ * ViewModel for coding challenge quizzes: session state, daily limits per
+ * `(quizRoute + language + level)` bucket, and persisted progress.
+ */
 class CodingChallengesViewModel(
     application: Application
 ) : AndroidViewModel(application) {
-    private val database = AppDatabase.Companion.getInstance(application)
-    private val answerRepository = CodingChallengeDatabaseRepository(database.codingChallengeDao())
 
-    private val _questions = MutableStateFlow<List<CodingChallenges>>(emptyList())
-    val questions: StateFlow<List<CodingChallenges>> = _questions
+    private val database = AppDatabase.getInstance(application)
+    private val questionRepository = CodingQuestionDatabaseRepository(database.codingQuestionDao())
+    private val quizProgressRepository = QuizProgressDatabaseRepository(database.quizProgressDao())
+    private val quizAnswerEventRepository =
+        QuizAnswerEventDatabaseRepository(database.quizAnswerEventDao())
+    private val timelineRepository = TimelineDatabaseRepository(database.timelineDao())
 
-    private val _currentIndex = MutableStateFlow(0)
-    val currentIndex: StateFlow<Int> = _currentIndex
+    private val jsonFormat = Json { ignoreUnknownKeys = true }
 
-    private val _answers = MutableStateFlow<MutableMap<String, String>>(mutableMapOf())
-    val answers: StateFlow<Map<String, String>> = _answers
+    private val _questionList = MutableStateFlow<List<CodingChallenges>>(emptyList())
+    val questions: StateFlow<List<CodingChallenges>> = _questionList.asStateFlow()
+
+    private val _currentQuestionIndex = MutableStateFlow(0)
+    val currentIndex: StateFlow<Int> = _currentQuestionIndex.asStateFlow()
+
+    /** Always holds an immutable map snapshot; updates replace the whole map (no shared [MutableMap]). */
+    private val _answersByQuestionId = MutableStateFlow<Map<String, String>>(emptyMap())
+    val answers: StateFlow<Map<String, String>> = _answersByQuestionId.asStateFlow()
 
     private val _showSummary = MutableStateFlow(false)
-    val showSummary: StateFlow<Boolean> = _showSummary
+    val showSummary: StateFlow<Boolean> = _showSummary.asStateFlow()
 
     private val _currentStreak = MutableStateFlow(0)
     val currentStreak: StateFlow<Int> = _currentStreak.asStateFlow()
 
-    fun setQuestions(list: List<CodingChallenges>) {
-        _questions.value = list
-        _currentIndex.value = 0
-        _answers.value = mutableMapOf()
-        _showSummary.value = false
+    private val _todayAnswerCount = MutableStateFlow(0)
+    val todayAnswerCount: StateFlow<Int> = _todayAnswerCount.asStateFlow()
+
+    private val _correctAnswers = MutableStateFlow(0)
+    val correctAnswers: StateFlow<Int> = _correctAnswers.asStateFlow()
+
+    private val _showResults = MutableStateFlow(false)
+    val showResults: StateFlow<Boolean> = _showResults.asStateFlow()
+
+    private val _questionResults = MutableStateFlow<Map<String, Boolean>>(emptyMap())
+    val questionResults: StateFlow<Map<String, Boolean>> = _questionResults.asStateFlow()
+
+    private val _selectedAnswer = MutableStateFlow("")
+    val selectedAnswer: StateFlow<String> = _selectedAnswer.asStateFlow()
+
+    private val _answerFeedback = MutableStateFlow(AnswerFeedback.NONE)
+    val answerFeedback: StateFlow<AnswerFeedback> = _answerFeedback.asStateFlow()
+
+    private val _quizLoading = MutableStateFlow(false)
+    val quizLoading: StateFlow<Boolean> = _quizLoading.asStateFlow()
+
+    private val _dailyLimitReachedForBucket = MutableStateFlow(false)
+    val dailyLimitReachedForBucket: StateFlow<Boolean> = _dailyLimitReachedForBucket.asStateFlow()
+
+    private var activeQuizRoute: String = ""
+    private var activeLanguageNormalized: String = ""
+    private var activeLevel: String = ""
+
+    private var submitAnswerJob: Job? = null
+
+    /**
+     * Updates the current answer selection for the active question (UI binding).
+     *
+     * @param value Selected option text, or empty if none.
+     */
+    fun onSelectedAnswerChange(value: String) {
+        _selectedAnswer.value = value
     }
 
-    fun answerCurrentQuestion(answer: String) {
-        val q = _questions.value.getOrNull(_currentIndex.value) ?: return
-        _answers.value[q.id] = answer
+    /**
+     * Loads or resumes a quiz for the given bucket and refreshes today’s answer count from the DB.
+     *
+     * Side effects: reads/writes [QuizProgressEntity], updates question list, index, results flags.
+     *
+     * @param quizRoute Navigation route key for the quiz domain (isolates Coding vs AI/LLM vs LeetCode).
+     * @param language Language chip value; use empty string when the quiz has no language.
+     * @param level Difficulty level (Beginner / Intermediate / Advanced).
+     * @param sessionSize Number of questions per session (default 10).
+     */
+    fun loadQuiz(
+        quizRoute: String,
+        language: String?,
+        level: String,
+        sessionSize: Int = SESSION_QUESTION_COUNT
+    ) {
         viewModelScope.launch {
-            answerRepository.insert(
-                CodingChallengeEntity(
-                    questionId = q.id,
-                    answerChosen = answer,
-                    timestamp = System.currentTimeMillis()
-                )
+            _quizLoading.value = true
+            try {
+                activeQuizRoute = quizRoute
+                activeLanguageNormalized = QuizProgressEntityHelper.normalizedLanguage(language)
+                activeLevel = level
+                _showResults.value = false
+                _selectedAnswer.value = ""
+                _answerFeedback.value = AnswerFeedback.NONE
+
+                val progressId = QuizProgressEntityHelper.makeProgressId(quizRoute, language, level)
+                val startOfDay = getStartOfTodayMillis()
+                refreshTodayCount(quizRoute, activeLanguageNormalized, level, startOfDay)
+
+                val existing = quizProgressRepository.getById(progressId)
+
+                when {
+                    existing != null && existing.isCompleted -> {
+                        applyCompletedProgress(existing)
+                    }
+
+                    existing != null && !existing.isCompleted -> {
+                        applyInProgressRestore(existing)
+                    }
+
+                    _todayAnswerCount.value >= DAILY_ANSWER_LIMIT -> {
+                        _dailyLimitReachedForBucket.value = true
+                        _questionList.value = emptyList()
+                    }
+
+                    else -> {
+                        startNewRandomSession(
+                            quizRoute = quizRoute,
+                            languageNormalized = activeLanguageNormalized,
+                            level = level,
+                            sessionSize = sessionSize,
+                            progressId = progressId
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                CodingChallengesImporter.syncCodingQuestionsFromAssets(getApplication())
+                tryReloadAfterImport(quizRoute, language, level, sessionSize)
+            } finally {
+                _quizLoading.value = false
+            }
+        }
+    }
+
+    /**
+     * Re-runs the same load path as [loadQuiz] after asset import when the initial load threw
+     * (typically empty DB). Updates active bucket fields and session state.
+     */
+    private suspend fun tryReloadAfterImport(
+        quizRoute: String,
+        language: String?,
+        level: String,
+        sessionSize: Int
+    ) {
+        val progressId = QuizProgressEntityHelper.makeProgressId(quizRoute, language, level)
+        val startOfDay = getStartOfTodayMillis()
+        activeQuizRoute = quizRoute
+        activeLanguageNormalized = QuizProgressEntityHelper.normalizedLanguage(language)
+        activeLevel = level
+        refreshTodayCount(quizRoute, activeLanguageNormalized, level, startOfDay)
+        val existing = quizProgressRepository.getById(progressId)
+        when {
+            existing != null && existing.isCompleted -> applyCompletedProgress(existing)
+            existing != null && !existing.isCompleted -> applyInProgressRestore(existing)
+            _todayAnswerCount.value >= DAILY_ANSWER_LIMIT -> {
+                _dailyLimitReachedForBucket.value = true
+                _questionList.value = emptyList()
+            }
+
+            else -> startNewRandomSession(
+                quizRoute, activeLanguageNormalized, level, sessionSize, progressId
             )
         }
     }
 
-    fun goToNextQuestion() {
-        if (_currentIndex.value < _questions.value.size - 1) {
-            _currentIndex.value++
-        } else {
-            _showSummary.value = true
+    private suspend fun applyCompletedProgress(existing: QuizProgressEntity) {
+        val ids = decodeQuestionIdsJson(existing.questionIdsJson)
+        if (ids.isEmpty()) {
+            _questionList.value = emptyList()
+            return
         }
+        val entities = questionRepository.getQuestionsByQuestionIds(ids)
+        val ordered = ids.mapNotNull { id -> entities.find { it.questionId == id } }
+        val models = CodingChallengesImporter.convertEntitiesToModels(ordered)
+        _questionList.value = models
+        _currentQuestionIndex.value = 0
+        val answersMap = decodeAnswersJson(existing.answersJson).toMap()
+        _answersByQuestionId.value = answersMap
+        recalcSessionScore(models, answersMap)
+        _showResults.value = true
+        _dailyLimitReachedForBucket.value = false
+        // Restore path: ensure timeline has the completion without creating duplicates.
+        ChallengeCompletionTracker.recordCompletionIfAbsent(
+            timelineRepository = timelineRepository,
+            progressId = existing.id,
+            questionIdsJson = existing.questionIdsJson,
+            language = existing.language,
+            quizRoute = existing.quizRoute,
+            level = existing.level,
+            timestamp = existing.lastUpdated
+        )
     }
 
-    fun goToPreviousQuestion() {
-        if (_currentIndex.value > 0) {
-            _currentIndex.value--
+    private suspend fun applyInProgressRestore(existing: QuizProgressEntity) {
+        val ids = decodeQuestionIdsJson(existing.questionIdsJson)
+        if (ids.isEmpty()) {
+            _questionList.value = emptyList()
+            return
         }
+        val entities = questionRepository.getQuestionsByQuestionIds(ids)
+        val ordered = ids.mapNotNull { id -> entities.find { it.questionId == id } }
+        val models = CodingChallengesImporter.convertEntitiesToModels(ordered)
+        _questionList.value = models
+        _currentQuestionIndex.value =
+            existing.currentIndex.coerceIn(0, (models.size - 1).coerceAtLeast(0))
+        val answersMap = decodeAnswersJson(existing.answersJson).toMap()
+        _answersByQuestionId.value = answersMap
+        recalcSessionScore(models, answersMap)
+        _showResults.value = false
+        _dailyLimitReachedForBucket.value = false
     }
 
-    fun reset() {
-        _currentIndex.value = 0
-        _answers.value = mutableMapOf()
-        _showSummary.value = false
-    }
-
-    private fun getStartOfToday(): Long {
-        val cal = Calendar.getInstance(TimeZone.getDefault())
-        cal.set(Calendar.HOUR_OF_DAY, 0)
-        cal.set(Calendar.MINUTE, 0)
-        cal.set(Calendar.SECOND, 0)
-        cal.set(Calendar.MILLISECOND, 0)
-        return cal.timeInMillis
-    }
-
-    suspend fun getTodayAnswerCount(
-        language: String,
+    private suspend fun startNewRandomSession(
+        quizRoute: String,
+        languageNormalized: String,
         level: String,
-        platform: String
-    ): Int {
-        val allAnswers = answerRepository.getAllChallengeAnswers()
-        val startOfToday = getStartOfToday()
-        return allAnswers.count {
-            it.timestamp >= startOfToday &&
-                    questions.value.find { q -> q.id == it.questionId }?.let { q ->
-                        q.language == language && q.level == level && q.platform == platform
-                    } == true
-        }
-    }
-
-    fun canAnswerMoreToday(
-        language: String,
-        level: String,
-        platform: String,
-        onResult: (Boolean) -> Unit
+        sessionSize: Int,
+        progressId: String
     ) {
-        viewModelScope.launch {
-            val limit = when (level) {
-                "Beginner" -> 5
-                "Intermediate" -> 7
-                "Advanced" -> 10
-                else -> 5
+        var entities = questionRepository.getQuestionsByLanguageAndLevel(languageNormalized, level)
+        if (entities.isEmpty()) {
+            CodingChallengesImporter.syncCodingQuestionsFromAssets(getApplication())
+            entities = questionRepository.getQuestionsByLanguageAndLevel(languageNormalized, level)
+        }
+        val pool = CodingChallengesImporter.convertEntitiesToModels(entities)
+        val effectiveSize = QuizSessionBuilder.effectiveSessionSize(
+            requestedSize = sessionSize,
+            todayAnswerCount = _todayAnswerCount.value,
+            dailyLimit = DAILY_ANSWER_LIMIT
+        )
+        if (effectiveSize <= 0) {
+            _dailyLimitReachedForBucket.value = true
+            _questionList.value = emptyList()
+            return
+        }
+
+        val models = QuizSessionBuilder.buildSession(pool, effectiveSize)
+        if (models.isEmpty()) {
+            _questionList.value = emptyList()
+            return
+        }
+        _questionList.value = models
+        _currentQuestionIndex.value = 0
+        _answersByQuestionId.value = emptyMap()
+        _questionResults.value = emptyMap()
+        _correctAnswers.value = 0
+        _showResults.value = false
+        _dailyLimitReachedForBucket.value = false
+        _answerFeedback.value = AnswerFeedback.NONE
+
+        val now = System.currentTimeMillis()
+        quizProgressRepository.insertOrReplace(
+            QuizProgressEntity(
+                id = progressId,
+                quizRoute = quizRoute,
+                language = languageNormalized,
+                level = level,
+                currentIndex = 0,
+                answersJson = encodeAnswersJson(emptyMap()),
+                questionIdsJson = encodeQuestionIdsJson(models.map { it.id }),
+                isCompleted = false,
+                lastUpdated = now
+            )
+        )
+    }
+
+    /**
+     * Shows correct/incorrect overlay briefly, then records the answer and advances or completes the quiz.
+     *
+     * Cancels any in-flight feedback job so an older delay cannot overwrite newer feedback state.
+     */
+    fun submitAnswer(answer: String, quizRoute: String, language: String?, level: String) {
+        if (answer.isBlank()) return
+        submitAnswerJob?.cancel()
+        submitAnswerJob = viewModelScope.launch {
+            val lang = QuizProgressEntityHelper.normalizedLanguage(language)
+            val startOfDay = getStartOfTodayMillis()
+            if (!canAnswerMore(quizRoute, lang, level, startOfDay)) {
+                _dailyLimitReachedForBucket.value = true
+                refreshTodayCount(quizRoute, lang, level, startOfDay)
+                return@launch
             }
-            val count = getTodayAnswerCount(language, level, platform)
-            onResult(count < limit)
+
+            val currentQuestion =
+                _questionList.value.getOrNull(_currentQuestionIndex.value) ?: return@launch
+            val isCorrect = answer == currentQuestion.correctAnswer
+            _answerFeedback.value =
+                if (isCorrect) AnswerFeedback.CORRECT else AnswerFeedback.INCORRECT
+
+            delay(FEEDBACK_OVERLAY_MS)
+            if (!isActive) return@launch
+            _answerFeedback.value = AnswerFeedback.NONE
+
+            quizAnswerEventRepository.insert(
+                QuizAnswerEventEntity(
+                    quizRoute = quizRoute,
+                    language = lang,
+                    level = level,
+                    questionId = currentQuestion.id,
+                    answerChosen = answer,
+                    isCorrect = isCorrect,
+                    timestamp = System.currentTimeMillis()
+                )
+            )
+
+            _answersByQuestionId.value = _answersByQuestionId.value + (currentQuestion.id to answer)
+            val newMap = _answersByQuestionId.value
+            recalcSessionScore(_questionList.value, newMap)
+            refreshTodayCount(quizRoute, lang, level, startOfDay)
+
+            val progressId = QuizProgressEntityHelper.makeProgressId(quizRoute, language, level)
+            val isLast = _currentQuestionIndex.value >= _questionList.value.lastIndex
+
+            if (isLast) {
+                _showResults.value = true
+                val questionIdsJson = encodeQuestionIdsJson(_questionList.value.map { it.id })
+                val completedAt = System.currentTimeMillis()
+                quizProgressRepository.insertOrReplace(
+                    QuizProgressEntity(
+                        id = progressId,
+                        quizRoute = quizRoute,
+                        language = lang,
+                        level = level,
+                        currentIndex = _currentQuestionIndex.value,
+                        answersJson = encodeAnswersJson(newMap),
+                        questionIdsJson = questionIdsJson,
+                        isCompleted = true,
+                        lastUpdated = completedAt
+                    )
+                )
+                ChallengeCompletionTracker.recordCompletionIfAbsent(
+                    timelineRepository = timelineRepository,
+                    progressId = progressId,
+                    questionIdsJson = questionIdsJson,
+                    language = lang,
+                    quizRoute = quizRoute,
+                    level = level,
+                    timestamp = completedAt
+                )
+            } else {
+                _currentQuestionIndex.value += 1
+                _selectedAnswer.value = ""
+                quizProgressRepository.insertOrReplace(
+                    QuizProgressEntity(
+                        id = progressId,
+                        quizRoute = quizRoute,
+                        language = lang,
+                        level = level,
+                        currentIndex = _currentQuestionIndex.value,
+                        answersJson = encodeAnswersJson(newMap),
+                        questionIdsJson = encodeQuestionIdsJson(_questionList.value.map { it.id }),
+                        isCompleted = false,
+                        lastUpdated = System.currentTimeMillis()
+                    )
+                )
+            }
         }
     }
 
-    fun answerCurrentQuestionWithLimit(
-        answer: String,
-        language: String,
-        level: String,
-        platform: String,
-        onLimitReached: () -> Unit
-    ) {
-        canAnswerMoreToday(language, level, platform) { canAnswer ->
-            if (canAnswer) {
-                answerCurrentQuestion(answer)
-                goToNextQuestion()
-            } else {
-                onLimitReached()
+    /**
+     * Deletes persisted progress for the active bucket and reloads a new session when under the daily cap.
+     */
+    fun resetForNewDay() {
+        viewModelScope.launch {
+            val progressId = QuizProgressEntityHelper.makeProgressId(
+                activeQuizRoute,
+                activeLanguageNormalized,
+                activeLevel
+            )
+            quizProgressRepository.deleteById(progressId)
+            resetSessionState()
+            if (activeQuizRoute.isNotEmpty() && activeLevel.isNotEmpty()) {
+                loadQuiz(activeQuizRoute, activeLanguageNormalized, activeLevel)
             }
         }
     }
 
     fun updateCurrentStreak() {
         viewModelScope.launch {
-            val allAnswers = answerRepository.getAllChallengeAnswers()
+            val allAnswers = quizAnswerEventRepository.getAllOrderByTimestampDesc()
             val days = allAnswers.map {
                 val calendar = Calendar.getInstance(TimeZone.getDefault())
                 calendar.timeInMillis = it.timestamp
-                // Use only year, month, day for streak
                 Triple(
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH),
@@ -166,10 +439,12 @@ class CodingChallengesViewModel(
                 _currentStreak.value = 0
                 return@launch
             }
-            // Sort days descending
-            val sortedDays = days.sortedWith(compareByDescending<Triple<Int, Int, Int>> { it.first }
-                .thenByDescending { it.second }
-                .thenByDescending { it.third })
+            val sortedDays =
+                days.sortedWith(
+                    compareByDescending<Triple<Int, Int, Int>> { it.first }
+                        .thenByDescending { it.second }
+                        .thenByDescending { it.third }
+                )
             var streak = 1
             for (i in 1 until sortedDays.size) {
                 val previous = sortedDays[i - 1]
@@ -191,5 +466,87 @@ class CodingChallengesViewModel(
             }
             _currentStreak.value = streak
         }
+    }
+
+    private fun resetSessionState() {
+        _questionList.value = emptyList()
+        _currentQuestionIndex.value = 0
+        _answersByQuestionId.value = emptyMap()
+        _showSummary.value = false
+        _showResults.value = false
+        _correctAnswers.value = 0
+        _questionResults.value = emptyMap()
+        _selectedAnswer.value = ""
+        _answerFeedback.value = AnswerFeedback.NONE
+        _dailyLimitReachedForBucket.value = false
+    }
+
+    private suspend fun refreshTodayCount(
+        quizRoute: String,
+        languageNormalized: String,
+        level: String,
+        startOfDay: Long
+    ) {
+        val count = getTodayAnswerCount(quizRoute, languageNormalized, level, startOfDay)
+        _todayAnswerCount.value = count
+    }
+
+    private suspend fun getTodayAnswerCount(
+        quizRoute: String,
+        languageNormalized: String,
+        level: String,
+        startOfDayMillis: Long
+    ): Int = quizAnswerEventRepository.countTodayForBucket(
+        startOfDayMillis,
+        quizRoute,
+        languageNormalized,
+        level
+    )
+
+    private suspend fun canAnswerMore(
+        quizRoute: String,
+        languageNormalized: String,
+        level: String,
+        startOfDayMillis: Long
+    ): Boolean {
+        val count = getTodayAnswerCount(quizRoute, languageNormalized, level, startOfDayMillis)
+        return count < DAILY_ANSWER_LIMIT
+    }
+
+    private fun recalcSessionScore(
+        models: List<CodingChallenges>,
+        answersMap: Map<String, String>
+    ) {
+        val (results, correct) = QuizSessionBuilder.countCorrect(models, answersMap)
+        _questionResults.value = results
+        _correctAnswers.value = correct
+    }
+
+    /** Local calendar start of day in the default timezone, as epoch millis. */
+    private fun getStartOfTodayMillis(): Long {
+        val cal = Calendar.getInstance(TimeZone.getDefault())
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+        cal.set(Calendar.MILLISECOND, 0)
+        return cal.timeInMillis
+    }
+
+    private fun encodeAnswersJson(map: Map<String, String>): String =
+        if (map.isEmpty()) "{}" else jsonFormat.encodeToString(map)
+
+    private fun decodeAnswersJson(s: String): Map<String, String> =
+        if (s.isBlank() || s == "{}") emptyMap() else jsonFormat.decodeFromString(s)
+
+    private fun encodeQuestionIdsJson(ids: List<String>): String =
+        jsonFormat.encodeToString(ids)
+
+    private fun decodeQuestionIdsJson(s: String): List<String> =
+        if (s.isBlank() || s == "[]") emptyList() else jsonFormat.decodeFromString(s)
+
+    companion object {
+        const val DAILY_ANSWER_LIMIT = 30
+        private const val SESSION_QUESTION_COUNT = 10
+        private const val FEEDBACK_OVERLAY_MS = 1200L
     }
 }

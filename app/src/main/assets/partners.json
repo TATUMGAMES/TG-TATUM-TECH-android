@@ -1,0 +1,427 @@
+[
+  {
+    "id": "community_better_youth",
+    "name": "Better Youth",
+    "category": "Community Partners",
+    "logo": "partner_logo_betteryouth",
+    "description": "Community organization and partner in the Tatum Games ecosystem.",
+    "featured": false,
+    "contacts": [
+      {
+        "name": "Syd Stewart",
+        "email": "sstewart@betteryouth.org"
+      }
+    ],
+    "websiteUrl": "https://www.betteryouth.org/",
+    "donationUrl": "https://www.betteryouth.org/donate"
+  },
+  {
+    "id": "community_bgxs",
+    "name": "Black Gxming Society (BGXS)",
+    "category": "Community Partners",
+    "logo": "partner_logo_bgxs",
+    "description": "Community organization and partner in the Tatum Games ecosystem.",
+    "contacts": [
+      {
+        "name": "BGXS",
+        "email": "nyebeck@gmail.com"
+      }
+    ],
+    "websiteUrl": "https://linktr.ee/bgxs.ebg"
+  },
+  {
+    "id": "community_create_now",
+    "name": "Create Now",
+    "category": "Community Partners",
+    "logo": "partner_logo_createnow",
+    "description": "Community organization and partner in the Tatum Games ecosystem.",
+    "featured": true,
+    "contacts": [
+      {
+        "name": "Create Now",
+        "email": "brandon@createnow.org"
+      }
+    ],
+    "websiteUrl": "https://createnow.org/",
+    "donationUrl": "https://www.classy.org/campaign/peer-peer-create-now-a-new-era-of-change/c623336"
+  },
+  {
+    "id": "community_living_advantage",
+    "name": "Living Advantage",
+    "category": "Community Partners",
+    "logo": "partner_logo_livingadvantage",
+    "description": "Community organization and partner in the Tatum Games ecosystem.",
+    "contacts": [
+      {
+        "name": "Living Advantage",
+        "email": "CMLAYC@LivingAdvantageInc.org"
+      }
+    ],
+    "websiteUrl": "https://www.livingadvantageinc.org/",
+    "socialLinks": {
+      "instagram": "https://www.instagram.com/livingadvantage/",
+      "meta": "https://www.facebook.com/livingadvantage/"
+    }
+  },
+  {
+    "id": "community_tretech",
+    "name": "TreTech",
+    "category": "Community Partners",
+    "logo": "partner_logo_tretech",
+    "description": "Community organization and partner in the Tatum Games ecosystem.",
+    "contacts": [
+      {
+        "name": "Tre",
+        "email": "tre@tretechinc.com"
+      }
+    ],
+    "websiteUrl": "https://tretechinc.com/"
+  },
+  {
+    "id": "community_tutord",
+    "name": "TutorD",
+    "category": "Community Partners",
+    "logo": "partner_logo_tutord",
+    "description": "Community organization and partner in the Tatum Games ecosystem.",
+    "featured": true,
+    "contacts": [
+      {
+        "name": "Michael Evans",
+        "email": "mike@tutord.io"
+      },
+      {
+        "name": "Brandon Bailey",
+        "email": "Admin@Tutord.io"
+      }
+    ],
+    "websiteUrl": "https://tutord.io/",
+    "additionalLinks": [
+      {
+        "label": "Scholars",
+        "url": "https://scholars.tutord.io/"
+      }
+    ]
+  },
+  {
+    "id": "corporate_disney_imagineering",
+    "name": "Walt Disney Imagineering",
+    "category": "Corporate Partners",
+    "logo": "partner_logo_walt_disney_imagineering",
+    "description": "Corporate partner in the Tatum Games ecosystem.",
+    "contacts": [
+      {
+        "name": "Brianna Butler",
+        "title": "Associate R&D Imagineer - Creative Technologist",
+        "email": "brianna.butler@disney.com",
+        "phone": "706.691.3509"
+      }
+    ],
+    "websiteUrl": "https://disney.com/"
+  },
+  {
+    "id": "education_csun",
+    "name": "CSUN",
+    "category": "Education Partners",
+    "logo": "partner_logo_csun",
+    "description": "Education partner in the Tatum Games ecosystem.",
+    "featured": true,
+    "websiteUrl": "https://www.csun.edu/"
+  },
+  {
+    "id": "education_hawthorne",
+    "name": "Hawthorne",
+    "category": "Education Partners",
+    "logo": "partner_logo_hawthorne",
+    "description": "Education partner in the Tatum Games ecosystem.",
+    "featured": false,
+    "websiteUrl": "https://www.hhscougars.org/"
+  },
+  {
+    "id": "education_lausd",
+    "name": "LAUSD Unified",
+    "category": "Education Partners",
+    "logo": "partner_logo_lausd",
+    "description": "Education partner in the Tatum Games ecosystem.",
+    "featured": false,
+    "contacts": [
+      {
+        "name": "Arthina Green",
+        "email": "arthina.green@lausd.net"
+      }
+    ],
+    "websiteUrl": "https://www.lausd.org/"
+  },
+  {
+    "id": "education_ucla",
+    "name": "UCLA",
+    "category": "Education Partners",
+    "logo": "partner_logo_ucla",
+    "description": "Education partner in the Tatum Games ecosystem.",
+    "featured": false,
+    "websiteUrl": "https://www.ucla.edu/"
+  },
+  {
+    "id": "education_usc",
+    "name": "USC",
+    "category": "Education Partners",
+    "logo": "partner_logo_usc",
+    "description": "Education partner in the Tatum Games ecosystem.",
+    "featured": false,
+    "websiteUrl": "https://www.usc.edu/"
+  },
+  {
+    "id": "game_studio_baobab",
+    "name": "Baobab Studios",
+    "category": "Game Studio Partners",
+    "logo": "partner_logo_baobab",
+    "description": "Game studio partner in the Tatum Games ecosystem.",
+    "contacts": [
+      {
+        "name": "Jackson Clayton",
+        "email": "JKClaytonDev@gmail.com"
+      }
+    ],
+    "websiteUrl": "https://www.baobabstudios.com/"
+  },
+  {
+    "id": "game_studio_flickin_fun",
+    "name": "Flickin Fun",
+    "category": "Game Studio Partners",
+    "logo": "partner_logo_pixel_pirates",
+    "description": "Game studio partner in the Tatum Games ecosystem.",
+    "contacts": [
+      {
+        "name": "Eric Kasnetsis",
+        "email": "erickasnetsis@gmail.com"
+      }
+    ],
+    "websiteUrl": "https://www.flickinfun.com",
+    "productName": "Pixel Pirates",
+    "downloadUrl": "https://store.steampowered.com/app/3343440?utm_source=discord&utm_campaign=early-access&utm_medium=social"
+  },
+  {
+    "id": "game_studio_laughing_otter",
+    "name": "The Laughing Otter",
+    "category": "Game Studio Partners",
+    "logo": "partner_logo_laughing_otter",
+    "description": "Game studio partner in the Tatum Games ecosystem.",
+    "featured": true,
+    "contacts": [
+      {
+        "name": "Jeff Bogensberger",
+        "email": "jeffb@thelaughingotter.com"
+      }
+    ],
+    "websiteUrl": "https://thelaughingotter.com/"
+  },
+  {
+    "id": "game_studio_miami_avalon",
+    "name": "Miami Avalon",
+    "category": "Game Studio Partners",
+    "logo": "partner_logo_miami_avalon",
+    "description": "Game studio partner in the Tatum Games ecosystem.",
+    "contacts": [
+      {
+        "name": "Nareice Wint",
+        "email": "nareice@miamiavalon.com"
+      }
+    ],
+    "productName": "Ascend",
+    "productUrl": "https://store.steampowered.com/app/1944260/Ascend/"
+  },
+  {
+    "id": "game_studio_robot_cowboys",
+    "name": "Robot Cowboys of Mars",
+    "category": "Game Studio Partners",
+    "logo": "partner_logo_solgears",
+    "description": "Game studio partner (Solgears). Official product logo was not available; a related mark is shown.",
+    "contacts": [
+      {
+        "name": "Nigel Randall"
+      }
+    ],
+    "socialLinks": {
+      "discord": "https://discord.gg/GXJCkz5NdC"
+    }
+  },
+  {
+    "id": "game_studio_shero_games",
+    "name": "Shero Games",
+    "category": "Game Studio Partners",
+    "logo": "partner_logo_shero_games",
+    "description": "Game studio partner in the Tatum Games ecosystem.",
+    "contacts": [
+      {
+        "name": "Rayven Choi",
+        "email": "shequeta@gmail.com"
+      },
+      {
+        "name": "Shequeta Smith",
+        "email": "shequeta@sherocomics.com"
+      }
+    ],
+    "websiteUrl": "https://sherogames.com/",
+    "additionalLinks": [
+      {
+        "label": "Shero Comics",
+        "url": "https://sherocomics.com/"
+      }
+    ]
+  },
+  {
+    "id": "game_studio_voidcube",
+    "name": "Voidcube Studio",
+    "category": "Game Studio Partners",
+    "logo": "partner_logo_void_cube",
+    "description": "Game studio partner in the Tatum Games ecosystem.",
+    "contacts": [
+      {
+        "name": "Matthew Sloan",
+        "email": "studio@voidcube.io"
+      }
+    ],
+    "socialLinks": {
+      "linkedin": "https://www.linkedin.com/in/sloanservices/"
+    }
+  },
+  {
+    "id": "government_human_it",
+    "name": "Human-I-T",
+    "category": "Government Partners",
+    "logo": "partner_logo_human_it",
+    "description": "Government / public-sector partner in the Tatum Games ecosystem.",
+    "websiteUrl": "https://www.human-i-t.org/"
+  },
+  {
+    "id": "government_delete_the_divide",
+    "name": "Delete the Divide",
+    "category": "Government Partners",
+    "logo": "partner_logo_dtd",
+    "description": "Government / public-sector partner in the Tatum Games ecosystem.",
+    "websiteUrl": "https://www.deletethedivide.org/"
+  },
+  {
+    "id": "technology_accessible_automation",
+    "name": "Accessible Automation",
+    "category": "Technology Partners",
+    "logo": "partner_logo_aa_blue",
+    "description": "Technology partner in the Tatum Games ecosystem.",
+    "contacts": [
+      {
+        "name": "Isaac Nash-Bey",
+        "email": "isaac.nash-bey@accessible-automation.org"
+      }
+    ],
+    "websiteUrl": "https://www.accessible-automation.org/"
+  },
+  {
+    "id": "technology_jiwe",
+    "name": "Jiwe",
+    "category": "Technology Partners",
+    "logo": "partner_logo_jiwe",
+    "description": "Technology partner in the Tatum Games ecosystem.",
+    "contacts": [
+      {
+        "name": "Max",
+        "title": "Founder",
+        "email": "max@jiwe.io"
+      }
+    ],
+    "websiteUrl": "https://jiwe.io/"
+  },
+  {
+    "id": "technology_korgi",
+    "name": "Korgi",
+    "category": "Technology Partners",
+    "logo": "partner_logo_korgi_electric",
+    "description": "Technology partner in the Tatum Games ecosystem.",
+    "featured": true,
+    "contacts": [
+      {
+        "name": "Korgi",
+        "email": "dma@korgiboard.com"
+      }
+    ],
+    "websiteUrl": "https://korgiboard.com",
+    "socialLinks": {
+      "youtube": "https://youtube.com/@korgiboard"
+    }
+  },
+  {
+    "id": "technology_spinach_video",
+    "name": "Spinach Video",
+    "category": "Technology Partners",
+    "logo": "partner_logo_spinach_video",
+    "description": "Technology partner in the Tatum Games ecosystem.",
+    "contacts": [
+      {
+        "name": "Kris",
+        "email": "kris@spinachvideo.com"
+      }
+    ],
+    "websiteUrl": "https://spinachvideo.com/"
+  },
+  {
+    "id": "technology_glitch",
+    "name": "Glitch",
+    "category": "Technology Partners",
+    "logo": "partner_logo_glitch",
+    "description": "Technology partner in the Tatum Games ecosystem.",
+    "featured": true,
+    "websiteUrl": "https://www.glitch.fun/"
+  },
+  {
+    "id": "technology_invo",
+    "name": "INVO Tech",
+    "category": "Technology Partners",
+    "logo": "partner_logo_arms_invo",
+    "description": "Technology partner in the Tatum Games ecosystem.",
+    "featured": true,
+    "websiteUrl": "https://www.ourinvo.com/"
+  },
+  {
+    "id": "technology_my_virtual_mate",
+    "name": "My Virtual Mate",
+    "category": "Technology Partners",
+    "logo": "partner_logo_my_virtual_mate_cover",
+    "description": "Technology partner in the Tatum Games ecosystem.",
+    "websiteUrl": "https://myvirtualmate.com/"
+  },
+  {
+    "id": "technology_influencer",
+    "name": "Influencer",
+    "category": "Technology Partners",
+    "logo": "partner_logo_influencer",
+    "description": "Technology partner in the Tatum Games ecosystem.",
+    "featured": true,
+    "websiteUrl": "https://www.influencer.com/"
+  },
+  {
+    "id": "technology_mikros",
+    "name": "Tatum Games",
+    "category": "Technology Partners",
+    "logo": "partner_logo_mikros",
+    "description": "MIKROS is a game development ecosystem built to help studios understand, grow, and market their games. From powerful game analytics to AI-driven marketing tools, MIKROS gives developers the insights, technology, and reach they need to turn better data into better decisions and better games.",
+    "featured": true,
+    "productName": "MIKROS",
+    "websiteUrl": "https://developer.tatumgames.com/"
+  },
+  {
+    "id": "technology_red_apple_tech",
+    "name": "Red Apple Tech",
+    "category": "Technology Partners",
+    "description": "Technology partner that helps businesses and creators build video games and interactive digital experiences.",
+    "featured": true,
+    "contacts": [
+      {
+        "name": "Rozan Cook",
+        "email": "rozan@redappletech.com"
+      },
+      {
+        "name": "Arup Roy",
+        "email": "arup@redappletech.com"
+      }
+    ],
+    "websiteUrl": "https://redappletech.com/"
+  }
+]

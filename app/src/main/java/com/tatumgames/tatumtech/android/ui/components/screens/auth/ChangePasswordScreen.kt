@@ -16,7 +16,7 @@ package com.tatumgames.tatumtech.android.ui.components.screens.auth
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,10 +31,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -53,7 +53,9 @@ import com.tatumgames.tatumtech.android.ui.components.common.OutlinedInputField
 import com.tatumgames.tatumtech.android.ui.components.common.RoundedButton
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.common.TermsAndPrivacyText
+import com.tatumgames.tatumtech.android.ui.theme.Red300
 import com.tatumgames.tatumtech.android.ui.theme.TatumTechTheme
+import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.android.utils.Utils
 
 @Preview(showBackground = true)
@@ -98,14 +100,13 @@ fun ChangePasswordScreen(
                 onBackClick = { navController.popBackStack() }
             )
         },
-        containerColor = Color(0xFFF0F0F0)
+        containerColor = White
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 20.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+                .padding(20.dp)
         ) {
             Column {
                 StandardText(
@@ -148,7 +149,7 @@ fun ChangePasswordScreen(
                     passwordTouched && password.isNotBlank() && !isPasswordValid
                 StandardText(
                     text = stringResource(R.string.error_password_minimum_six_characters),
-                    color = Color.Red,
+                    color = Red300,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -193,7 +194,7 @@ fun ChangePasswordScreen(
                     confirmTouched && confirmPassword.isNotBlank() && !doPasswordsMatch
                 StandardText(
                     text = stringResource(R.string.error_passwords_do_not_match),
-                    color = Color.Red,
+                    color = Red300,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -232,9 +233,12 @@ fun ChangePasswordScreen(
                 }
             }
 
-            // Terms & Privacy at Bottom
+            // Terms & Privacy at bottom
             TermsAndPrivacyText(
-                textColor = colorResource(R.color.black)
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 10.dp),
+                textColor = colorResource(id = R.color.black)
             )
         }
     }

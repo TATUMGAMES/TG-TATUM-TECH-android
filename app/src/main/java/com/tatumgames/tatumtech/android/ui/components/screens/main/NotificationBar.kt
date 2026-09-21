@@ -42,6 +42,10 @@ import androidx.compose.ui.unit.sp
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.constants.Constants.ICON_OR_IMAGE_ERROR
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
+import com.tatumgames.tatumtech.android.ui.theme.Black
+import com.tatumgames.tatumtech.android.ui.theme.Grey200
+import com.tatumgames.tatumtech.android.ui.theme.Grey500
+import com.tatumgames.tatumtech.android.ui.theme.NotificationLavender
 
 @Composable
 fun NotificationBar(
@@ -58,7 +62,7 @@ fun NotificationBar(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(Color.White)
+            .background(Grey200)
             .clickable { /* Handle notification click */ }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -67,7 +71,7 @@ fun NotificationBar(
             modifier = Modifier
                 .size(40.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(Color(0xFFEDE7F6))
+                .background(NotificationLavender)
                 .padding(8.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -97,14 +101,14 @@ fun NotificationBar(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 ),
-                color = Color.Black
+                color = Black
             )
             StandardText(
                 text = description,
                 style = TextStyle(
                     fontSize = 14.sp
                 ),
-                color = Color.Gray
+                color = Grey500
             )
         }
     }

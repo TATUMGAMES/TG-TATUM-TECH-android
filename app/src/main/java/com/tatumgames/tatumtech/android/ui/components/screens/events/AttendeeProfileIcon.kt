@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -35,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.enums.ProfileImage
 import com.tatumgames.tatumtech.android.ui.components.screens.events.models.Attendee
+import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.android.utils.Utils.generateColorFromString
 import com.tatumgames.tatumtech.android.utils.Utils.getNameInitials
 
@@ -57,12 +57,12 @@ fun AttendeeProfileIcon(
                 .size(32.dp)
                 .clip(CircleShape)
                 .background(attendeeColor)
-                .border(1.dp, Color.White, CircleShape),
+                .border(1.dp, White, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = initials,
-                color = Color.White,
+                color = White,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold
             )
