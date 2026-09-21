@@ -21,4 +21,10 @@ object DbConstants {
     const val TABLE_EVENT_REGISTRATION = "event_registrations"
     const val TABLE_TIMELINE = "timeline"
     const val TABLE_USERS = "users"
+    const val TABLE_QUIZ_PROGRESS = "quiz_progress"
+    const val TABLE_QUIZ_ANSWER_EVENTS = "quiz_answer_events"
+    const val TABLE_DEMOGRAPHIC_DATA = "demographic_data"
+    const val TABLE_CONTACT_CARDS = "contact_cards"
+    const val TABLE_CONNECTIONS = "connections"
+    const val TABLE_ENGAGEMENT_COUNTERS = "engagement_counters"
 }

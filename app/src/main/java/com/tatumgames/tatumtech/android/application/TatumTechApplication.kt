@@ -18,10 +18,4 @@ import android.app.Application
 
 class TatumTechApplication : Application() {
 
-    override fun onCreate() {
-        super.onCreate()
-
-        // Firebase is now initialized in the framework layer
-        // No Firebase dependencies in the app layer
-    }
 }
