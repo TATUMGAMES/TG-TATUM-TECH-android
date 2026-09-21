@@ -33,6 +33,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.ui.theme.Transparent
 
 @Composable
 fun OutlinedButton(
@@ -85,7 +86,7 @@ fun RoundedButton(
             .border(
                 // no border for solid button
                 width = 0.dp,
-                color = Color.Transparent,
+                color = Transparent,
                 shape = RoundedCornerShape(8.dp)
             ),
         colors = ButtonDefaults.buttonColors(

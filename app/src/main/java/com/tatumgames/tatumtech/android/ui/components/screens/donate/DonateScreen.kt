@@ -35,7 +35,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -53,6 +52,8 @@ import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.RoundedButton
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
+import com.tatumgames.tatumtech.android.ui.theme.Black
+import com.tatumgames.tatumtech.android.ui.theme.ScreenScaffoldLight
 import kotlinx.coroutines.launch
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -84,7 +85,7 @@ fun DonateScreen(navController: NavController) {
         bottomBar = {
             BottomNavigationBar(navController = navController)
         },
-        containerColor = Color(0xFFF0F0F0)
+        containerColor = ScreenScaffoldLight
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -101,7 +102,7 @@ fun DonateScreen(navController: NavController) {
                     StandardText(
                         text = stringResource(R.string.donation_mission_text),
                         style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
-                        color = Color.Black
+                        color = Black
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -161,4 +162,3 @@ fun DonateScreen(navController: NavController) {
         }
     }
 }
-

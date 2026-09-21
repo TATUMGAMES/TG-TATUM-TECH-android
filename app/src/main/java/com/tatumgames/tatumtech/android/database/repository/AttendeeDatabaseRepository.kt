@@ -30,6 +30,14 @@ class AttendeeDatabaseRepository(
         attendeeDao.insertAttendees(attendees)
     }
 
+    override suspend fun insertAttendee(attendee: AttendeeEntity) {
+        attendeeDao.insertAttendee(attendee)
+    }
+
+    override suspend fun removeAttendee(attendeeId: Long) {
+        attendeeDao.removeAttendee(attendeeId)
+    }
+
     override suspend fun addFriend(attendeeId: Long) {
         attendeeDao.addFriend(attendeeId)
     }

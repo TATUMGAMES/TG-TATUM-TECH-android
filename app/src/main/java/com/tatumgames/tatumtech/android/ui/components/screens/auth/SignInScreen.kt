@@ -16,7 +16,7 @@ package com.tatumgames.tatumtech.android.ui.components.screens.auth
 
 import android.content.Intent
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -56,7 +55,9 @@ import com.tatumgames.tatumtech.android.ui.components.common.RoundedButton
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.common.TermsAndPrivacyText
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
+import com.tatumgames.tatumtech.android.ui.theme.Red300
 import com.tatumgames.tatumtech.android.ui.theme.TatumTechTheme
+import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.android.utils.Utils
 
 @Preview(showBackground = true)
@@ -99,14 +100,13 @@ fun SignInScreen(
                 onBackClick = { navController.navigate(NavRoutes.AUTH_SCREEN) }
             )
         },
-        containerColor = Color(0xFFF0F0F0)
+        containerColor = White
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 20.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+                .padding(20.dp)
         ) {
             Column {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -135,7 +135,7 @@ fun SignInScreen(
                 val emailErrorVisible = emailTouched && email.isNotBlank() && !isEmailValid
                 StandardText(
                     text = stringResource(R.string.error_input_valid_email),
-                    color = Color.Red,
+                    color = Red300,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -186,7 +186,7 @@ fun SignInScreen(
                     passwordTouched && password.isNotBlank() && !isPasswordValid
                 StandardText(
                     text = stringResource(R.string.error_password_minimum_six_characters),
-                    color = Color.Red,
+                    color = Red300,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -213,8 +213,8 @@ fun SignInScreen(
 
                             // TODO Call TG API to authenticate user
                             val intent = Intent(context, MainActivity::class.java).apply {
-                                flags =
-                                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                                        Intent.FLAG_ACTIVITY_CLEAR_TASK
                             }
                             context.startActivity(intent)
                         }
@@ -245,9 +245,12 @@ fun SignInScreen(
                 )
             }
 
-            // Terms & Privacy at Bottom
+            // Terms & Privacy at bottom
             TermsAndPrivacyText(
-                textColor = colorResource(R.color.black)
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 10.dp),
+                textColor = colorResource(id = R.color.black)
             )
         }
     }

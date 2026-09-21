@@ -1,4 +1,7 @@
 {
   "user_id": "user_12345",
-  "request_time": "2025-04-01T10:00:00Z"
+  "filters": {
+    "start_time": "2025-08-01T00:00:00Z",
+    "end_time": "2025-09-01T00:00:00Z"
+  }
 } 

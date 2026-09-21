@@ -33,20 +33,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
-import com.tatumgames.tatumtech.android.ui.components.screens.events.models.Attendee
 import com.tatumgames.tatumtech.android.ui.components.screens.events.models.Event
+import com.tatumgames.tatumtech.android.ui.theme.Grey500
+import com.tatumgames.tatumtech.android.ui.theme.Transparent
+import com.tatumgames.tatumtech.android.ui.theme.White
 
 @Composable
 fun AttendeeList(
     event: Event,
-    onDismiss: () -> Unit,
-    onAddFriend: ((Attendee) -> Unit)? = null
+    onDismiss: () -> Unit
 ) {
     Dialog(
         onDismissRequest = onDismiss,
@@ -58,15 +58,14 @@ fun AttendeeList(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.Cyan)
+                .background(Transparent)
                 .heightIn(max = 600.dp),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = White)
         ) {
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                // Header
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -78,28 +77,26 @@ fun AttendeeList(
                     )
                     StandardText(
                         text = "${event.attendees.size} people",
-                        color = Color.Gray,
+                        color = Grey500,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Attendee list
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(event.attendees) { attendee ->
-                        AttendeeItem(
-                            attendee = attendee,
-                            onAddFriend = onAddFriend
-                        )
+                    items(
+                        items = event.attendees,
+                        key = { it.id }
+                    ) { attendee ->
+                        AttendeeItem(attendee = attendee)
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Close button
                 Button(
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth(),
@@ -107,7 +104,7 @@ fun AttendeeList(
                 ) {
                     StandardText(
                         text = "Close",
-                        color = Color.White
+                        color = White
                     )
                 }
             }

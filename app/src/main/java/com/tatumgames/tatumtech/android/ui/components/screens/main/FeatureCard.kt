@@ -42,19 +42,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tatumgames.tatumtech.android.constants.Constants.ICON_OR_IMAGE_ERROR
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
+import com.tatumgames.tatumtech.android.ui.theme.Black
+import com.tatumgames.tatumtech.android.ui.theme.Grey200
+import com.tatumgames.tatumtech.android.ui.theme.NotificationLavender
 
 @Composable
 fun FeatureCard(
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     image: Painter? = null,
     text: String,
-    modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     elevation: Dp = 4.dp,
-    backgroundColor: Color = Color.White,
+    backgroundColor: Color = Grey200,
     iconTint: Color = Color.Unspecified,
-    iconBackground: Color = Color(0xFFEDE7F6),
-    textColor: Color = Color.Black
+    iconBackground: Color = NotificationLavender,
+    textColor: Color = Black
 ) {
     require(icon != null || image != null) {
         ICON_OR_IMAGE_ERROR
@@ -64,7 +67,12 @@ fun FeatureCard(
         modifier = modifier
             .height(100.dp)
             .clip(RoundedCornerShape(12.dp))
-            .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable { onClick() }
+                } else {
+                    Modifier
+                }),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(defaultElevation = elevation)
     ) {

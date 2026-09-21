@@ -19,18 +19,18 @@ import com.tatumgames.tatumtech.android.database.entity.EventRegistrationEntity
 import com.tatumgames.tatumtech.android.database.interfaces.EventRegistrationInterface
 
 class EventRegistrationDatabaseRepository(
-    private val dao: EventRegistrationDao
+    private val eventRegistrationDao: EventRegistrationDao
 ) : EventRegistrationInterface {
 
     override suspend fun getRegisteredEvents(): List<Long> {
-        return dao.getAll().map { it.id }
+        return eventRegistrationDao.getAll().map { it.id }
     }
 
     override suspend fun registerEvent(id: Long) {
-        dao.insert(EventRegistrationEntity(id))
+        eventRegistrationDao.insert(EventRegistrationEntity(id))
     }
 
     override suspend fun unregisterEvent(id: Long) {
-        dao.delete(EventRegistrationEntity(id))
+        eventRegistrationDao.delete(EventRegistrationEntity(id))
     }
 } 

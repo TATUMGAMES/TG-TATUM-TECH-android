@@ -19,21 +19,21 @@ import com.tatumgames.tatumtech.android.database.entity.CodingChallengeEntity
 import com.tatumgames.tatumtech.android.database.interfaces.CodingChallengeInterface
 
 class CodingChallengeDatabaseRepository(
-    private val dao: CodingChallengeDao
+    private val codingChallengeDao: CodingChallengeDao
 ) : CodingChallengeInterface {
 
     override suspend fun insert(codingChallengeEntity: CodingChallengeEntity): Long =
-        dao.insert(codingChallengeEntity)
+        codingChallengeDao.insert(codingChallengeEntity)
 
     override suspend fun update(codingChallengeEntity: CodingChallengeEntity) =
-        dao.update(codingChallengeEntity)
+        codingChallengeDao.update(codingChallengeEntity)
 
     override suspend fun delete(codingChallengeEntity: CodingChallengeEntity) =
-        dao.delete(codingChallengeEntity)
+        codingChallengeDao.delete(codingChallengeEntity)
 
     override suspend fun getAllChallengeAnswers(): List<CodingChallengeEntity> =
-        dao.getAllChallengeAnswers()
+        codingChallengeDao.getAllChallengeAnswers()
 
     override suspend fun getChallengeAnswerByQuestionId(questionId: String): CodingChallengeEntity? =
-        dao.getChallengeAnswerByQuestionId(questionId)
+        codingChallengeDao.getChallengeAnswerByQuestionId(questionId)
 }

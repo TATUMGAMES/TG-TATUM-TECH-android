@@ -3,86 +3,51 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package com.tatumgames.tatumtech.android.ui.components.screens.coding
 
-import android.app.Application
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.tatumgames.tatumtech.android.R
-import com.tatumgames.tatumtech.android.ui.components.common.Header
-import com.tatumgames.tatumtech.android.ui.components.common.StandardText
-import com.tatumgames.tatumtech.android.ui.components.screens.coding.viewmodels.CodingChallengesViewModel
-import com.tatumgames.tatumtech.android.ui.components.screens.coding.viewmodels.factory.CodingChallengesViewModelFactory
+import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
 
 @Composable
 fun CodingChallengesScreen(navController: NavController) {
-    val context = LocalContext.current
-    val app = context.applicationContext as Application
-    val viewModel: CodingChallengesViewModel = viewModel(
-        factory = CodingChallengesViewModelFactory(app)
+    ChallengeQuizScreen(
+        navController = navController,
+        titleResId = R.string.title_coding_challenges,
+        languages = listOf("Kotlin", "JavaScript", "Python", "Java", "C#"),
+        quizRoute = NavRoutes.CODING_CHALLENGES_SCREEN
     )
+}
 
-    val questions by viewModel.questions.collectAsState()
-    val currentIndex by viewModel.currentIndex.collectAsState()
-    val showSummary by viewModel.showSummary.collectAsState()
+@Composable
+fun AiLlmChallengesScreen(navController: NavController) {
+    ChallengeQuizScreen(
+        navController = navController,
+        titleResId = R.string.title_ai_llm_challenges,
+        languages = listOf("AI/LLM"),
+        quizRoute = NavRoutes.AI_LLM_CHALLENGES_SCREEN
+    )
+}
 
-    Scaffold(
-        topBar = {
-            Header(
-                text = stringResource(R.string.title_coding_challenges),
-                onBackClick = { navController.popBackStack() }
-            )
-        },
-        containerColor = Color(0xFFF0F0F0)
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentAlignment = Alignment.Center
-        ) {
-            when {
-                questions.isEmpty() -> {
-                    StandardText(text = stringResource(R.string.no_questions))
-                }
+@Composable
+fun LeetCodeChallengesScreen(navController: NavController) {
+    ChallengeQuizScreen(
+        navController = navController,
+        titleResId = R.string.title_leet_code_challenges,
+        languages = listOf("LeetCode"),
+        quizRoute = NavRoutes.LEET_CODE_CHALLENGES_SCREEN,
+        showLeetTeachingUi = true
+    )
+}
 
-                showSummary -> {
-                    StandardText(text = stringResource(R.string.challenge_complete))
-                }
-
-                else -> {
-                    val question = questions.getOrNull(currentIndex)
-                    val questionText = question?.question ?: stringResource(R.string.loading)
-                    StandardText(
-                        text = stringResource(
-                            R.string.question_number,
-                            currentIndex + 1,
-                            questionText
-                        )
-                    )
-                }
-            }
-        }
-    }
+@Composable
+fun MockInterviewChallengesScreen(navController: NavController) {
+    ChallengeQuizScreen(
+        navController = navController,
+        titleResId = R.string.title_mock_interview_challenges,
+        languages = listOf("MockInterview"),
+        quizRoute = NavRoutes.MOCK_INTERVIEW_CHALLENGES_SCREEN
+    )
 }

@@ -41,7 +41,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -61,10 +60,11 @@ import com.tatumgames.tatumtech.android.ui.components.common.RoundedButton
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.common.TermsAndPrivacyText
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
-import com.tatumgames.tatumtech.android.ui.components.screens.auth.splash.AuthScreenMessages.ACTIVITY_REQUIRED_GOOGLE_AUTHENTICATION
 import com.tatumgames.tatumtech.android.ui.components.screens.auth.splash.AuthScreenMessages.GOOGLE_AUTHENTICATION_FAILED
 import com.tatumgames.tatumtech.android.ui.components.screens.auth.splash.AuthScreenMessages.GOOGLE_AUTHENTICATION_SUCCESSFUL
+import com.tatumgames.tatumtech.android.ui.theme.Black
 import com.tatumgames.tatumtech.android.ui.theme.TatumTechTheme
+import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClient
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthError
 import com.tatumgames.tatumtech.framework.android.auth.configuration.GoogleAuthConfiguration
@@ -75,8 +75,6 @@ import com.tatumgames.tatumtech.framework.android.logger.Logger
 object AuthScreenMessages {
     internal const val GOOGLE_AUTHENTICATION_SUCCESSFUL = "Google authentication successful"
     internal const val GOOGLE_AUTHENTICATION_FAILED = "Google authentication failed"
-    internal const val ACTIVITY_REQUIRED_GOOGLE_AUTHENTICATION =
-        "Activity is required for Google authentication"
 }
 
 @Preview(showBackground = true)
@@ -101,7 +99,7 @@ fun AuthScreen(
     val context = LocalContext.current
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    val activity = context as? Activity
+    val activity = context as Activity
 
     // Google Authentication Callback implementation
     val authCallback = remember {
@@ -128,7 +126,7 @@ fun AuthScreen(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         // Only handle legacy result if we have a valid activity
-        activity?.let { safeActivity ->
+        activity.let { safeActivity ->
             // Create configuration for legacy result handling
             val configuration = GoogleAuthConfiguration.builder()
                 .context(context)
@@ -148,7 +146,7 @@ fun AuthScreen(
         errorMessage = null // Clear previous errors
 
         // Only proceed if we have a valid activity
-        activity?.let {
+        activity.let {
             // Create configuration for sign-in
             val configuration = GoogleAuthConfiguration.builder()
                 .context(context)
@@ -159,15 +157,13 @@ fun AuthScreen(
                 .build()
 
             GoogleAuthClient.signIn(configuration)
-        } ?: run {
-            errorMessage = ACTIVITY_REQUIRED_GOOGLE_AUTHENTICATION
         }
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(White)
             .padding(20.dp)
     ) {
         // Centered content
@@ -181,7 +177,7 @@ fun AuthScreen(
             // Description
             StandardText(
                 text = stringResource(id = R.string.lets_begin_your_tatum_tech_experience),
-                color = Color.Black,
+                color = Black,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -234,7 +230,7 @@ fun AuthScreen(
             }
         }
 
-        // Terms and Privacy
+        // Terms & Privacy at bottom
         TermsAndPrivacyText(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

@@ -1,46 +1,29 @@
-[
-  {
-    "event_id": "tt_apr_2025",
-    "name": "Tatum Tech Spring 2025",
-    "host": "Tatum Games",
-    "date": "2025-04-12T14:00:00Z",
-    "duration_hours": 5,
-    "location": "South LA",
-    "is_registration_open": true,
-    "attendees": [
-      {
-        "user_id": "user_12345",
-        "name": "Ethan",
-        "profile_image": "https://example.com/ethan.jpg"
-      },
-      {
-        "user_id": "user_67890",
-        "name": "Ava",
-        "profile_image": "https://example.com/ava.jpg"
-      }
-    ],
-    "featured_image": "https://example.com/tatumtech_spring.png"
-  },
-  {
-    "event_id": "tt_oct_2025",
-    "name": "Tatum Tech Fall 2025",
-    "host": "Tatum Games",
-    "date": "2025-10-18T14:00:00Z",
-    "duration_hours": 5,
-    "location": "South LA",
-    "is_registration_open": false,
-    "attendees": [
-      {
-        "user_id": "user_12345",
-        "name": "Ethan",
-        "profile_image": "https://example.com/ethan.jpg"
-      },
-      {
-        "user_id": "user_67890",
-        "name": "Ava",
-        "profile_image": "https://example.com/ava.jpg"
-      }
-    ],
-    "featured_image": "https://example.com/tatumtech_fall.png"
-  }
-] 
+{
+  "events": [
+    {
+      "id": 1,
+      "name": "Tatum Tech Fall 2026",
+      "host": "Tatum Games",
+      "date": "2026-10-10T11:30:00Z",
+      "durationHours": 5,
+      "location": "South Los Angeles, CA",
+      "featuredImage": "tatum_tech_placeholder_flyer_01",
+      "lumaUrl": "https://luma.com/14agrzue",
+      "virtualSpeakers": [
+        {
+          "id": "jeff-bogensberger",
+          "name": "Jeff Bogensberger",
+          "companyName": "The Laughing Otter",
+          "profileImage": "speaker_jeff_bogensberger",
+          "speakingTopic": "Maintaining work/life balance while building a gaming career",
+          "speakingSchedule": "Saturday, October 10 · 2:30 – 3:00pm",
+          "startTime": "2:30 PM",
+          "endTime": "3:00 PM",
+          "timeZone": "America/Los_Angeles",
+          "meetUrl": "https://meet.google.com/ggu-rnvc-rpm",
+          "sortOrder": 1
+        }
+      ]
+    }
+  ]
+}
