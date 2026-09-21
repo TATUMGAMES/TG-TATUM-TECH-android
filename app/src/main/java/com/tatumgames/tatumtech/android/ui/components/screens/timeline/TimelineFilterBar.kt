@@ -21,11 +21,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.tatumgames.tatumtech.android.enums.TimelineFilter
+import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 
 @Composable
 fun TimelineFilterBar(
@@ -41,19 +41,19 @@ fun TimelineFilterBar(
         FilterChip(
             selected = filter == TimelineFilter.TODAY,
             onClick = { onFilterChange(TimelineFilter.TODAY) },
-            label = { Text("Today") }
+            label = { StandardText(text = "Today") }
         )
         Spacer(modifier = Modifier.width(12.dp))
         FilterChip(
             selected = filter == TimelineFilter.WEEK,
             onClick = { onFilterChange(TimelineFilter.WEEK) },
-            label = { Text("Last Week") }
+            label = { StandardText(text = "Last Week") }
         )
         Spacer(modifier = Modifier.width(12.dp))
         FilterChip(
             selected = filter == TimelineFilter.MONTH,
             onClick = { onFilterChange(TimelineFilter.MONTH) },
-            label = { Text("Last Month") }
+            label = { StandardText(text = "Last Month") }
         )
     }
 }

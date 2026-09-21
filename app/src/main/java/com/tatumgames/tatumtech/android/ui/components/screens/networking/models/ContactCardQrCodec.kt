@@ -148,6 +148,9 @@ object ContactCardQrCodec {
     /**
      * Builds an [ContactsContract.Intents.Insert] intent so the user can review/save
      * the contact in the system Contacts app (no WRITE_CONTACTS permission required).
+     *
+     * Core fields use Insert extras; Website and alternate email use [Insert.DATA]
+     * ContentValues. Social/custom links that lack a clean Contacts field go into NOTES.
      */
     fun createInsertContactIntent(payload: ContactCardQrPayload): Intent {
         val notes = buildString {
@@ -156,17 +159,47 @@ object ContactCardQrCodec {
                 append("\n\n")
             }
             listOfNotNull(
-                payload.website?.takeIf { it.isNotBlank() }?.let { "Website: $it" },
                 payload.linkedin?.takeIf { it.isNotBlank() }?.let { "LinkedIn: $it" },
                 payload.twitter?.takeIf { it.isNotBlank() }?.let { "Twitter/X: $it" },
                 payload.customLink?.takeIf { it.isNotBlank() }?.let { "Link: $it" },
-                payload.calendly?.takeIf { it.isNotBlank() }?.let { "Calendly: $it" },
-                payload.alternateEmail?.takeIf { it.isNotBlank() }?.let { "Alt email: $it" }
+                payload.calendly?.takeIf { it.isNotBlank() }?.let { "Calendly: $it" }
             ).forEach {
                 append(it)
                 append('\n')
             }
         }.trim().ifBlank { null }
+
+        val dataRows = ArrayList<android.content.ContentValues>()
+        blankToNull(payload.website)?.let { url ->
+            dataRows.add(
+                android.content.ContentValues().apply {
+                    put(
+                        ContactsContract.Data.MIMETYPE,
+                        ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE
+                    )
+                    put(ContactsContract.CommonDataKinds.Website.URL, url)
+                    put(
+                        ContactsContract.CommonDataKinds.Website.TYPE,
+                        ContactsContract.CommonDataKinds.Website.TYPE_HOME
+                    )
+                }
+            )
+        }
+        blankToNull(payload.alternateEmail)?.let { altEmail ->
+            dataRows.add(
+                android.content.ContentValues().apply {
+                    put(
+                        ContactsContract.Data.MIMETYPE,
+                        ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE
+                    )
+                    put(ContactsContract.CommonDataKinds.Email.ADDRESS, altEmail)
+                    put(
+                        ContactsContract.CommonDataKinds.Email.TYPE,
+                        ContactsContract.CommonDataKinds.Email.TYPE_OTHER
+                    )
+                }
+            )
+        }
 
         return Intent(ContactsContract.Intents.Insert.ACTION).apply {
             type = ContactsContract.RawContacts.CONTENT_TYPE
@@ -190,6 +223,9 @@ object ContactCardQrCodec {
             }
             blankToNull(payload.jobTitle)?.let {
                 putExtra(ContactsContract.Intents.Insert.JOB_TITLE, it)
+            }
+            if (dataRows.isNotEmpty()) {
+                putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, dataRows)
             }
             notes?.let { putExtra(ContactsContract.Intents.Insert.NOTES, it) }
         }
