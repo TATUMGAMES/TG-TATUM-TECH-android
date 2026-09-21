@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -42,8 +41,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,46 +50,63 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.tatumgames.tatumtech.android.R
-import com.tatumgames.tatumtech.android.ui.components.common.ClickableText
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.screens.events.models.Event
-import com.tatumgames.tatumtech.android.ui.theme.SpringPurple
-import com.tatumgames.tatumtech.android.ui.theme.SpringPurple2
-import com.tatumgames.tatumtech.android.ui.theme.Teal700
+import com.tatumgames.tatumtech.android.ui.theme.Black
+import com.tatumgames.tatumtech.android.ui.theme.Grey300
+import com.tatumgames.tatumtech.android.ui.theme.Grey500
+import com.tatumgames.tatumtech.android.ui.theme.SpringPurple100
+import com.tatumgames.tatumtech.android.ui.theme.SpringPurple300
+import com.tatumgames.tatumtech.android.ui.theme.Transparent
+import com.tatumgames.tatumtech.android.ui.theme.White
+import com.tatumgames.tatumtech.android.ui.utils.GameMediaResolver
+import com.tatumgames.tatumtech.android.utils.Utils.openUrl
 import com.tatumgames.tatumtech.android.utils.Utils.parseDate
 
 @Composable
 fun EventCard(
     modifier: Modifier = Modifier,
     event: Event,
-    isRegistered: Boolean = false,
-    onImageClick: (() -> Unit)? = null,
-    onRegister: (() -> Unit)? = null,
-    onSeeAllAttendees: ((Event) -> Unit)? = null,
-    showSnackbar: ((String) -> Unit)? = null
+    onVirtualSpeakersClick: ((Event) -> Unit)? = null,
+    onImageClick: (() -> Unit)? = null
 ) {
+    val context = LocalContext.current
     var showFullscreenImage by remember { mutableStateOf(false) }
     val isColorBackground = event.featuredImage.startsWith("color://")
+    val featuredImageData = remember(event.featuredImage) {
+        when {
+            isColorBackground -> null
+            event.featuredImage.startsWith("http", ignoreCase = true) ||
+                    event.featuredImage.startsWith("android.resource://") -> event.featuredImage
+
+            event.featuredImage.startsWith("drawable:") ->
+                GameMediaResolver.resolve(context, event.featuredImage)
+
+            else -> GameMediaResolver.resolve(context, "drawable:${event.featuredImage}")
+                ?: event.featuredImage
+        }
+    }
 
     Card(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp)),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             val backgroundModifier = Modifier
                 .fillMaxWidth()
-                .height(220.dp) // Increased from 160dp to 220dp for better visual balance
+                .height(220.dp)
                 .clip(RoundedCornerShape(12.dp))
 
             if (isColorBackground) {
                 val color = when (event.featuredImage) {
-                    "color://spring_purple" -> SpringPurple
-                    "color://spring_purple2" -> SpringPurple2
-                    else -> Color.LightGray
+                    "color://spring_purple" -> SpringPurple100
+                    "color://spring_purple2" -> SpringPurple300
+                    else -> Grey300
                 }
                 Box(modifier = backgroundModifier.background(color))
             } else {
@@ -101,21 +117,25 @@ fun EventCard(
                         }
                 ) {
                     Image(
-                        painter = rememberAsyncImagePainter(event.featuredImage),
-                        contentDescription = null,
+                        painter = rememberAsyncImagePainter(
+                            ImageRequest.Builder(context)
+                                .data(featuredImageData)
+                                .crossfade(true)
+                                .build()
+                        ),
+                        contentDescription = event.name,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
 
-                    // Overlay gradient and text
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .background(
                                 Brush.verticalGradient(
                                     colors = listOf(
-                                        Color.Transparent,
-                                        Color.Black.copy(alpha = 0.7f)
+                                        Transparent,
+                                        Black.copy(alpha = 0.7f)
                                     )
                                 )
                             )
@@ -129,14 +149,14 @@ fun EventCard(
                     ) {
                         StandardText(
                             text = event.name,
-                            color = Color.White,
+                            color = White,
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.Bold
                             )
                         )
                         StandardText(
                             text = "Hosted by ${event.host}",
-                            color = Color.White.copy(alpha = 0.9f),
+                            color = White.copy(alpha = 0.9f),
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -150,7 +170,7 @@ fun EventCard(
             )
             StandardText(
                 text = "Hosted by ${event.host}",
-                color = Color.Gray,
+                color = Grey500,
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -160,70 +180,52 @@ fun EventCard(
             )
             StandardText(
                 text = "${event.location} · ${event.durationHours} hours",
-                color = Color.Gray,
+                color = Grey500,
                 style = MaterialTheme.typography.bodyMedium
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                event.attendees.take(5).forEach { attendee ->
-                    AttendeeProfileIcon(
-                        attendee = attendee,
-                        modifier = Modifier.padding(end = 4.dp)
-                    )
-                }
-                if (event.attendees.size > 5) {
-                    StandardText(
-                        text = "+${event.attendees.size - 5} more",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                ClickableText(
-                    text = stringResource(R.string.see_all_attendees),
-                    color = colorResource(R.color.purple_500),
-                    style = MaterialTheme.typography.bodySmall,
-                    onClick = { onSeeAllAttendees?.invoke(event) }
-                )
-            }
             Spacer(modifier = Modifier.height(12.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (event.isRegistrationOpen) {
+                Button(
+                    onClick = { openUrl(context, event.lumaUrl) },
+                    enabled = event.registerEnabled,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(R.color.purple_200),
+                        contentColor = White,
+                        disabledContainerColor = Grey300,
+                        disabledContentColor = Grey500
+                    )
+                ) {
+                    StandardText(
+                        text = stringResource(R.string.register),
+                        color = if (event.registerEnabled) White else Grey500
+                    )
+                }
+                if (event.hasVirtualSpeakers) {
                     Button(
-                        onClick = {
-                            onRegister?.invoke()
-                            showSnackbar?.invoke(
-                                if (!isRegistered) "Registered to ${event.name}" else "Unregistered from ${event.name}"
-                            )
-                        },
+                        onClick = { onVirtualSpeakersClick?.invoke(event) },
+                        modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isRegistered) Teal700 else colorResource(
-                                R.color.purple_200
-                            )
+                            containerColor = colorResource(R.color.purple_200),
+                            contentColor = White
                         )
                     ) {
                         StandardText(
-                            text = if (isRegistered) "Registered" else stringResource(R.string.register),
-                            color = if (isRegistered) Color.White else Color.Black
+                            text = stringResource(R.string.virtual_speakers),
+                            color = White
                         )
                     }
-                } else {
-                    StandardText(
-                        text = stringResource(R.string.registration_closed),
-                        color = Color.Red,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
-                    )
                 }
             }
         }
     }
 
-    // Fullscreen image dialog
     if (showFullscreenImage && !isColorBackground) {
         Dialog(
             onDismissRequest = { showFullscreenImage = false },
@@ -235,15 +237,14 @@ fun EventCard(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black)
+                    .background(Black)
             ) {
                 Image(
-                    painter = rememberAsyncImagePainter(event.featuredImage),
-                    contentDescription = null,
+                    painter = rememberAsyncImagePainter(featuredImageData),
+                    contentDescription = event.name,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Fit
                 )
-                // Overlay text
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -252,26 +253,26 @@ fun EventCard(
                 ) {
                     StandardText(
                         text = event.name,
-                        color = Color.White,
+                        color = White,
                         style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
                     )
                     StandardText(
                         text = "Hosted by ${event.host}",
-                        color = Color.White.copy(alpha = 0.9f),
+                        color = White.copy(alpha = 0.9f),
                         style = MaterialTheme.typography.titleMedium
                     )
                     StandardText(
                         text = parseDate(event.date),
-                        color = Color.White.copy(alpha = 0.8f),
+                        color = White.copy(alpha = 0.8f),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     StandardText(
                         text = event.location,
-                        color = Color.White.copy(alpha = 0.8f),
+                        color = White.copy(alpha = 0.8f),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }
         }
     }
-} 
+}
