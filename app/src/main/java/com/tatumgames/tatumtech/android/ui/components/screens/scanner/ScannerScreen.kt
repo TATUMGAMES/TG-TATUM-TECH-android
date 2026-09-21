@@ -23,32 +23,53 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.database.AppDatabase
+import com.tatumgames.tatumtech.android.database.entity.TimelineEntity
 import com.tatumgames.tatumtech.android.database.repository.TimelineDatabaseRepository
-import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
+import com.tatumgames.tatumtech.android.enums.TimelineType
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
+import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
+import com.tatumgames.tatumtech.android.ui.components.screens.networking.ContactCardScanSession
+import com.tatumgames.tatumtech.android.ui.components.screens.networking.models.ContactCardQrCodec
+import com.tatumgames.tatumtech.android.ui.components.screens.networking.models.ContactCardQrParseResult
+import com.tatumgames.tatumtech.android.ui.theme.Black
+import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.android.utils.Utils.hasPermissions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
+/**
+ * @param returnToUpcomingEvents when true, back / successful contact scan returns to Upcoming Events.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScannerScreen(navController: NavController) {
+fun ScannerScreen(
+    navController: NavController,
+    returnToUpcomingEvents: Boolean = false
+) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     var hasCameraPermission by remember { mutableStateOf(false) }
+    var scanHandled by remember { mutableStateOf(false) }
 
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -65,47 +86,81 @@ fun ScannerScreen(navController: NavController) {
         }
     }
 
+    fun onBack() {
+        if (returnToUpcomingEvents) {
+            val popped = navController.popBackStack(
+                NavRoutes.UPCOMING_EVENTS_SCREEN,
+                inclusive = false
+            )
+            if (!popped) navController.popBackStack()
+        } else {
+            navController.popBackStack()
+        }
+    }
+
     Scaffold(
         topBar = {
             Header(
                 text = stringResource(R.string.scanner),
-                backArrowTint = Color.White,
-                onBackClick = { navController.popBackStack() })
+                backArrowTint = White,
+                onBackClick = { onBack() })
         },
-        bottomBar = {
-            BottomNavigationBar(navController = navController)
-        },
-        containerColor = Color(0xFF000000)
+        bottomBar = {},
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        containerColor = Black
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Color.Black),
+                .background(Black),
             contentAlignment = Alignment.Center
         ) {
             if (hasCameraPermission) {
                 CameraPreviewWithControls(
-                    onSwitchCamera = {
-                        // TODO: Implement camera switching
-                    },
-                    onCapture = {
-                        // TODO: Capture image and scan QR code
-                        // If QR code is detected, log to Room Timeline
-                        // timelineRepository.insertTimelineEvent(
-                        //     TimelineEntity(
-                        //         type = "qr_scan",
-                        //         description = "Scanned QR code: $qrData",
-                        //         relatedId = qrData, // or event/workshop id if available
-                        //         timestamp = System.currentTimeMillis()
-                        //     )
-                        // )
+                    onBarcodeDetected = { raw ->
+                        if (scanHandled) return@CameraPreviewWithControls
+                        scanHandled = true
+                        scope.launch {
+                            when (val parsed = ContactCardQrCodec.parse(raw)) {
+                                is ContactCardQrParseResult.Success -> {
+                                    ContactCardScanSession.setPending(parsed.payload)
+                                    navController.navigate(NavRoutes.SCANNED_CONTACT_PREVIEW) {
+                                        launchSingleTop = true
+                                    }
+                                }
+
+                                is ContactCardQrParseResult.UnsupportedVersion -> {
+                                    snackbarHostState.showSnackbar(
+                                        context.getString(R.string.contact_unsupported_qr)
+                                    )
+                                    scanHandled = false
+                                }
+
+                                ContactCardQrParseResult.Invalid -> {
+                                    withContext(Dispatchers.IO) {
+                                        timelineRepository.insertTimelineEvent(
+                                            TimelineEntity(
+                                                type = TimelineType.QR_SCAN.typeValue,
+                                                description = "Scanned QR code",
+                                                relatedId = null,
+                                                timestamp = System.currentTimeMillis()
+                                            )
+                                        )
+                                    }
+                                    snackbarHostState.showSnackbar(
+                                        context.getString(R.string.contact_invalid_qr)
+                                    )
+                                    scanHandled = false
+                                }
+                            }
+                        }
                     }
                 )
             } else {
                 StandardText(
                     text = stringResource(R.string.camera_permission_required),
-                    color = Color.White,
+                    color = White,
                     textAlign = TextAlign.Center
                 )
             }
