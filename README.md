@@ -11,6 +11,9 @@ An Android application built with Jetpack Compose that provides a comprehensive 
   - [Coding](#coding)
   - [Community](#community)
   - [Stats](#stats)
+  - [Career](#career)
+  - [Games](#games)
+  - [Partners](#partners)
   - [Profile / Drawer](#profile--drawer)
 - [Architecture & Best Practices](#architecture--best-practices)
 
@@ -46,11 +49,10 @@ The file and folder structure is modular and corresponds to app features. Screen
 
 ### Upcoming Events
 
-- Renders a `LazyColumn` displaying upcoming marketing or coding events.
-- Uses local JSON via `/assets` as fallback, or eventual API.
-- Handles `Under Review`, `Waiting Assignment`, `Campaign Assigned`, and other statuses with time-based logic.
-- Applies smooth scroll optimization and proper state hoisting.
-- Features attendee management with friend functionality and registration status tracking.
+- Loads API-shaped event data from `assets/upcoming_events.json` (Luma RSVP URL + nested virtual speakers).
+- **Register** opens the event’s Luma page externally; the app does not track registered/unregistered state.
+- **Virtual Speakers** opens a dedicated screen with speaker cards and Google Meet **Join** links.
+- Digital networking at the top: create/edit a Tatum Tech contact card, share via QR, and scan others’ cards.
 
 [Back to Main Sections](#main-screen-sections)
 
@@ -61,7 +63,9 @@ The file and folder structure is modular and corresponds to app features. Screen
 - Composable reads from a ViewModel backed by Room.
 - Select language & difficulty, then drills into challenge details.
 - Supports multiple programming languages (Kotlin, JavaScript, Python) and difficulty levels (Beginner, Intermediate).
-- Features daily question limits and streak tracking for user engagement.
+- Features daily question limits (30 per language + difficulty bucket) and streak tracking for user engagement.
+- Challenge results show an accurate session score and offer **Do Another Challenge** when daily allowance remains, or **Try Again Tomorrow** when the limit is reached.
+- Completing a challenge writes exactly one idempotent `CHALLENGE_COMPLETION` timeline event (shared by Stats and My Timeline).
 
 [Back to Main Sections](#main-screen-sections)
 
@@ -76,16 +80,43 @@ The file and folder structure is modular and corresponds to app features. Screen
 
 ### Stats
 
-- Summarizes user activity or performance.
-- Previously crashed due to a missing ViewModel initializer (`CodingChallengesViewModel`).
-- Now fixed via correct ViewModel injection or removal of unnecessary dependencies.
-- Displays comprehensive user statistics including:
-  - Events attended
-  - Coding challenges completed
-  - QR codes scanned
-  - Achievement progress
-  - Current streaks
-- Features animated progress rings and achievement tracking.
+- Summarizes user activity from the shared timeline and quiz-answer stores.
+- Completed challenges are counted from `TimelineType.CHALLENGE_COMPLETION` events (written once when a quiz session finishes).
+- Category Breakdown groups those completions by language/track (Kotlin, Java, AI/LLM, etc.).
+- Displays:
+  - Events attended, challenges completed, QR scans
+  - Percent correct and current streak
+  - Coding Challenge Stats (questions answered vs correct)
+  - Achievements
+- Scrollable layout with fixed top/bottom bars; progress rings use named animation step delays.
+
+[Back to Main Sections](#main-screen-sections)
+
+### Career
+
+- Curated local job directory from `career_listings.json` (not live ATS scraping).
+- Search across title, company, description, and technologies.
+- Filter chips for Job Category and Employment Type (Games-style UI).
+- Listings point at official company careers pages; no fabricated dates or salaries.
+
+[Back to Main Sections](#main-screen-sections)
+
+### Games
+
+- Curated Discover Games showcase (currently **Price of Glory** and **Heroes Vs Villains: Nemesis**).
+- Featured tab: showcase cards with Featured / Coming Soon status, plus a MIKROS developer CTA.
+- Games tab: search/filter and Mikros catalog sections (intentionally sparse until more titles are added).
+- Outbound video, store, website, and Discord actions prefer tracked Appspot URLs; YouTube thumbnails are used for video previews.
+- Local drawable logos/screenshots (`pog_*`, `hvn_*`); no placeholder filler games.
+
+[Back to Main Sections](#main-screen-sections)
+
+### Partners
+
+- Curated partner directory from `partners.json` with six categories (Community, Corporate, Education, Game Studios, Government, Technology).
+- Category filter chips; featured partners sorted first with accent treatment.
+- Data-driven CTAs: website, contact email (picker when multiple), donate, call, wishlist/product, social icons.
+- Contact emails open the device mail app with subject: `Got Your Contact Info From Tatum Games. I Have Some Questions`.
 
 [Back to Main Sections](#main-screen-sections)
 
@@ -94,10 +125,11 @@ The file and folder structure is modular and corresponds to app features. Screen
 - MainScreen includes a hamburger icon that opens a right-side drawer (75% width).
 - Drawer contains:
   - Logo (from drawable `logo_text.png`)
-  - Menu items: **Profile**, **About Tatum Games**, **FAQ**
+  - Menu items: **Profile**, **Demographic Info**, **About Tatum Games**, **FAQ**
   - Bottom links: **Terms**, **Privacy Policy**
 - Implemented using `AnimatedVisibility` (or `ModalDrawer`) with clean, modular Composables.
 - Profile screen allows users to update their information with proper form validation.
+- Demographic Info screen collects optional age range, sex, occupation, salary range, and school data with consent acknowledgements for event analytics.
 - About screen provides comprehensive information about Tatum Tech and MIKROS.
 
 [Back to Main Sections](#main-screen-sections)
@@ -117,6 +149,7 @@ The file and folder structure is modular and corresponds to app features. Screen
 - **Consistent navigation**: Bottom navigation bar present on all screens for seamless navigation.
 
 [Back to Table of Contents](#table-of-contents)
+
 
 
 
