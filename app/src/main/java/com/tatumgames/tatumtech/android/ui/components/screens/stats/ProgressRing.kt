@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
+import com.tatumgames.tatumtech.android.ui.theme.Grey500
 
 @Composable
 fun ProgressRing(
@@ -59,7 +60,7 @@ fun ProgressRing(
         StandardText(
             text = label,
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp),
-            color = Color.Gray
+            color = Grey500
         )
     }
 }
