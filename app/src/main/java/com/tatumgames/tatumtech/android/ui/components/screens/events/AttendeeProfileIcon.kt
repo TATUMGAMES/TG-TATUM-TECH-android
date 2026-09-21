@@ -20,7 +20,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.enums.ProfileImage
+import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.screens.events.models.Attendee
 import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.android.utils.Utils.generateColorFromString
@@ -60,11 +61,13 @@ fun AttendeeProfileIcon(
                 .border(1.dp, White, CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Text(
+            StandardText(
                 text = initials,
                 color = White,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
             )
         }
     } else {
