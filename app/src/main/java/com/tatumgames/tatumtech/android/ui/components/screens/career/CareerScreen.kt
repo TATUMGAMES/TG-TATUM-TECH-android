@@ -55,6 +55,7 @@ import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.screens.stats.AchievementTrackingKeys
 import com.tatumgames.tatumtech.android.ui.components.screens.stats.EngagementTracker
 import com.tatumgames.tatumtech.android.ui.models.CareerListing
+import com.tatumgames.tatumtech.android.ui.theme.Black
 import com.tatumgames.tatumtech.android.ui.theme.ScreenScaffoldLight
 import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.android.ui.utils.JsonImporter
@@ -208,7 +209,7 @@ private fun CareerSearchFilters(
         StandardText(
             text = stringResource(R.string.career_job_category),
             style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.primary
+            color = Black
         )
         Row(
             modifier = Modifier
@@ -236,7 +237,7 @@ private fun CareerSearchFilters(
         StandardText(
             text = stringResource(R.string.career_employment_type),
             style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.primary
+            color = Black
         )
         Row(
             modifier = Modifier
@@ -294,14 +295,6 @@ private fun CareerEmptyState(onClearFilters: () -> Unit) {
             text = stringResource(R.string.career_no_jobs_found_hint),
             style = MaterialTheme.typography.bodyMedium
         )
-        TextButton(onClick = onClearFilters) {
-            StandardText(
-                text = stringResource(R.string.career_clear_filters),
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = MaterialTheme.colorScheme.primary
-                )
-            )
-        }
     }
 }
 
