@@ -16,25 +16,41 @@ package com.tatumgames.tatumtech.android.ui.components.navigation.graph
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
 import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.tatumgames.tatumtech.android.constants.Constants.KEY_USER_ID
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
+import com.tatumgames.tatumtech.android.ui.components.screens.AchievementsScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.GameDetailsScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.GamesResourcesScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.GamesScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.GetYourGameDiscoveredScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.HomePagerScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.PartnersScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.ResourcesScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.about.AboutContentType
+import com.tatumgames.tatumtech.android.ui.components.screens.about.AboutScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.auth.ForgotPasswordScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.auth.SignInScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.auth.SignUpScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.auth.splash.AuthScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.career.CareerScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.coding.AiLlmChallengesScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.CodingChallengesScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.coding.LeetCodeChallengesScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.coding.MockInterviewChallengesScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.community.CommunityScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.donate.DonateScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.about.AboutScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.about.AboutContentType
 import com.tatumgames.tatumtech.android.ui.components.screens.events.AttendeesScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.events.UpcomingEventsScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.events.VirtualSpeakersScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.main.DemographicInfoScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.main.MainScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.main.UserProfileScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.networking.ContactCardEditorScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.networking.MyContactCardQrScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.networking.ScannedContactPreviewScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.scanner.ScannerScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.stats.StatsScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.timeline.MyTimelineScreen
@@ -68,16 +84,35 @@ fun MainGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.MAIN_SCREEN
+        startDestination = NavRoutes.HOME_PAGER_SCREEN
     ) {
+        composable(NavRoutes.HOME_PAGER_SCREEN) {
+            HomePagerScreen(navController)
+        }
         composable(NavRoutes.MAIN_SCREEN) {
             MainScreen(navController)
         }
         composable(NavRoutes.UPCOMING_EVENTS_SCREEN) {
             UpcomingEventsScreen(navController)
         }
+        composable(
+            route = NavRoutes.VIRTUAL_SPEAKERS_SCREEN,
+            arguments = listOf(navArgument("eventId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getLong("eventId") ?: 0L
+            VirtualSpeakersScreen(navController, eventId)
+        }
         composable(NavRoutes.CODING_CHALLENGES_SCREEN) {
             CodingChallengesScreen(navController)
+        }
+        composable(NavRoutes.AI_LLM_CHALLENGES_SCREEN) {
+            AiLlmChallengesScreen(navController)
+        }
+        composable(NavRoutes.LEET_CODE_CHALLENGES_SCREEN) {
+            LeetCodeChallengesScreen(navController)
+        }
+        composable(NavRoutes.MOCK_INTERVIEW_CHALLENGES_SCREEN) {
+            MockInterviewChallengesScreen(navController)
         }
         composable(NavRoutes.MY_TIMELINE_SCREEN) {
             MyTimelineScreen(navController)
@@ -89,13 +124,31 @@ fun MainGraph(
             CommunityScreen(navController)
         }
         composable(NavRoutes.SCANNER_SCREEN) {
-            ScannerScreen(navController)
+            ScannerScreen(navController, returnToUpcomingEvents = false)
+        }
+        composable(NavRoutes.SCANNER_FROM_UPCOMING_EVENTS) {
+            ScannerScreen(navController, returnToUpcomingEvents = true)
+        }
+        composable(NavRoutes.CONTACT_CARD_EDITOR_SCREEN) {
+            ContactCardEditorScreen(navController)
+        }
+        composable(NavRoutes.MY_CONTACT_CARD_QR_SCREEN) {
+            MyContactCardQrScreen(navController)
+        }
+        composable(NavRoutes.SCANNED_CONTACT_PREVIEW) {
+            ScannedContactPreviewScreen(navController)
         }
         composable(NavRoutes.STATS_SCREEN) {
             StatsScreen(navController)
         }
+        composable(NavRoutes.ACHIEVEMENTS_SCREEN) {
+            AchievementsScreen(navController)
+        }
         composable(NavRoutes.USER_PROFILE_SCREEN) {
             UserProfileScreen(navController)
+        }
+        composable(NavRoutes.DEMOGRAPHIC_SCREEN) {
+            DemographicInfoScreen(navController)
         }
         composable(
             route = NavRoutes.ATTENDEES_SCREEN,
@@ -105,9 +158,36 @@ fun MainGraph(
             AttendeesScreen(navController, eventId)
         }
         composable("about_screen/{contentType}") { backStackEntry ->
-            val typeString = backStackEntry.arguments?.getString("contentType") ?: AboutContentType.ABOUT.route
-            val contentType = AboutContentType.values().find { it.route == typeString } ?: AboutContentType.ABOUT
+            val typeString =
+                backStackEntry.arguments?.getString("contentType") ?: AboutContentType.ABOUT.route
+            val contentType =
+                AboutContentType.entries.find { it.route == typeString } ?: AboutContentType.ABOUT
             AboutScreen(navController, contentType)
+        }
+        composable(NavRoutes.PARTNERS_SCREEN) {
+            PartnersScreen(navController)
+        }
+        composable(NavRoutes.RESOURCES_SCREEN) {
+            ResourcesScreen(navController)
+        }
+        composable(NavRoutes.GAMES_RESOURCES_SCREEN) {
+            GamesResourcesScreen(navController)
+        }
+        composable(NavRoutes.CAREER_SCREEN) {
+            CareerScreen(navController)
+        }
+        composable(NavRoutes.GAMES_SCREEN) {
+            GamesScreen(navController)
+        }
+        composable(NavRoutes.GET_YOUR_GAME_DISCOVERED_SCREEN) {
+            GetYourGameDiscoveredScreen(navController)
+        }
+        composable(
+            route = NavRoutes.GAME_DETAILS_SCREEN,
+            arguments = listOf(navArgument("gameId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val gameId = backStackEntry.arguments?.getString("gameId") ?: ""
+            GameDetailsScreen(navController, gameId)
         }
     }
 }
