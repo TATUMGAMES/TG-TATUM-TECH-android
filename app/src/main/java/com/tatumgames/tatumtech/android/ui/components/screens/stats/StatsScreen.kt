@@ -15,6 +15,7 @@
 package com.tatumgames.tatumtech.android.ui.components.screens.stats
 
 import android.app.Application
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -36,31 +39,39 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.database.AppDatabase
+import com.tatumgames.tatumtech.android.database.repository.QuizAnswerEventDatabaseRepository
+import com.tatumgames.tatumtech.android.database.repository.QuizProgressDatabaseRepository
 import com.tatumgames.tatumtech.android.database.repository.TimelineDatabaseRepository
 import com.tatumgames.tatumtech.android.enums.TimelineType
 import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
-import com.tatumgames.tatumtech.android.ui.components.screens.stats.models.Achievement
+import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
+import com.tatumgames.tatumtech.android.ui.components.screens.coding.ChallengeCompletionTracker
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.viewmodels.CodingChallengesViewModel
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.viewmodels.factory.CodingChallengesViewModelFactory
+import com.tatumgames.tatumtech.android.ui.models.Achievement
 import com.tatumgames.tatumtech.android.ui.theme.Gold
 import com.tatumgames.tatumtech.android.ui.theme.Purple500
+import com.tatumgames.tatumtech.android.ui.theme.ScreenScaffoldLight
 import com.tatumgames.tatumtech.android.ui.theme.Teal200
-import com.tatumgames.tatumtech.android.utils.MockData.getAllAchievements
+import com.tatumgames.tatumtech.android.ui.utils.JsonImporter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+
+private const val LONG_ANIMATION_STEP_DELAY_MS = 30L
+private const val MEDIUM_ANIMATION_STEP_DELAY_MS = LONG_ANIMATION_STEP_DELAY_MS / 2
+private const val SHORT_ANIMATION_STEP_DELAY_MS = 10L
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,6 +79,9 @@ fun StatsScreen(navController: NavController) {
     val context = LocalContext.current
     val database = remember { AppDatabase.getInstance(context) }
     val timelineRepository = remember { TimelineDatabaseRepository(database.timelineDao()) }
+    val quizProgressRepository = remember {
+        QuizProgressDatabaseRepository(database.quizProgressDao())
+    }
 
     var eventsAttended by remember { mutableIntStateOf(0) }
     var challengesCompleted by remember { mutableIntStateOf(0) }
@@ -76,6 +90,9 @@ fun StatsScreen(navController: NavController) {
     var achievementsUnlocked by remember { mutableIntStateOf(0) }
     var totalQuestionsAnswered by remember { mutableIntStateOf(0) }
     var correctAnswers by remember { mutableIntStateOf(0) }
+    var categoryCounts by remember {
+        mutableStateOf(ChallengeCompletionTracker.statsCategories.associateWith { 0 })
+    }
 
     var animatedEvents by remember { mutableIntStateOf(0) }
     var animatedChallenges by remember { mutableIntStateOf(0) }
@@ -83,6 +100,7 @@ fun StatsScreen(navController: NavController) {
     var animatedPercent by remember { mutableIntStateOf(0) }
 
     var achievementsList by remember { mutableStateOf<List<Achievement>>(emptyList()) }
+    var statsLoaded by remember { mutableStateOf(false) }
 
     val challengeViewModel: CodingChallengesViewModel = viewModel(
         factory = CodingChallengesViewModelFactory(context.applicationContext as Application)
@@ -91,76 +109,54 @@ fun StatsScreen(navController: NavController) {
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
+            ChallengeCompletionTracker.backfillFromCompletedProgress(
+                quizProgressRepository = quizProgressRepository,
+                timelineRepository = timelineRepository
+            )
+
             val allTimeline = timelineRepository.getAllTimelineEvents()
+            val challengeEvents = allTimeline.filter {
+                it.type == TimelineType.CHALLENGE_COMPLETION.typeValue
+            }
             eventsAttended =
                 allTimeline.count { it.type == TimelineType.EVENT_REGISTRATION.typeValue }
-            challengesCompleted =
-                allTimeline.count { it.type == TimelineType.CHALLENGE_COMPLETION.typeValue }
+            challengesCompleted = challengeEvents.size
+            categoryCounts = ChallengeCompletionTracker.categoryCounts(challengeEvents)
             qrCodesScanned = allTimeline.count { it.type == TimelineType.QR_SCAN.typeValue }
-            
-            // Get coding challenge statistics from the database
-            val appDatabase = AppDatabase.getInstance(context)
-            val answerRepository = com.tatumgames.tatumtech.android.database.repository.CodingChallengeDatabaseRepository(appDatabase.codingChallengeDao())
-            val challengeAnswers = answerRepository.getAllChallengeAnswers()
-            totalQuestionsAnswered = challengeAnswers.size
-            correctAnswers = challengeAnswers.count { _ ->
-                // This would need to be implemented to check if answer is correct
-                // For now, we'll use a placeholder
-                true // Placeholder
-            }
+
+            val quizAnswerRepo = QuizAnswerEventDatabaseRepository(database.quizAnswerEventDao())
+            val quizAnswerEvents = quizAnswerRepo.getAllOrderByTimestampDesc()
+            totalQuestionsAnswered = quizAnswerEvents.size
+            correctAnswers = quizAnswerEvents.count { it.isCorrect }
             percentCorrect = if (totalQuestionsAnswered > 0) {
                 (correctAnswers * 100) / totalQuestionsAnswered
             } else 0
 
-            val allAchievements = getAllAchievements(context)
-            achievementsList = allAchievements.map { ach ->
-                ach.copy(
-                    unlocked = when (ach.name) {
-                        context.getString(R.string.achievement_desc_first_step) -> eventsAttended >= 1
-                        context.getString(R.string.achievement_title_committed) -> eventsAttended >= 3
-                        context.getString(R.string.achievement_title_event_veteran) -> eventsAttended >= 5
-                        context.getString(R.string.achievement_title_coder_in_training) -> challengesCompleted >= 5
-                        context.getString(R.string.achievement_title_leveling_up) -> challengesCompleted >= 15
-                        context.getString(R.string.achievement_title_beginner_master) -> challengesCompleted >= 50
-                        context.getString(R.string.achievement_title_problem_solver) -> challengesCompleted >= 5
-                        context.getString(R.string.achievement_title_code_climber) -> challengesCompleted >= 15
-                        context.getString(R.string.achievement_title_intermediate_champ) -> challengesCompleted >= 50
-                        context.getString(R.string.achievement_title_code_warrior) -> challengesCompleted >= 5
-                        context.getString(R.string.achievement_title_algorithm_slayer) -> challengesCompleted >= 15
-                        context.getString(R.string.achievement_title_elite_hacker) -> challengesCompleted >= 50
-                        context.getString(R.string.achievement_title_qr_curious) -> qrCodesScanned >= 1
-                        context.getString(R.string.achievement_title_qr_explorer) -> qrCodesScanned >= 3
-                        context.getString(R.string.achievement_title_qr_adventurer) -> qrCodesScanned >= 5
-                        context.getString(R.string.achievement_title_qr_hunter) -> qrCodesScanned >= 10
-                        context.getString(R.string.achievement_title_qr_master) -> qrCodesScanned >= 20
-                        context.getString(R.string.achievement_title_qr_legend) -> qrCodesScanned >= 50
-                        context.getString(R.string.achievement_title_heart_giver) -> allTimeline.any {
-                            it.type == TimelineType.DONATION.typeValue
-                        }
-
-                        else -> false
-                    }
-                )
-            }
-            achievementsUnlocked = achievementsList.count { it.unlocked }
+            val progress = EngagementTracker.buildProgressCounts(context)
+            achievementsList = AchievementUnlockEvaluator.withUnlockState(
+                JsonImporter.loadAchievements(context),
+                progress
+            )
+            achievementsUnlocked = achievementsList.count { it.isUnlocked }
             challengeViewModel.updateCurrentStreak()
         }
+        statsLoaded = true
 
         repeat(eventsAttended + 1) {
             animatedEvents = it
-            delay(30)
+            delay(LONG_ANIMATION_STEP_DELAY_MS)
         }
         repeat(challengesCompleted + 1) {
             animatedChallenges = it
-            delay(15)
+            delay(MEDIUM_ANIMATION_STEP_DELAY_MS)
         }
         repeat(qrCodesScanned + 1) {
             animatedQrCodes = it
-            delay(15)
+            delay(MEDIUM_ANIMATION_STEP_DELAY_MS)
         }
         repeat(percentCorrect + 1) {
             animatedPercent = it
-            delay(10)
+            delay(SHORT_ANIMATION_STEP_DELAY_MS)
         }
     }
 
@@ -174,13 +170,16 @@ fun StatsScreen(navController: NavController) {
         bottomBar = {
             BottomNavigationBar(navController = navController)
         },
-        containerColor = Color(0xFFF0F0F0)
+        containerColor = ScreenScaffoldLight
     ) { paddingValues ->
-        // Check if there's any data to display
-        val hasData = eventsAttended > 0 || challengesCompleted > 0 || qrCodesScanned > 0 || achievementsUnlocked > 0
-        
-        if (!hasData) {
-            // Show empty state
+        val hasData =
+            eventsAttended > 0 ||
+                    challengesCompleted > 0 ||
+                    qrCodesScanned > 0 ||
+                    achievementsUnlocked > 0 ||
+                    totalQuestionsAnswered > 0
+
+        if (statsLoaded && !hasData) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -194,107 +193,156 @@ fun StatsScreen(navController: NavController) {
                 )
             }
         } else {
-            // Show statistics content
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(horizontal = 16.dp)
             ) {
-            StandardText(
-                text = stringResource(R.string.your_progress),
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
-                )
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    StandardText(
+                        text = stringResource(R.string.your_progress),
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                ProgressRing(
-                    label = stringResource(R.string.events),
-                    value = animatedEvents,
-                    max = 20,
-                    color = Purple500
-                )
-                ProgressRing(
-                    label = stringResource(R.string.challenges),
-                    value = animatedChallenges,
-                    max = 30,
-                    color = Gold
-                )
-                ProgressRing(
-                    label = stringResource(R.string.qr_scans),
-                    value = animatedQrCodes,
-                    max = 30,
-                    color = Teal200
-                )
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        ProgressRing(
+                            label = stringResource(R.string.events),
+                            value = animatedEvents,
+                            max = 20,
+                            color = Purple500
+                        )
+                        ProgressRing(
+                            label = stringResource(R.string.challenges),
+                            value = animatedChallenges,
+                            max = 30,
+                            color = Gold
+                        )
+                        ProgressRing(
+                            label = stringResource(R.string.qr_scans),
+                            value = animatedQrCodes,
+                            max = 30,
+                            color = Teal200
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        StandardText(
+                            text = stringResource(R.string.percent_correct),
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.SemiBold
+                            ),
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        AnimatedPercentRing(percent = animatedPercent)
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                item {
+                    StandardText(
+                        text = stringResource(R.string.current_streak_days, streak),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                item {
+                    StandardText(
+                        text = stringResource(R.string.achievements_unlocked, achievementsUnlocked),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                item {
+                    StandardText(
+                        text = stringResource(R.string.category_breakdown),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    CategoryBreakdownView(
+                        categoryCounts = categoryCounts,
+                        totalCompletions = challengesCompleted,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                item {
+                    StandardText(
+                        text = stringResource(R.string.coding_challenge_stats),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        ProgressRing(
+                            label = stringResource(R.string.stats_questions),
+                            value = totalQuestionsAnswered,
+                            max = 100,
+                            color = Purple500
+                        )
+                        ProgressRing(
+                            label = stringResource(R.string.stats_correct),
+                            value = correctAnswers,
+                            max = totalQuestionsAnswered.coerceAtLeast(1),
+                            color = Gold
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        StandardText(
+                            text = stringResource(R.string.achievements),
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                        )
+                        StandardText(
+                            text = stringResource(R.string.view_all),
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.primary
+                            ),
+                            modifier = Modifier.clickable {
+                                navController.navigate(NavRoutes.ACHIEVEMENTS_SCREEN)
+                            }
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                items(achievementsList) { achievement ->
+                    AchievementsListEntry(achievement = achievement)
+                }
+
+                item { Spacer(modifier = Modifier.height(16.dp)) }
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-            StandardText(
-                text = stringResource(R.string.percent_correct),
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
-            )
-            AnimatedPercentRing(percent = animatedPercent)
-
-            Spacer(modifier = Modifier.height(24.dp))
-            StandardText(
-                text = stringResource(R.string.current_streak_days, streak),
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-            StandardText(
-                text = stringResource(R.string.achievements_unlocked, achievementsUnlocked),
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-            StandardText(
-                text = stringResource(R.string.category_breakdown_coming_soon),
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
-            )
-
-            BarChartView()
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            // Coding Challenge Statistics
-            StandardText(
-                text = "Coding Challenge Stats",
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                ProgressRing(
-                    label = "Questions",
-                    value = totalQuestionsAnswered,
-                    max = 100,
-                    color = Purple500
-                )
-                ProgressRing(
-                    label = "Correct",
-                    value = correctAnswers,
-                    max = totalQuestionsAnswered.coerceAtLeast(1),
-                    color = Gold
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            StandardText(
-                text = stringResource(R.string.achievements),
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
-            )
-            AchievementsList(achievementsList)
-        }
         }
     }
 }
