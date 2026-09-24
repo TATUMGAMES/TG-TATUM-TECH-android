@@ -45,6 +45,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.analytics.AnalyticsService
+import com.tatumgames.tatumtech.android.analytics.ProfileFields
 import com.tatumgames.tatumtech.android.database.AppDatabase
 import com.tatumgames.tatumtech.android.database.repository.UserDatabaseRepository
 import com.tatumgames.tatumtech.android.ui.components.common.Header
@@ -185,13 +187,30 @@ fun UserProfileScreen(
                         CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
                             val currentUser = userRepository.getCurrentUser()
                             if (currentUser != null) {
+                                val newFirst = firstName.ifBlank { null }
+                                val newLast = lastName.ifBlank { null }
+                                val newEmail = email.ifBlank { null }
+                                val changedFields = buildList {
+                                    if (currentUser.firstName != newFirst) {
+                                        add(ProfileFields.FIRST_NAME)
+                                    }
+                                    if (currentUser.lastName != newLast) {
+                                        add(ProfileFields.LAST_NAME)
+                                    }
+                                    if (currentUser.email != newEmail) {
+                                        add(ProfileFields.EMAIL)
+                                    }
+                                }
                                 val updatedUser = currentUser.copy(
-                                    firstName = firstName.ifBlank { null },
-                                    lastName = lastName.ifBlank { null },
-                                    email = email.ifBlank { null }
+                                    firstName = newFirst,
+                                    lastName = newLast,
+                                    email = newEmail
                                     // Keep the original username unchanged
                                 )
                                 userRepository.updateUser(updatedUser)
+                                changedFields.forEach { field ->
+                                    AnalyticsService.updateProfile(field)
+                                }
 
                                 // Show success message on main thread
                                 withContext(kotlinx.coroutines.Dispatchers.Main) {

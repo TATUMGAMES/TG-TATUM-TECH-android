@@ -46,6 +46,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,12 +74,11 @@ import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.android.ui.viewmodels.HomePagerViewModel
 import com.tatumgames.tatumtech.android.ui.viewmodels.factory.HomePagerViewModelFactory
 import com.tatumgames.tatumtech.android.utils.CodingChallengesImporter
-import com.tatumgames.tatumtech.android.utils.MockData.getDummyNotifications
 import kotlinx.coroutines.launch
 
 /**
  * Main home screen with horizontal pager functionality.
- * Replicates MainScreen's exact UI structure, but with FeatureCards organized in a horizontal pager.
+ * Home pager with FeatureCards organized in a horizontal pager.
  * Only the FeatureCard grid area is inside the pager - all other elements (title, greeting, tabs, notifications, bottom bar) are static.
  *
  * @param navController Navigation controller for screen navigation
@@ -92,10 +92,11 @@ fun HomePagerScreen(
         factory = HomePagerViewModelFactory(context)
     )
 
-    var userName by remember { mutableStateOf("") }
     var isDrawerOpen by remember { mutableStateOf(false) }
     var notificationsExpanded by remember { mutableStateOf(true) }
     val notificationsScroll = rememberScrollState()
+    val notifications by viewModel.notifications.collectAsState()
+    val userName = viewModel.userName
 
     val categories = viewModel.pagerCategories
     val pagerState = rememberPagerState(
@@ -109,6 +110,7 @@ fun HomePagerScreen(
     LaunchedEffect(Unit) {
         viewModel.refreshUser()
         CodingChallengesImporter.syncCodingQuestionsFromAssets(context.applicationContext)
+        viewModel.refreshNotifications()
     }
 
     Box(
@@ -229,7 +231,6 @@ fun HomePagerScreen(
                     enter = expandVertically(animationSpec = tween(220)) + fadeIn(tween(200)),
                     exit = shrinkVertically(animationSpec = tween(200)) + fadeOut(tween(180))
                 ) {
-                    val notifications = getDummyNotifications(context)
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -237,14 +238,31 @@ fun HomePagerScreen(
                             .verticalScroll(notificationsScroll),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        notifications.forEach { notification ->
-                            val painter = notification.iconResId?.let { painterResource(id = it) }
-                            NotificationBar(
-                                icon = notification.icon,
-                                image = painter,
-                                title = notification.title,
-                                description = notification.description
+                        if (notifications.isEmpty()) {
+                            StandardText(
+                                text = stringResource(R.string.recent_notifications_empty),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(vertical = 8.dp)
                             )
+                        } else {
+                            notifications.forEach { notification ->
+                                val painter =
+                                    notification.iconResId?.let { painterResource(id = it) }
+                                NotificationBar(
+                                    icon = notification.icon,
+                                    image = painter,
+                                    title = notification.title,
+                                    description = notification.description,
+                                    isUnread = notification.isUnread,
+                                    onClick = {
+                                        viewModel.openNotification(notification.id) { route ->
+                                            navController.navigate(route) {
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                    }
+                                )
+                            }
                         }
                     }
                 }

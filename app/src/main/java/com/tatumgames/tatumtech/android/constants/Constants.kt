@@ -24,6 +24,14 @@ object Constants {
     // MIKROS / Discover
     const val URL_MIKROS_DEVELOPER = "https://developer.tatumgames.com/"
     const val URL_MIKROS_EXPLAINER_VIDEO = "https://youtu.be/pz2iMZ-mjFM"
+    const val URL_MIKROS_MARKETING_TUTORIAL = "https://youtu.be/n2a1hoINzKw"
+    const val URL_MIKROS_ANALYTICS_INTEGRATION = "https://youtu.be/4g380D_bAVA"
+    const val URL_MIKROS_ANALYTICS_LOGGING = "https://youtu.be/GINXSVBlO0M"
+    const val URL_MIKROS_TECHNICAL_DOCS =
+        "https://developer.tatumgames.com/documentation/introduction"
+
+    // Tatum Tech program site
+    const val URL_TATUM_TECH = "https://tatumgames.com/tatum-tech/"
 
     // Donation & Community URLs
     // used to retrieve server information from Discord API

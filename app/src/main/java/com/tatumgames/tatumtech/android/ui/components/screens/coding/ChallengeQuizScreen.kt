@@ -7,16 +7,16 @@
 package com.tatumgames.tatumtech.android.ui.components.screens.coding
 
 import android.app.Application
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Image
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -53,7 +52,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -66,6 +64,7 @@ import androidx.navigation.NavController
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.Header
+import com.tatumgames.tatumtech.android.ui.components.common.MotionDefaults
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.models.AnswerFeedback
@@ -114,11 +113,13 @@ fun ChallengeQuizScreen(
     val quizLoading by viewModel.quizLoading.collectAsState()
     val dailyLimitReachedForBucket by viewModel.dailyLimitReachedForBucket.collectAsState()
 
-    // Keep last non-NONE feedback so AnimatedVisibility exit does not flash the opposite icon.
+    // Keep last non-NONE feedback so AnimatedVisibility exit does not flash the opposite icon/text.
     var displayedFeedback by remember { mutableStateOf(AnswerFeedback.NONE) }
-    LaunchedEffect(answerFeedback) {
+    var feedbackQuestion by remember { mutableStateOf<CodingChallenges?>(null) }
+    LaunchedEffect(answerFeedback, currentIndex, questions) {
         if (answerFeedback != AnswerFeedback.NONE) {
             displayedFeedback = answerFeedback
+            feedbackQuestion = questions.getOrNull(currentIndex)
         }
     }
     val initialLanguage = languages.firstOrNull().orEmpty()
@@ -134,6 +135,8 @@ fun ChallengeQuizScreen(
     val contentScroll = rememberScrollState()
     val codeSnippetScroll = rememberScrollState()
     val showLanguageRow = languages.size > 1
+    val animationsEnabled = MotionDefaults.animationsEnabled()
+    val feedbackBlocking = answerFeedback != AnswerFeedback.NONE
 
     LaunchedEffect(selectedLanguage, selectedDifficulty, quizRoute) {
         if (selectedLanguage.isNotEmpty() && selectedDifficulty.isNotEmpty()) {
@@ -293,80 +296,115 @@ fun ChallengeQuizScreen(
 
                             Spacer(modifier = Modifier.height(24.dp))
 
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(containerColor = White),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(16.dp)
-                                ) {
-                                    StandardText(
-                                        text = "Question ${currentIndex + 1} of ${questions.size}",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = Purple500
+                            AnimatedContent(
+                                targetState = currentIndex to question,
+                                transitionSpec = {
+                                    val enter = fadeIn(
+                                        MotionDefaults.durationSpec(
+                                            animationsEnabled,
+                                            MotionDefaults.CONTENT_MS
+                                        )
+                                    ) + slideInHorizontally(
+                                        animationSpec = MotionDefaults.durationSpec(
+                                            animationsEnabled,
+                                            MotionDefaults.CONTENT_MS
+                                        ),
+                                        initialOffsetX = { if (animationsEnabled) it / 16 else 0 }
                                     )
-                                    if (showLeetTeachingUi && question.pattern.isNotBlank()) {
-                                        Spacer(modifier = Modifier.height(10.dp))
-                                        Surface(
-                                            shape = RoundedCornerShape(8.dp),
-                                            color = MaterialTheme.colorScheme.secondaryContainer
-                                        ) {
-                                            StandardText(
-                                                text = stringResource(
-                                                    R.string.leetcode_pattern_label,
-                                                    question.pattern
-                                                ),
-                                                style = MaterialTheme.typography.labelLarge,
-                                                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                                modifier = Modifier.padding(
-                                                    horizontal = 12.dp,
-                                                    vertical = 8.dp
-                                                )
-                                            )
-                                        }
-                                    }
-                                    if (showLeetTeachingUi && question.codeSnippet.isNotBlank()) {
-                                        Spacer(modifier = Modifier.height(12.dp))
-                                        Card(
-                                            modifier = Modifier.semantics {
-                                                contentDescription =
-                                                    context.getString(R.string.leetcode_code_block)
-                                            },
-                                            colors = CardDefaults.cardColors(
-                                                containerColor = MaterialTheme.colorScheme.surfaceVariant
-                                            ),
-                                            shape = RoundedCornerShape(8.dp)
-                                        ) {
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .horizontalScroll(codeSnippetScroll)
-                                                    .padding(12.dp)
+                                    val exit = fadeOut(
+                                        MotionDefaults.durationSpec(
+                                            animationsEnabled,
+                                            MotionDefaults.CONTENT_MS
+                                        )
+                                    ) + slideOutHorizontally(
+                                        animationSpec = MotionDefaults.durationSpec(
+                                            animationsEnabled,
+                                            MotionDefaults.CONTENT_MS
+                                        ),
+                                        targetOffsetX = { if (animationsEnabled) -it / 16 else 0 }
+                                    )
+                                    enter togetherWith exit
+                                },
+                                label = "quizQuestion"
+                            ) { (questionIndex, animatedQuestion) ->
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(containerColor = White),
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(16.dp)
+                                    ) {
+                                        StandardText(
+                                            text = "Question ${questionIndex + 1} of ${questions.size}",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = Purple500
+                                        )
+                                        if (showLeetTeachingUi && animatedQuestion.pattern.isNotBlank()) {
+                                            Spacer(modifier = Modifier.height(10.dp))
+                                            Surface(
+                                                shape = RoundedCornerShape(8.dp),
+                                                color = MaterialTheme.colorScheme.secondaryContainer
                                             ) {
-                                                Text(
-                                                    text = question.codeSnippet,
-                                                    style = MaterialTheme.typography.bodyMedium,
-                                                    fontFamily = FontFamily.Monospace,
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                    softWrap = false
+                                                StandardText(
+                                                    text = stringResource(
+                                                        R.string.leetcode_pattern_label,
+                                                        animatedQuestion.pattern
+                                                    ),
+                                                    style = MaterialTheme.typography.labelLarge,
+                                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                                    modifier = Modifier.padding(
+                                                        horizontal = 12.dp,
+                                                        vertical = 8.dp
+                                                    )
                                                 )
                                             }
                                         }
-                                    }
-                                    Spacer(modifier = Modifier.height(12.dp))
-                                    StandardText(
-                                        text = question.question,
-                                        style = MaterialTheme.typography.bodyLarge
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-                                    question.options.forEachIndexed { index, option ->
-                                        RadioButtonOption(
-                                            text = "${('A' + index)}. $option",
-                                            isSelected = selectedAnswer == option,
-                                            onClick = { viewModel.onSelectedAnswerChange(option) }
+                                        if (showLeetTeachingUi && animatedQuestion.codeSnippet.isNotBlank()) {
+                                            Spacer(modifier = Modifier.height(12.dp))
+                                            Card(
+                                                modifier = Modifier.semantics {
+                                                    contentDescription =
+                                                        context.getString(R.string.leetcode_code_block)
+                                                },
+                                                colors = CardDefaults.cardColors(
+                                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                                ),
+                                                shape = RoundedCornerShape(8.dp)
+                                            ) {
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .horizontalScroll(codeSnippetScroll)
+                                                        .padding(12.dp)
+                                                ) {
+                                                    Text(
+                                                        text = animatedQuestion.codeSnippet,
+                                                        style = MaterialTheme.typography.bodyMedium,
+                                                        fontFamily = FontFamily.Monospace,
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                        softWrap = false
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.height(12.dp))
+                                        StandardText(
+                                            text = animatedQuestion.question,
+                                            style = MaterialTheme.typography.bodyLarge
                                         )
-                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        animatedQuestion.options.forEachIndexed { index, option ->
+                                            RadioButtonOption(
+                                                text = "${('A' + index)}. $option",
+                                                isSelected = selectedAnswer == option,
+                                                enabled = !feedbackBlocking,
+                                                onClick = {
+                                                    viewModel.onSelectedAnswerChange(option)
+                                                }
+                                            )
+                                            Spacer(modifier = Modifier.height(8.dp))
+                                        }
                                     }
                                 }
                             }
@@ -376,7 +414,7 @@ fun ChallengeQuizScreen(
                             val canSubmitToday = todayAnswerCount < DAILY_LIMIT
                             Button(
                                 onClick = {
-                                    if (selectedAnswer.isNotEmpty() && canSubmitToday) {
+                                    if (selectedAnswer.isNotEmpty() && canSubmitToday && !feedbackBlocking) {
                                         viewModel.submitAnswer(
                                             answer = selectedAnswer,
                                             quizRoute = quizRoute,
@@ -385,7 +423,9 @@ fun ChallengeQuizScreen(
                                         )
                                     }
                                 },
-                                enabled = selectedAnswer.isNotEmpty() && canSubmitToday,
+                                enabled = selectedAnswer.isNotEmpty() &&
+                                    canSubmitToday &&
+                                    !feedbackBlocking,
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Purple500,
                                     disabledContainerColor = Purple500.copy(alpha = 0.5f)
@@ -414,47 +454,20 @@ fun ChallengeQuizScreen(
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
-            val overlayVisible = answerFeedback != AnswerFeedback.NONE
-            AnimatedVisibility(
-                visible = overlayVisible,
-                enter = fadeIn(animationSpec = tween(200)),
-                exit = fadeOut(animationSpec = tween(200)),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                val interactionSource = remember { MutableInteractionSource() }
-                val feedbackForDisplay =
-                    if (displayedFeedback != AnswerFeedback.NONE) {
-                        displayedFeedback
-                    } else {
-                        answerFeedback
-                    }
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Black.copy(alpha = 0.35f))
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null
-                        ) { },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(
-                            id = if (feedbackForDisplay == AnswerFeedback.CORRECT) {
-                                R.drawable.coding_challenge_correct
-                            } else {
-                                R.drawable.coding_challenge_incorrect
-                            }
-                        ),
-                        contentDescription = if (feedbackForDisplay == AnswerFeedback.CORRECT) {
-                            stringResource(R.string.cd_answer_correct)
-                        } else {
-                            stringResource(R.string.cd_answer_incorrect)
-                        },
-                        modifier = Modifier.size(140.dp)
-                    )
+            val feedbackForDisplay =
+                if (displayedFeedback != AnswerFeedback.NONE) {
+                    displayedFeedback
+                } else {
+                    answerFeedback
                 }
-            }
+            val questionForFeedback = feedbackQuestion ?: questions.getOrNull(currentIndex)
+            AnswerFeedbackOverlay(
+                visible = answerFeedback != AnswerFeedback.NONE,
+                feedback = feedbackForDisplay,
+                correctAnswer = questionForFeedback?.correctAnswer.orEmpty(),
+                explanation = questionForFeedback?.explanation.orEmpty(),
+                onContinue = { viewModel.acknowledgeAnswerFeedback() }
+            )
         }
     }
 }
@@ -624,18 +637,20 @@ fun ChallengeResultsScreen(
 fun RadioButtonOption(
     text: String,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    enabled: Boolean = true
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable(enabled = enabled) { onClick() }
             .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(
             selected = isSelected,
-            onClick = { onClick() },
+            onClick = { if (enabled) onClick() },
+            enabled = enabled,
             colors = androidx.compose.material3.RadioButtonDefaults.colors(
                 selectedColor = Purple500
             )

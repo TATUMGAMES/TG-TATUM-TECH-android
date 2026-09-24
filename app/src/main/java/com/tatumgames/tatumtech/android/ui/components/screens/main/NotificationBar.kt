@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -46,13 +47,16 @@ import com.tatumgames.tatumtech.android.ui.theme.Black
 import com.tatumgames.tatumtech.android.ui.theme.Grey200
 import com.tatumgames.tatumtech.android.ui.theme.Grey500
 import com.tatumgames.tatumtech.android.ui.theme.NotificationLavender
+import com.tatumgames.tatumtech.android.ui.theme.Purple500
 
 @Composable
 fun NotificationBar(
     icon: ImageVector? = null,
     image: Painter? = null,
     title: String,
-    description: String
+    description: String,
+    isUnread: Boolean = false,
+    onClick: (() -> Unit)? = null
 ) {
     require(icon != null || image != null) {
         ICON_OR_IMAGE_ERROR
@@ -62,8 +66,14 @@ fun NotificationBar(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(Grey200)
-            .clickable { /* Handle notification click */ }
+            .background(if (isUnread) NotificationLavender.copy(alpha = 0.55f) else Grey200)
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(onClick = onClick)
+                } else {
+                    Modifier
+                }
+            )
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -94,12 +104,12 @@ fun NotificationBar(
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             StandardText(
                 text = title,
                 style = TextStyle(
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = if (isUnread) FontWeight.SemiBold else FontWeight.Medium
                 ),
                 color = Black
             )
@@ -109,6 +119,16 @@ fun NotificationBar(
                     fontSize = 14.sp
                 ),
                 color = Grey500
+            )
+        }
+
+        if (isUnread) {
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .clip(CircleShape)
+                    .background(Purple500)
             )
         }
     }

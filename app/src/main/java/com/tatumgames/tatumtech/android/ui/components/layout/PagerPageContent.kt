@@ -34,7 +34,7 @@ import com.tatumgames.tatumtech.android.ui.models.FeatureCardItem
 /**
  * Composable that displays feature cards in a grid layout for a pager page.
  * Contains ONLY FeatureCards - no notifications section.
- * Replicates MainScreen's FeatureCard grid layout pattern.
+ * FeatureCard grid layout for a single home-pager category.
  *
  * @param items List of FeatureCardItem objects to display
  * @param navController Navigation controller for handling card clicks
@@ -50,7 +50,7 @@ fun PagerPageContent(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp)
     ) {
-        // FeatureCard Grid (same layout pattern as MainScreen)
+        // FeatureCard grid
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             // Group items into rows of 2 (except last item if odd count, make it full width)
             // Use chunked(2) to safely handle pairs of items

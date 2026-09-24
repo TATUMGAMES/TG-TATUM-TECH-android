@@ -52,6 +52,10 @@
     <string name="greeting_generic">Hello!</string>
     <string name="greeting_with_name">Hello, %1$s!</string>
     <string name="recent_notifications">Recent Notifications</string>
+    <string name="recent_notifications_empty">No recent notifications</string>
+    <string name="notif_career_spotlight">New roles are available in Career. Explore openings that match your skills.</string>
+    <string name="notif_community_spotlight">See what’s happening in the Tatum Tech community.</string>
+    <string name="notif_game_spotlight">Discover games and opportunities in the Games section.</string>
     <string name="cd_notifications_section_expanded">Collapse recent notifications</string>
     <string name="cd_notifications_section_collapsed">Expand recent notifications</string>
     <string name="title_partners">Partners</string>
@@ -73,6 +77,11 @@
     <string name="title_mock_interview_challenges">Mock Interviews</string>
     <string name="cd_answer_correct">Answer correct</string>
     <string name="cd_answer_incorrect">Answer incorrect</string>
+    <string name="answer_feedback_correct_title">✓ Correct!</string>
+    <string name="answer_feedback_incorrect_title">✕ Not quite.</string>
+    <string name="answer_feedback_correct_answer">Correct Answer: %1$s</string>
+    <string name="answer_feedback_continue">Continue</string>
+    <string name="answer_feedback_explanation_fallback">Review the correct answer and try a similar question next time to reinforce this concept.</string>
     <string name="leetcode_pattern_label">Pattern: %1$s</string>
     <string name="leetcode_code_block">Code snippet</string>
     <string name="partner_since_label">Partner Since %1$s</string>
@@ -128,12 +137,12 @@
     <string name="demographic_save_button">Save Demographic Information</string>
     <string name="demographic_save_success">Thank you. Your information has been saved.</string>
     <string-array name="demographic_age_ranges">
-        <item>13-17</item>
-        <item>18-24</item>
-        <item>25-34</item>
-        <item>35-44</item>
-        <item>45-54</item>
-        <item>55-64</item>
+        <item>13–17</item>
+        <item>18–24</item>
+        <item>25–34</item>
+        <item>35–44</item>
+        <item>45–54</item>
+        <item>55–64</item>
         <item>65+</item>
     </string-array>
     <string-array name="demographic_sex_options">
@@ -158,16 +167,35 @@
     <string name="about_impact_title">Our Impact</string>
     <string name="about_impact_description" formatted="false">With only 2% of game developers being Black and 3% Latinx, we\'re working to change the future by empowering diverse voices to create, lead, and innovate in gaming.</string>
     <string name="about_tatum_tech_title">What is Tatum Tech?</string>
-    <string name="about_tatum_tech_description">Tatum Tech is our bi-annual community event that bridges the digital divide in South LA. We give away 100+ computers and offer hands-on tech workshops led by professionals from top game studios. Learn more at https://tatumgames.com</string>
+    <string name="about_tatum_tech_description">Tatum Tech is a workforce-development and game-production program operated by Tatum Games that helps aspiring developers, artists, designers, programmers, and creators build practical AI and game-development skills through hands-on production. Participants work in multidisciplinary teams to create original games and intellectual property, learn from industry professionals, and develop portfolio-quality projects using the broader Tatum Games technology ecosystem.</string>
+    <string name="about_visit_tatum_tech">Visit Tatum Tech</string>
+<!--    <string name="about_our_technology_title">Our Technology</string>-->
+    <string name="about_orchestra_title">Orchestra AI</string>
+    <string name="about_orchestra_description">Orchestra is Tatum Games\' AI orchestration and production platform for accelerating game development from idea to production-ready output. It coordinates AI models, agents, tools, and development workflows to help creators build and iterate on games more efficiently.</string>
+    <string name="about_mikros_analytics_title">MIKROS Analytics</string>
+    <string name="about_mikros_analytics_description">Understand your players with game analytics, benchmarking, player intelligence, and data-driven insights designed to help developers make better decisions.</string>
+    <string name="about_mikros_marketing_title">MIKROS Marketing</string>
+    <string name="about_mikros_marketing_description">Launch and manage game marketing campaigns designed specifically for developers and studios, helping games reach players across the broader Tatum Games ecosystem.</string>
+    <string name="about_mikros_resources_title">MIKROS Resources</string>
+    <string name="about_mikros_resource_explainer">MIKROS Explainer</string>
+    <string name="about_mikros_resource_explainer_desc">Powerful infrastructure and technologies built by developers for developers.</string>
+    <string name="about_mikros_resource_marketing_tutorial">MIKROS Marketing Tutorial</string>
+    <string name="about_mikros_resource_marketing_tutorial_desc">Launch game marketing campaigns in minutes.</string>
+    <string name="about_mikros_resource_analytics_integration">MIKROS Analytics — Integration Tutorial</string>
+    <string name="about_mikros_resource_analytics_integration_desc">World\'s leading in-app data analytics and insights.</string>
+    <string name="about_mikros_resource_analytics_logging">MIKROS Analytics — Logging Events</string>
+    <string name="about_mikros_resource_analytics_logging_desc">Log custom events tutorial.</string>
+    <string name="about_mikros_resource_docs">MIKROS Technical Documentation</string>
+    <string name="about_mikros_resource_docs_desc">SDK integration, analytics, APIs, and developer documentation.</string>
     <string name="about_mikros_title">Powered by MIKROS</string>
-    <string name="about_mikros_description">Our flagship product, MIKROS, helps game developers acquire users, grow revenue, and gain insights through advanced analytics powered by AI and patented technology. Explore at https://wwww.developer.tatumgames.com</string>
+    <string name="about_mikros_description">Our flagship product, MIKROS, helps game developers acquire users, grow revenue, and gain insights through advanced analytics powered by AI and patented technology.</string>
     <string name="about_community_title">Join the MIKROS Mafia</string>
     <string name="about_community_description">Connect with game developers, influencers, and industry insiders. Get support, exclusive perks, and early access to opportunities. Join us on Discord: https://discord.com/invite/6FzqSUDRXQ</string>
 
     <!-- FAQ -->
     <string name="faq_general_questions">General Questions</string>
     <string name="faq_what_is_tatum_tech">What is Tatum Tech?</string>
-    <string name="faq_what_is_tatum_tech_answer">Tatum Tech is a series of free events that introduce underrepresented communities to careers in tech and game development. We host hands-on workshops, coding challenges, and networking with industry professionals.</string>
+    <string name="faq_what_is_tatum_tech_answer">Tatum Tech is a workforce-development and game-production program that helps aspiring creators build AI and game-development skills through hands-on production, mentorship, and portfolio-quality projects.</string>
     <string name="faq_who_can_attend">Who can attend Tatum Tech events?</string>
     <string name="faq_who_can_attend_answer">Anyone can attend! We especially welcome participants from underrepresented communities, including women, people of color, and individuals from low-income backgrounds.</string>
     <string name="faq_how_to_register">How do I register for events?</string>
@@ -274,6 +302,8 @@
     <string name="contact_card_section_contact">Contact</string>
     <string name="contact_card_section_links">Links</string>
     <string name="contact_card_name">Name</string>
+    <string name="contact_card_first_name">First Name</string>
+    <string name="contact_card_last_name">Last Name</string>
     <string name="contact_card_job_title">Job title</string>
     <string name="contact_card_company">Company</string>
     <string name="contact_card_description">Description</string>
@@ -289,6 +319,7 @@
     <string name="contact_card_take_photo">Take photo</string>
     <string name="contact_card_choose_photo">Choose photo</string>
     <string name="contact_card_name_required">Name is required</string>
+    <string name="contact_card_first_name_required">First name is required</string>
     <string name="contact_card_email_required">Email is required</string>
     <string name="contact_card_email_invalid">Enter a valid email address</string>
     <string name="contact_card_fix_invalid">Please fix the highlighted fields</string>

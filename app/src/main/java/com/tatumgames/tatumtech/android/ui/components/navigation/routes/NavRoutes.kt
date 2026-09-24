@@ -23,10 +23,8 @@ object NavRoutes {
     const val SIGN_IN_SCREEN = "sign_in_screen"
     const val SIGN_UP_SCREEN = "sign_up_screen"
     const val FORGOT_PASSWORD_SCREEN = "forgot_password_screen"
-    const val CHANGE_PASSWORD_SCREEN = "change_password_screen"
 
     // main routes
-    const val MAIN_SCREEN = "main_screen"
     const val UPCOMING_EVENTS_SCREEN = "upcoming_events_screen"
     const val VIRTUAL_SPEAKERS_SCREEN = "virtual_speakers_screen/{eventId}"
     const val CODING_CHALLENGES_SCREEN = "coding_challenges_screen"
@@ -63,12 +61,4 @@ object NavRoutes {
     fun gameDetailsRoute(gameId: String): String = "game_details_screen/$gameId"
 
     fun virtualSpeakersRoute(eventId: Long): String = "virtual_speakers_screen/$eventId"
-
-    /**
-     * Helper function to build the attendees screen route with event ID.
-     *
-     * @param eventId The ID of the event to display attendees for.
-     * @return The complete route string for the attendees screen.
-     */
-    fun attendeesScreenRoute(eventId: Long): String = "attendees_screen/$eventId"
 }

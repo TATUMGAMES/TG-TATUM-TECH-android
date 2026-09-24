@@ -4,7 +4,7 @@
     "name": "Better Youth",
     "category": "Community Partners",
     "logo": "partner_logo_betteryouth",
-    "description": "Community organization and partner in the Tatum Games ecosystem.",
+    "description": "Community Partner in the Tatum Games ecosystem. Better Youth supports underserved young people in Los Angeles through mentorship, enrichment programs, and pathways into creative and professional opportunities.",
     "featured": false,
     "contacts": [
       {
@@ -20,7 +20,7 @@
     "name": "Black Gxming Society (BGXS)",
     "category": "Community Partners",
     "logo": "partner_logo_bgxs",
-    "description": "Community organization and partner in the Tatum Games ecosystem.",
+    "description": "Community Partner in the Tatum Games ecosystem. Black Gxming Society is a community organization that connects Black gamers and creators through events, networking, and shared gaming culture.",
     "contacts": [
       {
         "name": "BGXS",
@@ -34,7 +34,7 @@
     "name": "Create Now",
     "category": "Community Partners",
     "logo": "partner_logo_createnow",
-    "description": "Community organization and partner in the Tatum Games ecosystem.",
+    "description": "Community Partner in the Tatum Games ecosystem. Create Now is a Los Angeles nonprofit that provides free arts education and mentoring to underserved youth ages 3–24 through classrooms, shelters, community agencies, and cultural field trips.",
     "featured": true,
     "contacts": [
       {
@@ -50,7 +50,7 @@
     "name": "Living Advantage",
     "category": "Community Partners",
     "logo": "partner_logo_livingadvantage",
-    "description": "Community organization and partner in the Tatum Games ecosystem.",
+    "description": "Community Partner in the Tatum Games ecosystem. Living Advantage supports foster, adoptive, and kinship families with advocacy, education, and resources that help youth thrive.",
     "contacts": [
       {
         "name": "Living Advantage",
@@ -68,7 +68,7 @@
     "name": "TreTech",
     "category": "Community Partners",
     "logo": "partner_logo_tretech",
-    "description": "Community organization and partner in the Tatum Games ecosystem.",
+    "description": "Community Partner in the Tatum Games ecosystem. TreTech works with communities on technology education and workforce pathways that expand access to digital skills.",
     "contacts": [
       {
         "name": "Tre",
@@ -82,7 +82,7 @@
     "name": "TutorD",
     "category": "Community Partners",
     "logo": "partner_logo_tutord",
-    "description": "Community organization and partner in the Tatum Games ecosystem.",
+    "description": "Community Partner in the Tatum Games ecosystem. TutorD provides tutoring and scholar programs that help students build academic confidence and skills through personalized learning support.",
     "featured": true,
     "contacts": [
       {
@@ -107,7 +107,7 @@
     "name": "Walt Disney Imagineering",
     "category": "Corporate Partners",
     "logo": "partner_logo_walt_disney_imagineering",
-    "description": "Corporate partner in the Tatum Games ecosystem.",
+    "description": "Corporate Partner in the Tatum Games ecosystem. Walt Disney Imagineering designs and builds Disney parks, attractions, and experiential entertainment by combining storytelling, engineering, and creative technology.",
     "contacts": [
       {
         "name": "Brianna Butler",
@@ -123,7 +123,7 @@
     "name": "CSUN",
     "category": "Education Partners",
     "logo": "partner_logo_csun",
-    "description": "Education partner in the Tatum Games ecosystem.",
+    "description": "Education Partner in the Tatum Games ecosystem. California State University, Northridge is a public university in the San Fernando Valley offering undergraduate and graduate programs across arts, sciences, engineering, and business.",
     "featured": true,
     "websiteUrl": "https://www.csun.edu/"
   },
@@ -132,7 +132,7 @@
     "name": "Hawthorne",
     "category": "Education Partners",
     "logo": "partner_logo_hawthorne",
-    "description": "Education partner in the Tatum Games ecosystem.",
+    "description": "Education Partner in the Tatum Games ecosystem. Hawthorne High School serves students in the South Bay of Los Angeles County with college-preparatory and career-focused high school programs.",
     "featured": false,
     "websiteUrl": "https://www.hhscougars.org/"
   },
@@ -141,7 +141,7 @@
     "name": "LAUSD Unified",
     "category": "Education Partners",
     "logo": "partner_logo_lausd",
-    "description": "Education partner in the Tatum Games ecosystem.",
+    "description": "Education Partner in the Tatum Games ecosystem. Los Angeles Unified School District is the second-largest public school district in the United States, serving hundreds of thousands of K–12 students across Los Angeles.",
     "featured": false,
     "contacts": [
       {
@@ -156,7 +156,7 @@
     "name": "UCLA",
     "category": "Education Partners",
     "logo": "partner_logo_ucla",
-    "description": "Education partner in the Tatum Games ecosystem.",
+    "description": "Education Partner in the Tatum Games ecosystem. The University of California, Los Angeles is a major public research university known for academic programs spanning STEM, arts, humanities, and professional schools.",
     "featured": false,
     "websiteUrl": "https://www.ucla.edu/"
   },
@@ -165,7 +165,7 @@
     "name": "USC",
     "category": "Education Partners",
     "logo": "partner_logo_usc",
-    "description": "Education partner in the Tatum Games ecosystem.",
+    "description": "Education Partner in the Tatum Games ecosystem. The University of Southern California is a private research university in Los Angeles with well-known programs in cinema, engineering, business, and the arts.",
     "featured": false,
     "websiteUrl": "https://www.usc.edu/"
   },
@@ -174,7 +174,7 @@
     "name": "Baobab Studios",
     "category": "Game Studio Partners",
     "logo": "partner_logo_baobab",
-    "description": "Game studio partner in the Tatum Games ecosystem.",
+    "description": "Game Studio Partner in the Tatum Games ecosystem. Baobab Studios creates immersive animated storytelling experiences for VR and interactive platforms, blending cinematic narrative with real-time technology.",
     "contacts": [
       {
         "name": "Jackson Clayton",
@@ -188,7 +188,7 @@
     "name": "Flickin Fun",
     "category": "Game Studio Partners",
     "logo": "partner_logo_pixel_pirates",
-    "description": "Game studio partner in the Tatum Games ecosystem.",
+    "description": "Game Studio Partner in the Tatum Games ecosystem. Flickin Fun is an independent studio developing Pixel Pirates, a Steam early-access title focused on pirate-themed gameplay.",
     "contacts": [
       {
         "name": "Eric Kasnetsis",
@@ -204,7 +204,7 @@
     "name": "The Laughing Otter",
     "category": "Game Studio Partners",
     "logo": "partner_logo_laughing_otter",
-    "description": "Game studio partner in the Tatum Games ecosystem.",
+    "description": "Game Studio Partner in the Tatum Games ecosystem. The Laughing Otter is an independent game studio creating original interactive entertainment and collaborating within the broader games community.",
     "featured": true,
     "contacts": [
       {
@@ -219,7 +219,7 @@
     "name": "Miami Avalon",
     "category": "Game Studio Partners",
     "logo": "partner_logo_miami_avalon",
-    "description": "Game studio partner in the Tatum Games ecosystem.",
+    "description": "Game Studio Partner in the Tatum Games ecosystem. Miami Avalon is an independent studio behind Ascend, a Steam-published game experience from their development team.",
     "contacts": [
       {
         "name": "Nareice Wint",
@@ -234,7 +234,7 @@
     "name": "Robot Cowboys of Mars",
     "category": "Game Studio Partners",
     "logo": "partner_logo_solgears",
-    "description": "Game studio partner (Solgears). Official product logo was not available; a related mark is shown.",
+    "description": "Game Studio Partner in the Tatum Games ecosystem. Robot Cowboys of Mars (Solgears) is an independent game project with an active community presence; an official product logo was not available, so a related mark is shown.",
     "contacts": [
       {
         "name": "Nigel Randall"
@@ -249,7 +249,7 @@
     "name": "Shero Games",
     "category": "Game Studio Partners",
     "logo": "partner_logo_shero_games",
-    "description": "Game studio partner in the Tatum Games ecosystem.",
+    "description": "Game Studio Partner in the Tatum Games ecosystem. Shero Games creates games and related media that center women heroes, with companion storytelling through Shero Comics.",
     "contacts": [
       {
         "name": "Rayven Choi",
@@ -269,11 +269,31 @@
     ]
   },
   {
+    "id": "game_studio_tictoc_games",
+    "name": "TicToc Games",
+    "category": "Game Studio Partners",
+    "logo": "partner_logo_tictoc_games",
+    "description": "Game Development Partner in the Tatum Games ecosystem. TicToc Games is a full-service game development studio with teams in Burbank and Manila, creating original games and collaborating with major entertainment and gaming brands across mobile, console, and other platforms.",
+    "featured": true,
+    "contacts": [
+      {
+        "name": "Scott Prather",
+        "email": "scott.prather@tictocgames.com"
+      }
+    ],
+    "websiteUrl": "https://tictocgames.com/",
+    "socialLinks": {
+      "discord": "https://discord.com/invite/w9sPbPt26H",
+      "instagram": "https://www.instagram.com/tictocgames/",
+      "x": "https://x.com/tictocgames"
+    }
+  },
+  {
     "id": "game_studio_voidcube",
     "name": "Voidcube Studio",
     "category": "Game Studio Partners",
     "logo": "partner_logo_void_cube",
-    "description": "Game studio partner in the Tatum Games ecosystem.",
+    "description": "Game Studio Partner in the Tatum Games ecosystem. Voidcube Studio is an independent game development studio building original interactive experiences.",
     "contacts": [
       {
         "name": "Matthew Sloan",
@@ -289,7 +309,7 @@
     "name": "Human-I-T",
     "category": "Government Partners",
     "logo": "partner_logo_human_it",
-    "description": "Government / public-sector partner in the Tatum Games ecosystem.",
+    "description": "Government Partner in the Tatum Games ecosystem. Human-I-T advances digital equity by refurbishing devices, providing low-cost internet options, and delivering digital literacy support to underserved communities.",
     "websiteUrl": "https://www.human-i-t.org/"
   },
   {
@@ -297,7 +317,7 @@
     "name": "Delete the Divide",
     "category": "Government Partners",
     "logo": "partner_logo_dtd",
-    "description": "Government / public-sector partner in the Tatum Games ecosystem.",
+    "description": "Government Partner in the Tatum Games ecosystem. Delete the Divide is a Los Angeles County initiative focused on closing the digital divide through access to devices, connectivity, and digital skills programs.",
     "websiteUrl": "https://www.deletethedivide.org/"
   },
   {
@@ -305,7 +325,7 @@
     "name": "Accessible Automation",
     "category": "Technology Partners",
     "logo": "partner_logo_aa_blue",
-    "description": "Technology partner in the Tatum Games ecosystem.",
+    "description": "Technology Partner in the Tatum Games ecosystem. Accessible Automation focuses on automation tools and services designed to improve accessibility and operational efficiency.",
     "contacts": [
       {
         "name": "Isaac Nash-Bey",
@@ -319,7 +339,7 @@
     "name": "Jiwe",
     "category": "Technology Partners",
     "logo": "partner_logo_jiwe",
-    "description": "Technology partner in the Tatum Games ecosystem.",
+    "description": "Technology Partner in the Tatum Games ecosystem. Jiwe builds technology products and services for creators and teams working in digital and interactive media.",
     "contacts": [
       {
         "name": "Max",
@@ -334,7 +354,7 @@
     "name": "Korgi",
     "category": "Technology Partners",
     "logo": "partner_logo_korgi_electric",
-    "description": "Technology partner in the Tatum Games ecosystem.",
+    "description": "Technology Partner in the Tatum Games ecosystem. Korgi is an AI-assisted project management platform with Kanban boards and templates that help teams plan, organize, and deliver creative and game-development work.",
     "featured": true,
     "contacts": [
       {
@@ -352,7 +372,7 @@
     "name": "Spinach Video",
     "category": "Technology Partners",
     "logo": "partner_logo_spinach_video",
-    "description": "Technology partner in the Tatum Games ecosystem.",
+    "description": "Technology Partner in the Tatum Games ecosystem. Spinach Video provides video production and media technology services for digital content teams.",
     "contacts": [
       {
         "name": "Kris",
@@ -366,7 +386,7 @@
     "name": "Glitch",
     "category": "Technology Partners",
     "logo": "partner_logo_glitch",
-    "description": "Technology partner in the Tatum Games ecosystem.",
+    "description": "Technology Partner in the Tatum Games ecosystem. Glitch is a game marketing platform that helps developers grow audiences through social automation, influencer outreach, ads tools, analytics, and supervised marketing agents.",
     "featured": true,
     "websiteUrl": "https://www.glitch.fun/"
   },
@@ -375,7 +395,7 @@
     "name": "INVO Tech",
     "category": "Technology Partners",
     "logo": "partner_logo_arms_invo",
-    "description": "Technology partner in the Tatum Games ecosystem.",
+    "description": "Technology Partner in the Tatum Games ecosystem. INVO Tech provides middleware for portable premium currency across games, letting players carry spending value between titles while developers control acceptance rules and monetization.",
     "featured": true,
     "websiteUrl": "https://www.ourinvo.com/"
   },
@@ -384,7 +404,7 @@
     "name": "My Virtual Mate",
     "category": "Technology Partners",
     "logo": "partner_logo_my_virtual_mate_cover",
-    "description": "Technology partner in the Tatum Games ecosystem.",
+    "description": "Technology Partner in the Tatum Games ecosystem. My Virtual Mate builds virtual companion and interactive digital experiences for consumers and creators.",
     "websiteUrl": "https://myvirtualmate.com/"
   },
   {
@@ -392,7 +412,7 @@
     "name": "Influencer",
     "category": "Technology Partners",
     "logo": "partner_logo_influencer",
-    "description": "Technology partner in the Tatum Games ecosystem.",
+    "description": "Technology Partner in the Tatum Games ecosystem. Influencer.com provides tools and services that help brands and creators manage influencer marketing campaigns and creator partnerships.",
     "featured": true,
     "websiteUrl": "https://www.influencer.com/"
   },
@@ -401,7 +421,7 @@
     "name": "Tatum Games",
     "category": "Technology Partners",
     "logo": "partner_logo_mikros",
-    "description": "MIKROS is a game development ecosystem built to help studios understand, grow, and market their games. From powerful game analytics to AI-driven marketing tools, MIKROS gives developers the insights, technology, and reach they need to turn better data into better decisions and better games.",
+    "description": "Technology Partner in the Tatum Games ecosystem. MIKROS is a game development platform that helps studios understand, grow, and market their games with analytics and AI-driven marketing tools.",
     "featured": true,
     "productName": "MIKROS",
     "websiteUrl": "https://developer.tatumgames.com/"
@@ -410,7 +430,7 @@
     "id": "technology_red_apple_tech",
     "name": "Red Apple Tech",
     "category": "Technology Partners",
-    "description": "Technology partner that helps businesses and creators build video games and interactive digital experiences.",
+    "description": "Technology Partner in the Tatum Games ecosystem. Red Apple Tech helps businesses and creators build video games and interactive digital experiences from concept through development.",
     "featured": true,
     "contacts": [
       {

@@ -8,27 +8,20 @@
   },
   {
     "id": "notif_002",
-    "type": "EventRegistration",
-    "title": "Event Registration Open",
-    "description": "Register for the upcoming Tatum Tech Workshop on February 15th.",
-    "date": "2024-01-14T14:20:00Z"
-  },
-  {
-    "id": "notif_003",
     "type": "Achievement",
     "title": "Badge Earned!",
     "description": "Congratulations! You've earned the 'First Steps' badge for completing your first coding challenge.",
     "date": "2024-01-13T16:45:00Z"
   },
   {
-    "id": "notif_004",
+    "id": "notif_003",
     "type": "Community",
     "title": "New Community Post",
     "description": "Check out the latest discussion in the Tatum Tech Discord community.",
     "date": "2024-01-12T09:15:00Z"
   },
   {
-    "id": "notif_005",
+    "id": "notif_004",
     "type": "Career",
     "title": "New Job Opportunity",
     "description": "Riot Games is hiring Junior Software Engineers. Apply now!",

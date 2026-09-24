@@ -49,6 +49,7 @@ class PartnersJsonValidationTest {
                     "TutorD",
                     "CSUN",
                     "The Laughing Otter",
+                    "TicToc Games",
                     "Glitch",
                     "Influencer",
                     "Red Apple Tech",
@@ -56,6 +57,23 @@ class PartnersJsonValidationTest {
                     "Korgi"
                 )
             )
+        )
+
+        val tictoc = partners.first { it.id == "game_studio_tictoc_games" }
+        assertTrue(tictoc.featured)
+        assertEquals("Game Studio Partners", tictoc.category)
+        assertEquals("partner_logo_tictoc_games", tictoc.logo)
+        assertEquals("https://tictocgames.com/", tictoc.websiteUrl)
+        assertTrue(tictoc.contactList().any { it.email == "scott.prather@tictocgames.com" })
+        assertEquals("https://discord.com/invite/w9sPbPt26H", tictoc.socialLinks?.discord)
+        assertEquals("https://www.instagram.com/tictocgames/", tictoc.socialLinks?.instagram)
+        assertEquals("https://x.com/tictocgames", tictoc.socialLinks?.x)
+        assertTrue(tictoc.description!!.contains("Game Development Partner"))
+        assertTrue(partners.none { it.description.isNullOrBlank() })
+        assertTrue(
+            partners.all {
+                it.description!!.contains("Partner in the Tatum Games ecosystem")
+            }
         )
 
         val robotCowboys = partners.first { it.id == "game_studio_robot_cowboys" }
