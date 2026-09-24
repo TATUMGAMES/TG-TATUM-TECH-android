@@ -20,6 +20,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.tatumgames.tatumtech.android.analytics.TrackNavigationAnalytics
+import com.tatumgames.tatumtech.android.ui.components.common.MotionDefaults
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
 import com.tatumgames.tatumtech.android.ui.components.screens.AchievementsScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.GameDetailsScreen
@@ -46,7 +48,6 @@ import com.tatumgames.tatumtech.android.ui.components.screens.events.AttendeesSc
 import com.tatumgames.tatumtech.android.ui.components.screens.events.UpcomingEventsScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.events.VirtualSpeakersScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.main.DemographicInfoScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.main.MainScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.main.UserProfileScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.networking.ContactCardEditorScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.networking.MyContactCardQrScreen
@@ -59,6 +60,7 @@ import com.tatumgames.tatumtech.android.ui.components.screens.timeline.MyTimelin
 fun AccountSetupGraph(
     navController: NavHostController
 ) {
+    TrackNavigationAnalytics(navController)
     NavHost(
         navController = navController,
         startDestination = NavRoutes.AUTH_SCREEN
@@ -82,15 +84,18 @@ fun AccountSetupGraph(
 fun MainGraph(
     navController: NavHostController
 ) {
+    TrackNavigationAnalytics(navController)
+    val animationsEnabled = MotionDefaults.animationsEnabled()
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.HOME_PAGER_SCREEN
+        startDestination = NavRoutes.HOME_PAGER_SCREEN,
+        enterTransition = { MotionDefaults.navEnter(animationsEnabled) },
+        exitTransition = { MotionDefaults.navExit(animationsEnabled) },
+        popEnterTransition = { MotionDefaults.navPopEnter(animationsEnabled) },
+        popExitTransition = { MotionDefaults.navPopExit(animationsEnabled) }
     ) {
         composable(NavRoutes.HOME_PAGER_SCREEN) {
             HomePagerScreen(navController)
-        }
-        composable(NavRoutes.MAIN_SCREEN) {
-            MainScreen(navController)
         }
         composable(NavRoutes.UPCOMING_EVENTS_SCREEN) {
             UpcomingEventsScreen(navController)
