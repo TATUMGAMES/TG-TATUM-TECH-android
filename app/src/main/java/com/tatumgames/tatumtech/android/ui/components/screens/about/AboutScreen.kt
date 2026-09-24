@@ -47,12 +47,12 @@ import com.tatumgames.tatumtech.android.constants.Constants
 import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.ClickableText
 import com.tatumgames.tatumtech.android.ui.components.common.Header
-import com.tatumgames.tatumtech.android.ui.components.common.OutlinedButton
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.common.TitleText
 import com.tatumgames.tatumtech.android.ui.theme.Grey200
 import com.tatumgames.tatumtech.android.ui.theme.Purple500
 import com.tatumgames.tatumtech.android.ui.theme.ScreenScaffoldLight
+import com.tatumgames.tatumtech.android.ui.theme.SpringPurple100
 import com.tatumgames.tatumtech.android.utils.Utils.openUrl
 
 /**
@@ -75,6 +75,7 @@ fun AboutScreen(
     val mikrosResources = listOf(
         AboutResourceLink(
             titleRes = R.string.about_mikros_resource_explainer,
+            descriptionRes = R.string.about_mikros_resource_explainer_desc,
             url = Constants.URL_MIKROS_EXPLAINER_VIDEO
         ),
         AboutResourceLink(
@@ -84,10 +85,12 @@ fun AboutScreen(
         ),
         AboutResourceLink(
             titleRes = R.string.about_mikros_resource_analytics_integration,
+            descriptionRes = R.string.about_mikros_resource_analytics_integration_desc,
             url = Constants.URL_MIKROS_ANALYTICS_INTEGRATION
         ),
         AboutResourceLink(
             titleRes = R.string.about_mikros_resource_analytics_logging,
+            descriptionRes = R.string.about_mikros_resource_analytics_logging_desc,
             url = Constants.URL_MIKROS_ANALYTICS_LOGGING
         ),
         AboutResourceLink(
@@ -121,13 +124,16 @@ fun AboutScreen(
                     item {
                         ClickableText(
                             text = stringResource(R.string.about_tatum_games_description),
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     }
 
                     item {
                         Column {
-                            TitleText(text = stringResource(R.string.about_mission_title))
+                            TitleText(
+                                Modifier.background(SpringPurple100),
+                                text = stringResource(R.string.about_mission_title)
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
                             StandardText(
                                 text = stringResource(R.string.about_mission_description),
@@ -138,7 +144,10 @@ fun AboutScreen(
 
                     item {
                         Column {
-                            TitleText(text = stringResource(R.string.about_impact_title))
+                            TitleText(
+                                Modifier.background(SpringPurple100),
+                                text = stringResource(R.string.about_impact_title)
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
                             StandardText(
                                 text = stringResource(R.string.about_impact_description),
@@ -149,27 +158,34 @@ fun AboutScreen(
 
                     item {
                         Column {
-                            TitleText(text = stringResource(R.string.about_tatum_tech_title))
+                            TitleText(
+                                Modifier.background(SpringPurple100),
+                                text = stringResource(R.string.about_tatum_tech_title)
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
                             StandardText(
                                 text = stringResource(R.string.about_tatum_tech_description),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Spacer(modifier = Modifier.height(12.dp))
-                            OutlinedButton(
-                                text = stringResource(R.string.about_visit_tatum_tech),
+                            AboutResourceRow(
+                                title = stringResource(R.string.about_visit_tatum_tech),
+                                description = null,
                                 onClick = { openUrl(context, Constants.URL_TATUM_TECH) }
                             )
                         }
                     }
 
-                    item {
-                        TitleText(text = stringResource(R.string.about_our_technology_title))
-                    }
+//                    item {
+//                        TitleText(text = stringResource(R.string.about_our_technology_title))
+//                    }
 
                     item {
                         Column {
-                            TitleText(text = stringResource(R.string.about_orchestra_title))
+                            TitleText(
+                                Modifier.background(SpringPurple100),
+                                text = stringResource(R.string.about_orchestra_title)
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
                             StandardText(
                                 text = stringResource(R.string.about_orchestra_description),
@@ -180,7 +196,10 @@ fun AboutScreen(
 
                     item {
                         Column {
-                            TitleText(text = stringResource(R.string.about_mikros_analytics_title))
+                            TitleText(
+                                Modifier.background(SpringPurple100),
+                                text = stringResource(R.string.about_mikros_analytics_title)
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
                             StandardText(
                                 text = stringResource(R.string.about_mikros_analytics_description),
@@ -191,7 +210,10 @@ fun AboutScreen(
 
                     item {
                         Column {
-                            TitleText(text = stringResource(R.string.about_mikros_marketing_title))
+                            TitleText(
+                                Modifier.background(SpringPurple100),
+                                text = stringResource(R.string.about_mikros_marketing_title)
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
                             StandardText(
                                 text = stringResource(R.string.about_mikros_marketing_description),
@@ -202,7 +224,10 @@ fun AboutScreen(
 
                     item {
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            TitleText(text = stringResource(R.string.about_mikros_resources_title))
+                            TitleText(
+                                Modifier.background(SpringPurple100),
+                                text = stringResource(R.string.about_mikros_resources_title)
+                            )
                             mikrosResources.forEach { resource ->
                                 AboutResourceRow(
                                     title = stringResource(resource.titleRes),
@@ -217,7 +242,10 @@ fun AboutScreen(
 
                     item {
                         Column {
-                            TitleText(text = stringResource(R.string.about_community_title))
+                            TitleText(
+                                Modifier.background(SpringPurple100),
+                                text = stringResource(R.string.about_community_title)
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
                             ClickableText(
                                 text = stringResource(R.string.about_community_description),

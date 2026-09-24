@@ -137,12 +137,12 @@
     <string name="demographic_save_button">Save Demographic Information</string>
     <string name="demographic_save_success">Thank you. Your information has been saved.</string>
     <string-array name="demographic_age_ranges">
-        <item>13-17</item>
-        <item>18-24</item>
-        <item>25-34</item>
-        <item>35-44</item>
-        <item>45-54</item>
-        <item>55-64</item>
+        <item>13–17</item>
+        <item>18–24</item>
+        <item>25–34</item>
+        <item>35–44</item>
+        <item>45–54</item>
+        <item>55–64</item>
         <item>65+</item>
     </string-array>
     <string-array name="demographic_sex_options">
@@ -169,7 +169,7 @@
     <string name="about_tatum_tech_title">What is Tatum Tech?</string>
     <string name="about_tatum_tech_description">Tatum Tech is a workforce-development and game-production program operated by Tatum Games that helps aspiring developers, artists, designers, programmers, and creators build practical AI and game-development skills through hands-on production. Participants work in multidisciplinary teams to create original games and intellectual property, learn from industry professionals, and develop portfolio-quality projects using the broader Tatum Games technology ecosystem.</string>
     <string name="about_visit_tatum_tech">Visit Tatum Tech</string>
-    <string name="about_our_technology_title">Our Technology</string>
+<!--    <string name="about_our_technology_title">Our Technology</string>-->
     <string name="about_orchestra_title">Orchestra AI</string>
     <string name="about_orchestra_description">Orchestra is Tatum Games\' AI orchestration and production platform for accelerating game development from idea to production-ready output. It coordinates AI models, agents, tools, and development workflows to help creators build and iterate on games more efficiently.</string>
     <string name="about_mikros_analytics_title">MIKROS Analytics</string>
@@ -178,10 +178,13 @@
     <string name="about_mikros_marketing_description">Launch and manage game marketing campaigns designed specifically for developers and studios, helping games reach players across the broader Tatum Games ecosystem.</string>
     <string name="about_mikros_resources_title">MIKROS Resources</string>
     <string name="about_mikros_resource_explainer">MIKROS Explainer</string>
+    <string name="about_mikros_resource_explainer_desc">Powerful infrastructure and technologies built by developers for developers.</string>
     <string name="about_mikros_resource_marketing_tutorial">MIKROS Marketing Tutorial</string>
     <string name="about_mikros_resource_marketing_tutorial_desc">Launch game marketing campaigns in minutes.</string>
     <string name="about_mikros_resource_analytics_integration">MIKROS Analytics — Integration Tutorial</string>
+    <string name="about_mikros_resource_analytics_integration_desc">World\'s leading in-app data analytics and insights.</string>
     <string name="about_mikros_resource_analytics_logging">MIKROS Analytics — Logging Events</string>
+    <string name="about_mikros_resource_analytics_logging_desc">Log custom events tutorial.</string>
     <string name="about_mikros_resource_docs">MIKROS Technical Documentation</string>
     <string name="about_mikros_resource_docs_desc">SDK integration, analytics, APIs, and developer documentation.</string>
     <string name="about_mikros_title">Powered by MIKROS</string>
