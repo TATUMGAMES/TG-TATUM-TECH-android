@@ -14,19 +14,28 @@
  */
 package com.tatumgames.tatumtech.android.ui.viewmodels
 
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.database.entity.RecentNotificationEntity
 import com.tatumgames.tatumtech.android.database.entity.UserEntity
+import com.tatumgames.tatumtech.android.database.repository.RecentNotificationDatabaseRepository
 import com.tatumgames.tatumtech.android.database.repository.UserDatabaseRepository
 import com.tatumgames.tatumtech.android.enums.HomePagerCategory
+import com.tatumgames.tatumtech.android.enums.NotificationType
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
+import com.tatumgames.tatumtech.android.ui.components.screens.main.models.Notification
+import com.tatumgames.tatumtech.android.ui.components.screens.notifications.RecentNotificationPolicy
 import com.tatumgames.tatumtech.android.ui.models.FeatureCardItem
 import com.tatumgames.tatumtech.android.utils.Utils.generateAnonymousId
 import com.tatumgames.tatumtech.android.utils.Utils.getUserNameOrAnonymous
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 /**
@@ -34,14 +43,20 @@ import kotlinx.coroutines.launch
  * Handles the horizontal pager logic and feature card data for the home screen.
  */
 class HomePagerViewModel(
-    private val userRepository: UserDatabaseRepository
-) : ViewModel() {
+    application: Application,
+    private val userRepository: UserDatabaseRepository,
+    private val notificationRepository: RecentNotificationDatabaseRepository
+) : AndroidViewModel(application) {
 
     var userName by mutableStateOf("")
         private set
 
+    private val _notifications = MutableStateFlow<List<Notification>>(emptyList())
+    val notifications: StateFlow<List<Notification>> = _notifications.asStateFlow()
+
     init {
         initializeUser()
+        refreshNotifications()
     }
 
     val pagerCategories: List<HomePagerCategory> = HomePagerCategory.entries
@@ -140,6 +155,46 @@ class HomePagerViewModel(
                 )
             )
         }
+    }
+
+    /**
+     * Syncs recent notifications from content + persistence and updates UI state.
+     */
+    fun refreshNotifications() {
+        viewModelScope.launch {
+            val entities = notificationRepository.refreshAndLoad(getApplication())
+            _notifications.value = entities.mapNotNull { it.toUiModel() }
+        }
+    }
+
+    /**
+     * Marks a notification read (persisted) and returns its navigation destination, if any.
+     */
+    fun openNotification(id: String, onNavigate: (String) -> Unit) {
+        viewModelScope.launch {
+            val entity = notificationRepository.getById(id) ?: return@launch
+            notificationRepository.markRead(id)
+            val route = RecentNotificationPolicy.destinationRoute(entity)
+            val entities = notificationRepository.refreshAndLoad(getApplication())
+            _notifications.value = entities.mapNotNull { it.toUiModel() }
+            if (route.isNotBlank()) {
+                onNavigate(route)
+            }
+        }
+    }
+
+    private fun RecentNotificationEntity.toUiModel(): Notification? {
+        val type = NotificationType.fromStorage(type) ?: return null
+        return Notification(
+            id = id,
+            type = type,
+            title = title,
+            description = description,
+            isUnread = readAtMillis == null,
+            destinationRoute = RecentNotificationPolicy.destinationRoute(this),
+            iconResId = iconResId,
+            relatedContentId = relatedContentId
+        )
     }
 
     /**
