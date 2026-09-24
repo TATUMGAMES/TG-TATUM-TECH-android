@@ -15,7 +15,31 @@
 package com.tatumgames.tatumtech.android.application
 
 import android.app.Application
+import com.tatumgames.tatumtech.android.analytics.AnalyticsService
+import com.tatumgames.tatumtech.android.constants.Constants
+import com.tatumgames.tatumtech.framework.android.logger.Logger
 
 class TatumTechApplication : Application() {
 
+    override fun onCreate() {
+        super.onCreate()
+        AnalyticsService.initialize(this)
+        installUnhandledExceptionBridge()
+    }
+
+    /**
+     * Crashlytics already hooks the default handler. This adds a best-effort Analytics
+     * `exception` (handled=false) signal, then delegates to the previous handler.
+     */
+    private fun installUnhandledExceptionBridge() {
+        val previous = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            try {
+                AnalyticsService.recordUnhandledException(throwable)
+            } catch (e: Exception) {
+                Logger.e(Constants.TAG, "Failed to record unhandled exception: ${e.message}")
+            }
+            previous?.uncaughtException(thread, throwable)
+        }
+    }
 }

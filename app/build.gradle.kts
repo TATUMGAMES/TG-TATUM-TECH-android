@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("org.jetbrains.kotlin.kapt")
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.compose)
 }
@@ -22,6 +23,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -39,6 +43,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     lint {
         disable += "CredentialProviderPlayServicesAuthMissing"
@@ -73,8 +78,13 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // Framework reference - contains all Firebase and Google SSO logic
+    // Framework reference - contains Firebase Auth and Google SSO logic
     implementation(project(":tatumtech-framework-android"))
+
+    // Firebase Analytics + Crashlytics (BoM; Auth remains in framework module)
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-crashlytics")
 
     // MPAndroidChart dependency for charting in the Stats screen implementation
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
@@ -97,6 +107,9 @@ dependencies {
 
     // JSON parsing
     implementation("com.google.code.gson:gson:2.10.1")
+
+    // OkHttp (Discord community API client)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
 
 configurations.all {
