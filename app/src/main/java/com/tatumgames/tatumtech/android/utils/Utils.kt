@@ -99,21 +99,6 @@ object Utils {
         }
     }
 
-    /**
-     * Formats an ISO calendar date string (yyyy-MM-dd) for display (MMM d, yyyy).
-     */
-    fun formatIsoDateOnly(dateString: String): String {
-        return try {
-            val inFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val date = inFormat.parse(dateString) ?: return dateString
-            val outFormat = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
-            outFormat.format(date)
-        } catch (e: Exception) {
-            Logger.e(TAG, e.message)
-            dateString
-        }
-    }
-
     fun formatTimestamp(
         context: Context,
         timestamp: Long
@@ -125,10 +110,6 @@ object Utils {
             Logger.e(TAG, e.message)
             context.getString(R.string.to_be_determined)
         }
-    }
-
-    fun drawableToUri(drawableId: Int): String {
-        return "android.resource://com.tatumgames.tatumtech.android/$drawableId"
     }
 
     fun getNameInitials(
