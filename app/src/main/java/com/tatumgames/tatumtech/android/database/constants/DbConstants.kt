@@ -27,4 +27,5 @@ object DbConstants {
     const val TABLE_CONTACT_CARDS = "contact_cards"
     const val TABLE_CONNECTIONS = "connections"
     const val TABLE_ENGAGEMENT_COUNTERS = "engagement_counters"
+    const val TABLE_RECENT_NOTIFICATIONS = "recent_notifications"
 }

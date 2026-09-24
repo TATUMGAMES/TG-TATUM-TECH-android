@@ -15,6 +15,9 @@
 package com.tatumgames.tatumtech.android.ui.components.screens.scanner
 
 import android.Manifest
+import android.os.Build
+import android.view.HapticFeedbackConstants
+import android.view.View
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -35,10 +38,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.analytics.AnalyticsService
 import com.tatumgames.tatumtech.android.database.AppDatabase
 import com.tatumgames.tatumtech.android.database.entity.TimelineEntity
 import com.tatumgames.tatumtech.android.database.repository.TimelineDatabaseRepository
@@ -66,6 +71,7 @@ fun ScannerScreen(
     returnToUpcomingEvents: Boolean = false
 ) {
     val context = LocalContext.current
+    val view = LocalView.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     var hasCameraPermission by remember { mutableStateOf(false) }
@@ -124,6 +130,8 @@ fun ScannerScreen(
                         scope.launch {
                             when (val parsed = ContactCardQrCodec.parse(raw)) {
                                 is ContactCardQrParseResult.Success -> {
+                                    performScanSuccessHaptic(view)
+                                    AnalyticsService.scanContactCard()
                                     ContactCardScanSession.setPending(parsed.payload)
                                     navController.navigate(NavRoutes.SCANNED_CONTACT_PREVIEW) {
                                         launchSingleTop = true
@@ -166,4 +174,17 @@ fun ScannerScreen(
             }
         }
     }
+}
+
+/**
+ * Short confirmation pulse after a QR payload is accepted. Uses view haptics (no VIBRATE permission).
+ * Called once per successful scan because [ScannerScreen] gates on [scanHandled].
+ */
+private fun performScanSuccessHaptic(view: View) {
+    val feedback = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        HapticFeedbackConstants.CONFIRM
+    } else {
+        HapticFeedbackConstants.CONTEXT_CLICK
+    }
+    view.performHapticFeedback(feedback)
 }

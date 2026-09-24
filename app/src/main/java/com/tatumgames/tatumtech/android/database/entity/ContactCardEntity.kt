@@ -22,7 +22,9 @@ import com.tatumgames.tatumtech.android.database.constants.DbConstants.TABLE_CON
 /**
  * The authenticated user's digital Tatum Tech networking card.
  *
- * Card email fields are intentionally separate from account authentication email.
+ * [name] is a display snapshot for QR/export, composed from Profile first + last name
+ * when the card is saved. Identity fields (first/last/email) are owned by [UserEntity].
+ * Card-specific networking fields (job title, company, links, etc.) remain on the card.
  */
 @Entity(
     tableName = TABLE_CONTACT_CARDS,

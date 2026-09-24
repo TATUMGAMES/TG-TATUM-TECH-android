@@ -61,6 +61,8 @@ import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.analytics.AnalyticsService
+import com.tatumgames.tatumtech.android.analytics.ProfileFields
 import com.tatumgames.tatumtech.android.database.AppDatabase
 import com.tatumgames.tatumtech.android.database.entity.ContactCardEntity
 import com.tatumgames.tatumtech.android.database.entity.TimelineEntity
@@ -74,7 +76,6 @@ import com.tatumgames.tatumtech.android.ui.components.common.RoundedButton
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.screens.networking.models.ContactCardQrCodec
 import com.tatumgames.tatumtech.android.ui.theme.ScreenScaffoldLight
-import com.tatumgames.tatumtech.android.utils.Utils.getUserNameOrAnonymous
 import com.tatumgames.tatumtech.android.utils.Utils.hasPermissions
 import com.tatumgames.tatumtech.android.utils.Utils.isEmailValid
 import kotlinx.coroutines.Dispatchers
@@ -97,7 +98,8 @@ fun ContactCardEditorScreen(navController: NavController) {
     var isNewCard by remember { mutableStateOf(true) }
     var ownerUserId by remember { mutableStateOf(1L) }
     var profileImageUri by remember { mutableStateOf<String?>(null) }
-    var name by remember { mutableStateOf("") }
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
     var jobTitle by remember { mutableStateOf("") }
     var company by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -111,7 +113,7 @@ fun ContactCardEditorScreen(navController: NavController) {
     var calendly by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(true) }
     var pendingCameraUri by remember { mutableStateOf<Uri?>(null) }
-    var nameError by remember { mutableStateOf<String?>(null) }
+    var firstNameError by remember { mutableStateOf<String?>(null) }
     var emailError by remember { mutableStateOf<String?>(null) }
 
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -177,26 +179,30 @@ fun ContactCardEditorScreen(navController: NavController) {
             val user = userRepository.getCurrentUser()
             if (user != null) {
                 ownerUserId = user.id
+                // Identity fields always come from Profile (UserEntity) — never username.
+                firstName = user.firstName.orEmpty()
+                lastName = user.lastName.orEmpty()
+                email = user.email.orEmpty()
+
                 val existing = cardRepository.getByOwnerUserId(user.id)
                 if (existing != null) {
                     isNewCard = false
                     cardId = existing.cardId
                     profileImageUri = existing.profileImageUri
-                    name = existing.name
                     jobTitle = existing.jobTitle.orEmpty()
                     company = existing.company.orEmpty()
                     description = existing.description.orEmpty()
                     website = existing.website.orEmpty()
-                    email = existing.email.orEmpty()
                     phone = existing.phone.orEmpty()
                     alternateEmail = existing.alternateEmail.orEmpty()
                     linkedin = existing.linkedin.orEmpty()
                     twitter = existing.twitter.orEmpty()
                     customLink = existing.customLink.orEmpty()
                     calendly = existing.calendly.orEmpty()
-                } else {
-                    name = getUserNameOrAnonymous(user)
-                    email = user.email.orEmpty()
+                    // If Profile email is empty, surface legacy card email without inventing names.
+                    if (email.isBlank()) {
+                        email = existing.email.orEmpty()
+                    }
                 }
             }
         }
@@ -253,17 +259,25 @@ fun ContactCardEditorScreen(navController: NavController) {
                 }
 
                 OutlinedTextField(
-                    value = name,
+                    value = firstName,
                     onValueChange = {
-                        name = it
-                        nameError = null
+                        firstName = it
+                        firstNameError = null
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { StandardText(text = stringResource(R.string.contact_card_name)) },
+                    label = { StandardText(text = stringResource(R.string.contact_card_first_name)) },
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                     singleLine = true,
-                    isError = nameError != null,
-                    supportingText = nameError?.let { { StandardText(text = it) } }
+                    isError = firstNameError != null,
+                    supportingText = firstNameError?.let { { StandardText(text = it) } }
+                )
+                OutlinedTextField(
+                    value = lastName,
+                    onValueChange = { lastName = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { StandardText(text = stringResource(R.string.contact_card_last_name)) },
+                    leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
+                    singleLine = true
                 )
                 OutlinedTextField(
                     value = jobTitle,
@@ -369,11 +383,15 @@ fun ContactCardEditorScreen(navController: NavController) {
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(R.string.contact_card_save),
                     onClick = {
-                        val trimmedName = name.trim()
+                        val trimmedFirst = firstName.trim()
+                        val trimmedLast = lastName.trim()
                         val trimmedEmail = email.trim()
+                        val displayName =
+                            ContactCardDisplayName.fromParts(trimmedFirst, trimmedLast)
                         var valid = true
-                        if (trimmedName.isEmpty()) {
-                            nameError = context.getString(R.string.contact_card_name_required)
+                        if (trimmedFirst.isEmpty()) {
+                            firstNameError =
+                                context.getString(R.string.contact_card_first_name_required)
                             valid = false
                         }
                         if (trimmedEmail.isEmpty()) {
@@ -393,11 +411,34 @@ fun ContactCardEditorScreen(navController: NavController) {
                         }
                         scope.launch {
                             withContext(Dispatchers.IO) {
+                                val currentUser = userRepository.getCurrentUser()
+                                if (currentUser != null) {
+                                    val newFirst = trimmedFirst.ifBlank { null }
+                                    val newLast = trimmedLast.ifBlank { null }
+                                    val newEmail = trimmedEmail.ifBlank { null }
+                                    if (currentUser.firstName != newFirst) {
+                                        AnalyticsService.updateProfile(ProfileFields.FIRST_NAME)
+                                    }
+                                    if (currentUser.lastName != newLast) {
+                                        AnalyticsService.updateProfile(ProfileFields.LAST_NAME)
+                                    }
+                                    if (currentUser.email != newEmail) {
+                                        AnalyticsService.updateProfile(ProfileFields.EMAIL)
+                                    }
+                                    userRepository.updateUser(
+                                        currentUser.copy(
+                                            firstName = newFirst,
+                                            lastName = newLast,
+                                            email = newEmail
+                                            // username (name / anonymousId) unchanged
+                                        )
+                                    )
+                                }
                                 val card = ContactCardEntity(
                                     cardId = cardId,
                                     ownerUserId = ownerUserId,
                                     profileImageUri = profileImageUri,
-                                    name = trimmedName,
+                                    name = displayName,
                                     jobTitle = ContactCardQrCodec.blankToNull(jobTitle),
                                     company = ContactCardQrCodec.blankToNull(company),
                                     description = ContactCardQrCodec.blankToNull(description),
@@ -413,6 +454,7 @@ fun ContactCardEditorScreen(navController: NavController) {
                                 )
                                 cardRepository.upsert(card)
                                 if (isNewCard) {
+                                    AnalyticsService.createContactCard()
                                     timelineRepository.insertTimelineEvent(
                                         TimelineEntity(
                                             type = TimelineType.CONTACT_CARD_CREATED.typeValue,
