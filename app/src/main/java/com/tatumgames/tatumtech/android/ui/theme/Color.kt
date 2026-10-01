@@ -51,19 +51,3 @@ val DiscordBlurple = Color(0xFF5865F2)
 val DiscordGreen = Color(0xFF43B581)
 val DiscordPink = Color(0xFFF47FFF)
 val DiscordGold = Color(0xFFFAA61A)
-
-// Pastel palette for stable string → color (e.g. initials avatars)
-val StringHashPalette: List<Color> = listOf(
-    Color(0xFFE57373),
-    Color(0xFF81C784),
-    Color(0xFF64B5F6),
-    Color(0xFFFFB74D),
-    Color(0xFFBA68C8),
-    Color(0xFF4DB6AC),
-    Color(0xFFFF8A65),
-    Color(0xFF9575CD),
-    Color(0xFF4FC3F7),
-    Color(0xFF81C784),
-    Color(0xFFFFD54F),
-    Color(0xFFA1887F)
-)

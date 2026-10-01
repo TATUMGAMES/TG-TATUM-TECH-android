@@ -19,7 +19,6 @@ import com.google.gson.reflect.TypeToken
 import com.tatumgames.tatumtech.android.ui.components.screens.events.models.Event
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
@@ -46,7 +45,7 @@ class UpcomingEventsJsonValidationTest {
         )
         assertEquals("speaker_jeff_bogensberger", speakers[0].profileImage)
         assertEquals("speaker_reginald_owens", speakers[1].profileImage)
-        assertNull(speakers[2].profileImage)
+        assertEquals("male_profile_default", speakers[2].profileImage)
         assertTrue(speakers.all { it.joinEnabled })
         assertEquals("https://meet.google.com/ggu-rnvc-rpm", speakers[0].meetUrl)
         assertFalse(json.contains("Registered"))
