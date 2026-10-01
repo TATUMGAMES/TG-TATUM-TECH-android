@@ -54,7 +54,9 @@ class PartnersJsonValidationTest {
                     "Influencer",
                     "Red Apple Tech",
                     "INVO Tech",
-                    "Korgi"
+                    "Korgi",
+                    "Da Rib Crib",
+                    "NOI - Nation of Islam"
                 )
             )
         )
@@ -93,6 +95,16 @@ class PartnersJsonValidationTest {
 
         val betterYouth = partners.first { it.id == "community_better_youth" }
         assertFalse(betterYouth.donationUrl.isNullOrBlank())
+
+        val daRibCrib = partners.first { it.id == "community_da_rib_crib" }
+        assertEquals("partner_logo_da_rib_crib", daRibCrib.logo)
+        assertEquals("https://daribcrib.com/", daRibCrib.websiteUrl)
+        assertTrue(daRibCrib.contactList().any { it.email == "jonearlgreen@gmail.com" })
+        assertEquals("https://www.instagram.com/daribcrib", daRibCrib.socialLinks?.instagram)
+
+        val noi = partners.first { it.id == "community_noi" }
+        assertEquals("partner_logo_noi", noi.logo)
+        assertEquals("https://www.noilosangeles.org/", noi.websiteUrl)
 
         val disney = partners.first { it.id == "corporate_disney_imagineering" }
         assertTrue(disney.contactList().any { !it.phone.isNullOrBlank() })

@@ -45,7 +45,6 @@ object NavRoutes {
     const val ACHIEVEMENTS_SCREEN = "achievements_screen"
     const val USER_PROFILE_SCREEN = "user_profile_screen"
     const val DEMOGRAPHIC_SCREEN = "demographic_screen"
-    const val ATTENDEES_SCREEN = "attendees_screen/{eventId}"
 
     // Additional routes for home pager sections
     const val HOME_PAGER_SCREEN = "home_pager"

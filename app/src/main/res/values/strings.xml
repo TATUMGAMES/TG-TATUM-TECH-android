@@ -210,7 +210,6 @@
     <string name="learn">Learn</string>
     <string name="timeline">Timeline</string>
     <string name="stats">Stats</string>
-    <string name="attendees">Attendees</string>
     <string name="events">Events</string>
     <string name="games">Games</string>
     <string name="challenges">Challenges</string>
@@ -279,7 +278,6 @@
     <string name="open_url_failed">Unable to open link</string>
     <string name="cd_speaker_photo">Photo of %1$s</string>
     <string name="cd_speaker_photo_placeholder">Speaker photo placeholder</string>
-    <string name="see_all_attendees">See All Attendees</string>
     <string name="add_friend">Add Friend</string>
     <string name="remove_friend">Remove Friend</string>
     <string name="snackbar_removed_friend">Removed %1$s from friends</string>
@@ -325,7 +323,7 @@
     <string name="contact_card_fix_invalid">Please fix the highlighted fields</string>
     <string name="contact_card_saved">Contact card saved</string>
     <string name="contact_card_my_qr_title">My Tatum Tech Card</string>
-    <string name="contact_card_scan_instruction">Have someone scan this code to save your contact information.</string>
+    <string name="contact_card_scan_instruction">Scan with any camera to save this contact.</string>
     <string name="contact_card_qr_error">Unable to generate QR code</string>
     <string name="contact_found_title">Connecting With New Friend</string>
     <string name="contact_save">Save Contact</string>
@@ -344,7 +342,6 @@
     <string name="photo_capture_cancelled">Photo capture cancelled</string>
 
     <!-- event names -->
-    <string name="anonymous_name_fallback">Anonymous</string>
     <string name="event_name_fall_2025">Tatum Tech Fall 2025</string>
     <string name="event_name_spring_2026">Tatum Tech Spring 2026</string>
     <string name="event_name_fall_2026">Tatum Tech Fall 2026</string>

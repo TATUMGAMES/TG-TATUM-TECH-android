@@ -44,7 +44,6 @@ import com.tatumgames.tatumtech.android.ui.components.screens.coding.LeetCodeCha
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.MockInterviewChallengesScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.community.CommunityScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.donate.DonateScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.events.AttendeesScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.events.UpcomingEventsScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.events.VirtualSpeakersScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.main.DemographicInfoScreen
@@ -154,13 +153,6 @@ fun MainGraph(
         }
         composable(NavRoutes.DEMOGRAPHIC_SCREEN) {
             DemographicInfoScreen(navController)
-        }
-        composable(
-            route = NavRoutes.ATTENDEES_SCREEN,
-            arguments = listOf(navArgument("eventId") { type = NavType.LongType })
-        ) { backStackEntry ->
-            val eventId = backStackEntry.arguments?.getLong("eventId") ?: 0L
-            AttendeesScreen(navController, eventId)
         }
         composable("about_screen/{contentType}") { backStackEntry ->
             val typeString =
