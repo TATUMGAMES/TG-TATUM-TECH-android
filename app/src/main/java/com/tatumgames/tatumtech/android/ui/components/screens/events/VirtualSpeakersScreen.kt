@@ -118,7 +118,7 @@ private fun VirtualSpeakerCard(speaker: VirtualSpeaker) {
             GameMediaResolver.resolve(context, "drawable:$name")
         }
     }
-    val placeholder = painterResource(R.drawable.profile_male_placeholder_01)
+    val placeholder = painterResource(R.drawable.male_profile_default)
 
     Card(
         modifier = Modifier.fillMaxWidth(),
