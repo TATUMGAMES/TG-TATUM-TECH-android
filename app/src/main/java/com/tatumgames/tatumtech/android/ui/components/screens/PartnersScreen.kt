@@ -542,7 +542,7 @@ private fun PartnerSocialIconRow(partner: Partner) {
 }
 
 @Composable
-private fun SocialIconButton(drawableRes: Int, labelRes: Int, url: String) {
+internal fun SocialIconButton(drawableRes: Int, labelRes: Int, url: String) {
     val context = LocalContext.current
     val label = stringResource(labelRes)
     IconButton(

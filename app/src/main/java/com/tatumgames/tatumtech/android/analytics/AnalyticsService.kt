@@ -83,6 +83,24 @@ object AnalyticsService {
         logEvent(AnalyticsEvents.CREATE_CONTACT_CARD, Bundle())
     }
 
+    fun deleteAccount() {
+        logEvent(AnalyticsEvents.DELETE_ACCOUNT, Bundle())
+    }
+
+    /**
+     * @param rating Selected star count (1–5).
+     * @param trigger One of [RatingPromptTriggers].
+     * @param sentToStore Whether the user is being redirected to the store listing.
+     */
+    fun rateApp(rating: Int, trigger: String, sentToStore: Boolean) {
+        val params = Bundle().apply {
+            putLong(AnalyticsParams.RATING, rating.toLong())
+            putString(AnalyticsParams.TRIGGER, trigger.lowercase())
+            putString(AnalyticsParams.SENT_TO_STORE, sentToStore.toString())
+        }
+        logEvent(AnalyticsEvents.RATE_APP, params)
+    }
+
     /**
      * Product-level exception signal for Analytics; stack traces go to Crashlytics only.
      */

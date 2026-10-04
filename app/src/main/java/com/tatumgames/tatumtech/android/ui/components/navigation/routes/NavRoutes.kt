@@ -55,9 +55,13 @@ object NavRoutes {
     const val GAMES_SCREEN = "games_screen"
     const val GAME_DETAILS_SCREEN = "game_details_screen/{gameId}"
     const val GET_YOUR_GAME_DISCOVERED_SCREEN = "get_your_game_discovered_screen"
+    const val RATING_SCREEN = "rating_screen/{trigger}"
 
     /** Use this when navigating to game details so the route matches [GAME_DETAILS_SCREEN]. */
     fun gameDetailsRoute(gameId: String): String = "game_details_screen/$gameId"
 
     fun virtualSpeakersRoute(eventId: Long): String = "virtual_speakers_screen/$eventId"
+
+    /** @param trigger One of [com.tatumgames.tatumtech.android.analytics.RatingPromptTriggers]. */
+    fun ratingRoute(trigger: String): String = "rating_screen/$trigger"
 }

@@ -19,6 +19,9 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        // Store listings use the release id; debug builds append applicationIdSuffix.
+        buildConfigField("String", "STORE_PACKAGE_NAME", "\"$applicationId\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -95,6 +98,10 @@ dependencies {
     implementation("androidx.camera:camera-view:1.3.0")
     implementation("androidx.camera:camera-extensions:1.3.0")
     implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // Media3 (in-app playback of bundled game video segments)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
 
     // QR encode/decode for digital contact cards
     implementation("com.google.zxing:core:3.5.3")

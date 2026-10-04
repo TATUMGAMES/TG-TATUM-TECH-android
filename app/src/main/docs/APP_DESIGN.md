@@ -49,7 +49,6 @@ Main application navigation graph for authenticated users:
   - `CAREER_SCREEN` - Job listings
   - `GAMES_SCREEN` - Games listing
   - `GAME_DETAILS_SCREEN` - Individual game details (with `gameId` parameter)
-  - `ATTENDEES_SCREEN` - Event attendees list (with `eventId` parameter)
   - `about_screen/{contentType}` - About/FAQ content (with `contentType` parameter)
 
 ### Navigation Flow
@@ -594,7 +593,7 @@ Scaffold(
 #### Detail Screens
 - Header with back button
 - Content area with scrollable content
-- Example: `GameDetailsScreen`, `AttendeesScreen`
+- Example: `GameDetailsScreen`, `VirtualSpeakersScreen`
 
 ### Exceptions to Standard Pattern
 

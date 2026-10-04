@@ -36,6 +36,9 @@ val NotificationLavender = Color(0xFFEDE7F6)
 
 val SuccessGreen = Color(0xFF4CAF50)
 
+// Destructive actions (e.g. Delete Account) — darker than Red300 for legible text on white
+val DestructiveRed = Color(0xFFD32F2F)
+
 /** Partner CTA semantic colors (Partners screen). */
 val PartnerContactBlue = Color(0xFF64B5F6)
 val PartnerDonationTeal = Color(0xFF4DB6AC)

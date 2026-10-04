@@ -51,7 +51,6 @@ object FirebaseInitializer {
                 Logger.d(TAG, FIREBASE_INITIALIZED_SUCCESSFULLY)
             } catch (e: Exception) {
                 Logger.e(TAG, FIREBASE_FAILED_TO_INITIALIZE, e)
-                GoogleAuthError.FirebaseInitializationFailed
                 throw e
             }
         } else {

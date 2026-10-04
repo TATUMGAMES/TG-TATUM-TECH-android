@@ -14,20 +14,26 @@
  */
 package com.tatumgames.tatumtech.framework.android.auth
 
+import android.content.Context
+import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.tasks.Task
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.CLEAR_CREDENTIAL_STATE_FAILED
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.CREDENTIAL_MANAGER_EXCEPTION
+import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.DELETE_FIREBASE_USER_FAILED
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.CREDENTIAL_MANAGER_FAILED
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.FIREBASE_INIT_ERROR
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.GOOGLE_AUTH_INITIALIZATION_FAILED
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.LEGACY_RESULT_ERROR
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.LEGACY_SIGN_IN_ERROR
+import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.LEGACY_SIGN_OUT_FAILED
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.TAG
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.UNKNOWN_ERROR
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.UNKNOWN_FIREBASE_ERROR
@@ -37,6 +43,8 @@ import com.tatumgames.tatumtech.framework.android.logger.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 object GoogleAuthClientMessages {
     internal const val TAG = "GoogleAuthClient"
@@ -51,6 +59,9 @@ object GoogleAuthClientMessages {
     internal const val CREDENTIAL_MANAGER_EXCEPTION = "CredentialManager failed"
     internal const val UNKNOWN_FIREBASE_ERROR = "Unknown Firebase authentication error"
     internal const val FIREBASE_INIT_ERROR = "Failed to initialize Firebase"
+    internal const val DELETE_FIREBASE_USER_FAILED = "Failed to delete Firebase user"
+    internal const val CLEAR_CREDENTIAL_STATE_FAILED = "Failed to clear credential state"
+    internal const val LEGACY_SIGN_OUT_FAILED = "Failed to sign out of legacy Google Sign-In"
 }
 
 /**
@@ -202,6 +213,70 @@ object GoogleAuthClient {
         val googleSignInClient = GoogleSignIn.getClient(configuration.context, gso)
         legacyLauncher.launch(googleSignInClient.signInIntent)
     }
+
+    /**
+     * Permanently removes the signed-in identity from this device.
+     *
+     * Deletes the Firebase Auth user when one is signed in, then signs out of Firebase,
+     * clears Credential Manager state, and revokes the legacy Google Sign-In grant so the
+     * next sign-in starts from a clean slate. Each step is best-effort: a failure in one
+     * step (e.g. Firebase requiring a recent login) never prevents the remaining steps.
+     *
+     * @param context Any context; the application context is used internally.
+     * @param webClientId OAuth web client id used for the legacy Google Sign-In client.
+     * @return `true` when the remote Firebase user was deleted (or none was signed in).
+     */
+    suspend fun deleteAccount(context: Context, webClientId: String): Boolean {
+        val appContext = context.applicationContext
+        var remoteDeleted = true
+
+        try {
+            FirebaseInitializer.initialize(appContext)
+            val auth = FirebaseAuth.getInstance()
+            val user = auth.currentUser
+            if (user != null) {
+                remoteDeleted = awaitTask(user.delete())
+                if (!remoteDeleted) {
+                    Logger.e(TAG, DELETE_FIREBASE_USER_FAILED)
+                }
+            }
+            auth.signOut()
+        } catch (e: Exception) {
+            remoteDeleted = false
+            Logger.e(TAG, DELETE_FIREBASE_USER_FAILED, e)
+        }
+
+        try {
+            CredentialManager.create(appContext)
+                .clearCredentialState(ClearCredentialStateRequest())
+        } catch (e: Exception) {
+            Logger.e(TAG, CLEAR_CREDENTIAL_STATE_FAILED, e)
+        }
+
+        try {
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(webClientId)
+                .requestEmail()
+                .build()
+            val legacyClient = GoogleSignIn.getClient(appContext, gso)
+            if (!awaitTask(legacyClient.revokeAccess())) {
+                awaitTask(legacyClient.signOut())
+            }
+        } catch (e: Exception) {
+            Logger.e(TAG, LEGACY_SIGN_OUT_FAILED, e)
+        }
+
+        return remoteDeleted
+    }
+
+    private suspend fun awaitTask(task: Task<*>): Boolean =
+        suspendCancellableCoroutine { continuation ->
+            task.addOnCompleteListener { completed ->
+                if (continuation.isActive) {
+                    continuation.resume(completed.isSuccessful)
+                }
+            }
+        }
 
     /**
      * Authenticates with Firebase using the provided ID token.

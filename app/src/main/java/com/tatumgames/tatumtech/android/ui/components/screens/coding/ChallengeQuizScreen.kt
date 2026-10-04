@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.analytics.RatingPromptTriggers
 import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.MotionDefaults
@@ -112,6 +113,16 @@ fun ChallengeQuizScreen(
     val answerFeedback by viewModel.answerFeedback.collectAsState()
     val quizLoading by viewModel.quizLoading.collectAsState()
     val dailyLimitReachedForBucket by viewModel.dailyLimitReachedForBucket.collectAsState()
+    val ratingPromptRequested by viewModel.ratingPromptRequested.collectAsState()
+
+    LaunchedEffect(ratingPromptRequested) {
+        if (ratingPromptRequested) {
+            viewModel.onRatingPromptShown()
+            navController.navigate(
+                NavRoutes.ratingRoute(RatingPromptTriggers.CODING_CHALLENGE_COMPLETE)
+            )
+        }
+    }
 
     // Keep last non-NONE feedback so AnimatedVisibility exit does not flash the opposite icon/text.
     var displayedFeedback by remember { mutableStateOf(AnswerFeedback.NONE) }

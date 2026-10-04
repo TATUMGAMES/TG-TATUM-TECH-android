@@ -234,7 +234,6 @@
     <string name="games_status_featured">Featured</string>
     <string name="games_status_available">Available</string>
     <string name="games_status_coming_soon">Coming Soon</string>
-    <string name="games_platforms_ios_android">iOS / Android</string>
     <string name="games_logo_cd">%1$s logo</string>
     <string name="games_showcase_card_cd">%1$s, %2$s, %3$s</string>
     <string name="games_screenshot_cd">%1$s screenshot</string>
@@ -243,6 +242,12 @@
     <string name="games_download_ios">Download for iOS</string>
     <string name="games_visit_website">Visit Website</string>
     <string name="games_join_discord">Join Discord</string>
+    <string name="games_wishlist_steam">Wishlist on Steam</string>
+    <string name="games_get_steam">Get it on Steam</string>
+    <string name="games_wishlist_meta_quest">Wishlist on Meta Quest</string>
+    <string name="games_get_meta_quest">Get it on Meta Quest</string>
+    <string name="games_view_store_page">View Store Page</string>
+    <string name="games_follow_the_game">Follow the game</string>
     <string name="games_tags">Tags</string>
     <string name="games_videos">Videos</string>
     <string name="games_screenshots">Screenshots</string>
@@ -250,7 +255,7 @@
     <string name="games_details_title">Game Details</string>
     <string name="games_about">About</string>
     <string name="games_not_found">Game not found.</string>
-    <string name="games_coming_soon_notice">This game is not available yet. Check back for the iOS and Android release.</string>
+    <string name="games_coming_soon_notice">This game is not available yet. Check back for release updates.</string>
     <string name="games_screenshot_viewer_close_cd">Close screenshot viewer</string>
     <string name="mikros_cta_title">Want your game featured here?</string>
     <string name="mikros_cta_subtitle">Get your game discovered through MIKROS</string>
@@ -506,5 +511,21 @@
     <!-- donation achievement -->
     <string name="achievement_title_heart_giver">Heart Giver</string>
     <string name="achievement_desc_heart_giver">Donated to a Tatum Tech cause.</string>
+
+    <!-- Delete account -->
+    <string name="delete_account">Delete Account</string>
+    <string name="delete_account_dialog_message">Are you sure you want to delete your Tatum Tech account? This action is not reversable.</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="deleting_account">Deleting account…</string>
+    <string name="content_description_delete_account">Delete account</string>
+    <string name="content_description_warning">Warning</string>
+
+    <!-- Rating prompt -->
+    <string name="rating_title">Enjoying The Tatum Tech App?</string>
+    <string name="rating_mission_statement">Tatum Tech’s mission is to expand economic opportunity for underserved and underrepresented youth by providing free access to technology, hands-on training, industry mentorship, and real-world experience in AI, game development, and digital production, creating pathways to careers, entrepreneurship, and long-term economic mobility.</string>
+    <string name="rating_prompt">Giving us a positive rating helps us continue our mission. How are you enjoying the Tatum Tech app?</string>
+    <string name="rating_star_content_description">%1$d of %2$d stars</string>
+    <string name="rating_not_now">Not now</string>
 
 </resources>

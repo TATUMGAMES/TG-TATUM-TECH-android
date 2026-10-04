@@ -20,6 +20,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.tatumgames.tatumtech.android.analytics.RatingPromptTriggers
 import com.tatumgames.tatumtech.android.analytics.TrackNavigationAnalytics
 import com.tatumgames.tatumtech.android.ui.components.common.MotionDefaults
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
@@ -51,6 +52,7 @@ import com.tatumgames.tatumtech.android.ui.components.screens.main.UserProfileSc
 import com.tatumgames.tatumtech.android.ui.components.screens.networking.ContactCardEditorScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.networking.MyContactCardQrScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.networking.ScannedContactPreviewScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.rating.RatingScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.scanner.ScannerScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.stats.StatsScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.timeline.MyTimelineScreen
@@ -185,6 +187,14 @@ fun MainGraph(
         ) { backStackEntry ->
             val gameId = backStackEntry.arguments?.getString("gameId") ?: ""
             GameDetailsScreen(navController, gameId)
+        }
+        composable(
+            route = NavRoutes.RATING_SCREEN,
+            arguments = listOf(navArgument("trigger") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val trigger = backStackEntry.arguments?.getString("trigger")
+                ?: RatingPromptTriggers.APP_OPEN
+            RatingScreen(navController, trigger)
         }
     }
 }
