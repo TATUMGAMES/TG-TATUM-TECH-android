@@ -19,7 +19,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
+import com.tatumgames.tatumtech.android.api.TatumTechApiProvider
+import com.tatumgames.tatumtech.android.reminders.MeetingReminderDestination
 import com.tatumgames.tatumtech.android.ui.components.navigation.graph.AccountSetupGraph
+import com.tatumgames.tatumtech.android.ui.components.screens.auth.openMainScreen
+import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClient
 
 class AuthActivity : ComponentActivity() {
 
@@ -28,6 +32,12 @@ class AuthActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
 
+        if (hasExistingSession()) {
+            openMainScreen(this, MeetingReminderDestination.readFrom(intent))
+            finish()
+            return
+        }
+
         setContent {
             val navController = rememberNavController()
             AccountSetupGraph(
@@ -35,4 +45,10 @@ class AuthActivity : ComponentActivity() {
             )
         }
     }
+
+    /**
+     * A stored Tatum Tech session, or a Google (Firebase) sign-in that is still active.
+     */
+    private fun hasExistingSession(): Boolean =
+        TatumTechApiProvider.getSessionManager().isSignedIn || GoogleAuthClient.hasSignedInUser(this)
 }

@@ -15,8 +15,8 @@
 package com.tatumgames.tatumtech.android.ui.components.screens.main
 
 import android.content.Context
-import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.analytics.AnalyticsService
+import com.tatumgames.tatumtech.android.api.TatumTechApiProvider
 import com.tatumgames.tatumtech.android.constants.Constants
 import com.tatumgames.tatumtech.android.constants.Constants.TAG
 import com.tatumgames.tatumtech.android.database.AppDatabase
@@ -32,7 +32,8 @@ import java.io.File
 /**
  * Deletes the Tatum Tech account and every piece of user-specific state on this device.
  *
- * Cleared: the signed-in Google/Firebase identity, every Room table (user, demographics,
+ * Cleared: the Tatum Tech API session (signed out server-side when reachable), the signed-in
+ * Google/Firebase identity, every Room table (user, demographics,
  * contact cards, connections, achievement counters, notifications, timeline, quiz progress and
  * answer history, event registrations, imported coding content — re-synced from assets on next
  * home entry), captured contact card photos, and in-memory scan state.
@@ -47,10 +48,9 @@ object AccountDeletionManager {
         val appContext = context.applicationContext
         AnalyticsService.deleteAccount()
 
-        val remoteDeleted = GoogleAuthClient.deleteAccount(
-            context = appContext,
-            webClientId = appContext.getString(R.string.default_web_client_id)
-        )
+        TatumTechApiProvider.getSessionManager().signOut()
+
+        val remoteDeleted = GoogleAuthClient.deleteAccount(appContext)
         if (!remoteDeleted) {
             Logger.e(TAG, "Remote account deletion failed; local data is still cleared")
         }
