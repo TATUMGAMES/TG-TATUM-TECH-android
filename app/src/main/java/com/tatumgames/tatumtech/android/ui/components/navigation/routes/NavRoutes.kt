@@ -14,6 +14,7 @@
  */
 package com.tatumgames.tatumtech.android.ui.components.navigation.routes
 
+import android.net.Uri
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes.GAME_DETAILS_SCREEN
 
 
@@ -26,7 +27,7 @@ object NavRoutes {
 
     // main routes
     const val UPCOMING_EVENTS_SCREEN = "upcoming_events_screen"
-    const val VIRTUAL_SPEAKERS_SCREEN = "virtual_speakers_screen/{eventId}"
+    const val VIRTUAL_SPEAKERS_SCREEN = "virtual_speakers_screen/{eventId}?speakerId={speakerId}"
     const val CODING_CHALLENGES_SCREEN = "coding_challenges_screen"
     const val AI_LLM_CHALLENGES_SCREEN = "ai_llm_challenges_screen"
     const val LEET_CODE_CHALLENGES_SCREEN = "leet_code_challenges_screen"
@@ -60,7 +61,11 @@ object NavRoutes {
     /** Use this when navigating to game details so the route matches [GAME_DETAILS_SCREEN]. */
     fun gameDetailsRoute(gameId: String): String = "game_details_screen/$gameId"
 
-    fun virtualSpeakersRoute(eventId: Long): String = "virtual_speakers_screen/$eventId"
+    /** @param speakerId Optional speaker to scroll to and highlight. */
+    fun virtualSpeakersRoute(eventId: String, speakerId: String? = null): String {
+        val route = "virtual_speakers_screen/${Uri.encode(eventId)}"
+        return if (speakerId.isNullOrBlank()) route else "$route?speakerId=${Uri.encode(speakerId)}"
+    }
 
     /** @param trigger One of [com.tatumgames.tatumtech.android.analytics.RatingPromptTriggers]. */
     fun ratingRoute(trigger: String): String = "rating_screen/$trigger"

@@ -18,6 +18,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.tatumgames.tatumtech.android.ui.components.screens.partners.PartnerCategoryFilters
 import com.tatumgames.tatumtech.android.ui.models.Partner
+import com.tatumgames.tatumtech.android.ui.models.PartnerSocialLinks
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -117,5 +118,92 @@ class PartnersJsonValidationTest {
         val filteredTech = PartnerCategoryFilters.filter(partners, "Technology")
         assertTrue(filteredTech.all { it.category == "Technology Partners" })
         assertTrue(filteredTech.first().featured) // featured sort first
+    }
+
+    @Test
+    fun partnersJson_creativeMediaCommerceUsesTheSharedPartnerFields() {
+        val json = File("src/main/assets/partners.json").readText()
+        val partners: List<Partner> = Gson().fromJson(json, object : TypeToken<List<Partner>>() {}.type)
+
+        val partner = partners.single { it.id == "community_creative_media_commerce" }
+        assertEquals("Creative Media Commerce", partner.name)
+        assertEquals("Community Partners", partner.category)
+        assertEquals("partner_logo_creative_media_commerce", partner.logo)
+        assertEquals("https://www.itsaquestnotatest.com/", partner.websiteUrl)
+        assertEquals(
+            PartnerSocialLinks(
+                instagram = "https://www.instagram.com/itsaquestnotatest/",
+                tiktok = "https://www.tiktok.com/@itsaquestnotatest"
+            ),
+            partner.socialLinks
+        )
+        assertEquals(
+            listOf("contact@itsaquestnotatest.com", "creativemediacommerce@gmail.com"),
+            partner.emails().map { it.email }
+        )
+        val founder = partner.contactList().first()
+        assertEquals("David Ashe", founder.name)
+        assertEquals("Founder & CEO", founder.title)
+        assertTrue(partner in PartnerCategoryFilters.filter(partners, "Community"))
+        val domainAddresses = Regex("[\\w.+-]+@itsaquestnotatest\\.com", RegexOption.IGNORE_CASE)
+            .findAll(json).map { it.value.lowercase() }.toSet()
+        assertEquals(setOf("contact@itsaquestnotatest.com"), domainAddresses)
+    }
+
+    @Test
+    fun partnersJson_globalBusinessIncubationAndAthleticInterpretations() {
+        val json = File("src/main/assets/partners.json").readText()
+        val partners: List<Partner> = Gson().fromJson(json, object : TypeToken<List<Partner>>() {}.type)
+
+        val gbi = partners.single { it.id == "community_global_business_incubation" }
+        assertEquals("Global Business Incubation", gbi.name)
+        assertEquals("Community Partners", gbi.category)
+        assertEquals("gbi_logo", gbi.logo)
+        assertFalse(gbi.featured)
+        assertEquals("http://www.gbiinc.org/", gbi.websiteUrl)
+        assertEquals(
+            listOf("philbrown2020@yahoo.com", "gbi@globalbusinessincubation.com"),
+            gbi.emails().map { it.email }
+        )
+        assertEquals("Phillip Brown", gbi.contactList().first().name)
+        assertEquals("Executive Director", gbi.contactList().first().title)
+
+        val ai = partners.single { it.id == "technology_athletic_interpretations" }
+        assertEquals("Athletic Interpretations Inc.", ai.name)
+        assertEquals("Technology Partners", ai.category)
+        assertEquals("ai_logo", ai.logo)
+        assertFalse(ai.featured)
+        assertEquals("https://athleticinterpretations.com", ai.websiteUrl)
+        assertEquals("Speedbag Champ", ai.productName)
+        assertEquals("https://speedbagchamp.com", ai.productUrl)
+        val founder = ai.contactList().single()
+        assertEquals("Eras Noel III", founder.name)
+        assertEquals("Founder", founder.title)
+        assertEquals("eras.noel@athleticinterpretations.com", founder.email)
+        assertEquals(
+            listOf("Shop", "Starter Bundle", "LED Edition", "iOS App", "Android App"),
+            ai.linkList().map { it.label }
+        )
+        assertEquals(
+            PartnerSocialLinks(
+                tiktok = "https://tiktok.com/@speedbagchamp",
+                instagram = "https://instagram.com/speedbagchamp",
+                youtube = "https://www.youtube.com/@SpeedbagChamp"
+            ),
+            ai.socialLinks
+        )
+        assertTrue(ai.description!!.contains("U.S. Patent 9,937,402"))
+        assertTrue(ai in PartnerCategoryFilters.filter(partners, "Technology"))
+        assertTrue(gbi in PartnerCategoryFilters.filter(partners, "Community"))
+    }
+
+    @Test
+    fun partnersJson_logosReferenceExistingDrawables() {
+        val json = File("src/main/assets/partners.json").readText()
+        val partners: List<Partner> = Gson().fromJson(json, object : TypeToken<List<Partner>>() {}.type)
+        val drawables = File("src/main/res/drawable").listFiles().orEmpty().map { it.nameWithoutExtension }.toSet()
+
+        val missing = partners.mapNotNull { it.logo?.takeIf { logo -> logo.isNotBlank() } } - drawables
+        assertTrue("Missing logo drawables: $missing", missing.isEmpty())
     }
 }

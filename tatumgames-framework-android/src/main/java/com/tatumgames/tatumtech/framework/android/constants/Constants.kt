@@ -20,7 +20,7 @@ import com.tatumgames.tatumtech.framework.android.BuildConfig
  * General constants.
  */
 object Constants {
-    internal const val TAG = "TG_TatumTech_Framework"
+    internal const val TAG = "TG_Framework"
 
     // debuggable mode; true to see debug logs otherwise false
     internal const val DEBUG = BuildConfig.DEBUG_MODE

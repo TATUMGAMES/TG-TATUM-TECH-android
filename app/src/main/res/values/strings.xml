@@ -19,6 +19,8 @@
     <string name="lets_begin_your_tatum_tech_experience">Let\'s begin your Tatum Tech experience.</string>
     <string name="google_sso">Google SSO</string>
     <string name="content_description_google_sso">Google Sign In</string>
+    <string name="google_sign_in_failed">We couldn\'t sign you in with Google. Please try again, or sign in with your email.</string>
+    <string name="google_sign_in_unavailable">Google sign-in isn\'t available right now. Please try again, or sign in with your email.</string>
     <string name="error_invalid_context">Invalid context</string>">
     <string name="error_no_id_token_received">No ID token received</string>">
     <string name="password_updated">Password updated</string>
@@ -41,6 +43,9 @@
     <string name="input_email_for_reset">Input your email to reset your password.</string>
     <string name="reset_password">Reset Password</string>
     <string name="reset_password_email_sent">Reset password email sent</string>
+    <string name="error_network_unavailable">Can\'t reach Tatum Tech. Check your connection and try again.</string>
+    <string name="auth_error_title">Something went wrong</string>
+    <string name="ok">OK</string>
 
     <!-- change password -->
     <string name="set_new_password">Set your new password.</string>
@@ -247,6 +252,7 @@
     <string name="games_wishlist_meta_quest">Wishlist on Meta Quest</string>
     <string name="games_get_meta_quest">Get it on Meta Quest</string>
     <string name="games_view_store_page">View Store Page</string>
+    <string name="games_visit_linktree">Visit Linktree</string>
     <string name="games_follow_the_game">Follow the game</string>
     <string name="games_tags">Tags</string>
     <string name="games_videos">Videos</string>
@@ -527,5 +533,22 @@
     <string name="rating_prompt">Giving us a positive rating helps us continue our mission. How are you enjoying the Tatum Tech app?</string>
     <string name="rating_star_content_description">%1$d of %2$d stars</string>
     <string name="rating_not_now">Not now</string>
+
+    <!-- Virtual speaker meeting reminders -->
+    <string name="meeting_reminder_channel_name">Virtual Speakers</string>
+    <string name="meeting_reminder_channel_description">Reminders shortly before a virtual speaker session starts</string>
+    <plurals name="meeting_reminder_title_soon">
+        <item quantity="one">%1$s is speaking in %2$d minute</item>
+        <item quantity="other">%1$s is speaking in ~%2$d minutes</item>
+    </plurals>
+    <string name="meeting_reminder_title_now">%1$s is speaking now</string>
+    <string name="meeting_reminder_join_hint">Tap to join the virtual session</string>
+    <string name="meeting_reminder_dismiss">Dismiss reminder</string>
+    <string name="notification_permission_title">Get speaker reminders</string>
+    <string name="notification_permission_message">Tatum Tech notifies you utes before each virtual speaker session starts, so you can join on time. Allow notifications to get these reminders when the app is closed.</string>
+    <string name="notification_permission_allow">Allow notifications</string>
+    <string name="notification_permission_not_now">Not now</string>
+    <string name="meeting_reminder_debug_test">Test reminder in 10 s (debug)</string>
+    <string name="meeting_reminder_debug_scheduled">Reminder in 10 seconds. Leave the app to get the system notification instead of the banner.</string>
 
 </resources>

@@ -14,7 +14,6 @@
  */
 package com.tatumgames.tatumtech.android.ui.components.screens.auth
 
-import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.tatumgames.tatumtech.android.R
-import com.tatumgames.tatumtech.android.activity.MainActivity
+import com.tatumgames.tatumtech.android.api.TatumTechApiProvider
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.OutlinedButton
 import com.tatumgames.tatumtech.android.ui.components.common.OutlinedInputField
@@ -59,6 +59,9 @@ import com.tatumgames.tatumtech.android.ui.theme.Red300
 import com.tatumgames.tatumtech.android.ui.theme.TatumTechTheme
 import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.android.utils.Utils
+import com.tatumgames.tatumtech.framework.android.http.response.ApiError
+import com.tatumgames.tatumtech.framework.android.http.response.ApiResponse
+import kotlinx.coroutines.launch
 
 @Preview(showBackground = true)
 @Composable
@@ -97,6 +100,29 @@ fun SignUpScreen(
     val isPasswordValid = Utils.isPasswordValid(password)
     val doPasswordsMatch = confirmPassword == password && confirmPassword.isNotEmpty()
     val isFormValid = isEmailValid && isPasswordValid && doPasswordsMatch
+
+    var isSubmitting by remember { mutableStateOf(false) }
+    var authError by remember { mutableStateOf<ApiError?>(null) }
+    val scope = rememberCoroutineScope()
+
+    fun submitSignUp() {
+        isSubmitting = true
+        scope.launch {
+            val result = TatumTechApiProvider.getSessionManager()
+                .signUp(email.trim(), password, confirmPassword)
+            when (result) {
+                is ApiResponse.Success -> openMainScreen(context)
+                is ApiResponse.Failure -> {
+                    isSubmitting = false
+                    authError = result.error
+                }
+            }
+        }
+    }
+
+    authError?.let { error ->
+        AuthErrorDialog(error = error, onDismiss = { authError = null })
+    }
 
     Scaffold(
         topBar = {
@@ -226,7 +252,7 @@ fun SignUpScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Sign-Up Button
-                if (isFormValid) {
+                if (isFormValid && !isSubmitting) {
                     RoundedButton(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -235,12 +261,10 @@ fun SignUpScreen(
                         onClick = {
                             focusManager.clearFocus()
 
-                            // TODO Call TG API to register user
-                            val intent = Intent(context, MainActivity::class.java).apply {
-                                flags =
-                                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            }
-                            context.startActivity(intent)
+                            // TODO Developer bypass: to enter the app without the Tatum Tech API,
+                            //  uncomment openMainScreen(context) and comment out submitSignUp().
+                            // openMainScreen(context)
+                            submitSignUp()
                         }
                     )
                 } else {

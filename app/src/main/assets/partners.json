@@ -46,6 +46,29 @@
     "donationUrl": "https://www.classy.org/campaign/peer-peer-create-now-a-new-era-of-change/c623336"
   },
   {
+    "id": "community_creative_media_commerce",
+    "name": "Creative Media Commerce",
+    "category": "Community Partners",
+    "logo": "partner_logo_creative_media_commerce",
+    "description": "Community Partner in the Tatum Games ecosystem. Creative Media Commerce is led by Founder & CEO David Ashe.",
+    "contacts": [
+      {
+        "name": "David Ashe",
+        "title": "Founder & CEO",
+        "email": "contact@itsaquestnotatest.com"
+      },
+      {
+        "name": "Creative Media Commerce",
+        "email": "creativemediacommerce@gmail.com"
+      }
+    ],
+    "websiteUrl": "https://www.itsaquestnotatest.com/",
+    "socialLinks": {
+      "instagram": "https://www.instagram.com/itsaquestnotatest/",
+      "tiktok": "https://www.tiktok.com/@itsaquestnotatest"
+    }
+  },
+  {
     "id": "community_da_rib_crib",
     "name": "Da Rib Crib",
     "category": "Community Partners",
@@ -62,6 +85,25 @@
     "socialLinks": {
       "instagram": "https://www.instagram.com/daribcrib"
     }
+  },
+  {
+    "id": "community_global_business_incubation",
+    "name": "Global Business Incubation",
+    "category": "Community Partners",
+    "logo": "gbi_logo",
+    "description": "Community Partner in the Tatum Games ecosystem. Global Business Incubation is led by Executive Director Phillip Brown.",
+    "contacts": [
+      {
+        "name": "Phillip Brown",
+        "title": "Executive Director",
+        "email": "philbrown2020@yahoo.com"
+      },
+      {
+        "name": "Global Business Incubation",
+        "email": "gbi@globalbusinessincubation.com"
+      }
+    ],
+    "websiteUrl": "http://www.gbiinc.org/"
   },
   {
     "id": "community_living_advantage",
@@ -470,5 +512,49 @@
       }
     ],
     "websiteUrl": "https://redappletech.com/"
+  },
+  {
+    "id": "technology_athletic_interpretations",
+    "name": "Athletic Interpretations Inc.",
+    "category": "Technology Partners",
+    "logo": "ai_logo",
+    "description": "Technology Partner in the Tatum Games ecosystem. Speedbag Champ is a patented sensor (U.S. Patent 9,937,402) that turns any speed bag into a scored, connected game. Kids can track every punch, race each other live, and compete on a leaderboard. It's a natural fit for STEAM: sensors, data, and sport in one station.",
+    "contacts": [
+      {
+        "name": "Eras Noel III",
+        "title": "Founder",
+        "email": "eras.noel@athleticinterpretations.com"
+      }
+    ],
+    "websiteUrl": "https://athleticinterpretations.com",
+    "additionalLinks": [
+      {
+        "label": "Shop",
+        "url": "https://speedbagchamp.com/shop"
+      },
+      {
+        "label": "Starter Bundle",
+        "url": "https://speedbagchamp.com/shop/p/starter-bundle"
+      },
+      {
+        "label": "LED Edition",
+        "url": "https://speedbagchamp.com/counter"
+      },
+      {
+        "label": "iOS App",
+        "url": "https://apps.apple.com/us/app/speedbag-champ/id1450005124"
+      },
+      {
+        "label": "Android App",
+        "url": "https://play.google.com/store/apps/details?id=com.athleticinterpretations.thespeedchamp.android"
+      }
+    ],
+    "socialLinks": {
+      "tiktok": "https://tiktok.com/@speedbagchamp",
+      "instagram": "https://instagram.com/speedbagchamp",
+      "youtube": "https://www.youtube.com/@SpeedbagChamp"
+    },
+    "productName": "Speedbag Champ",
+    "productUrl": "https://speedbagchamp.com"
   }
 ]

@@ -1,55 +1,128 @@
-# TatumTech Android App - UI/UX Design Documentation
+# TatumTech Android App - Architecture & UI/UX Design
+
+This document describes how the app is structured today. Paths are relative to
+`app/src/main/java/com/tatumgames/tatumtech/android/` unless stated otherwise.
+API setup, environments, sessions, and adding endpoints are covered separately in
+[docs/TATUM_TECH_API.md](../../../../docs/TATUM_TECH_API.md).
 
 ## Table of Contents
-1. [Navigation Architecture](#navigation-architecture)
-2. [Header Component](#header-component)
-3. [Home Screen Design](#home-screen-design)
-4. [FeatureCard Component](#featurecard-component)
-5. [Bottom Navigation](#bottom-navigation)
-6. [Screen Patterns](#screen-patterns)
-7. [Navigation Drawer](#navigation-drawer)
-8. [Design System](#design-system)
+1. [Modules](#modules)
+2. [App Architecture](#app-architecture)
+3. [Activities & App Flow](#activities--app-flow)
+4. [Authentication Flow](#authentication-flow)
+5. [Navigation Architecture](#navigation-architecture)
+6. [Data & Network Architecture](#data--network-architecture)
+7. [Features](#features)
+8. [Header Component](#header-component)
+9. [Home Screen Design](#home-screen-design)
+10. [FeatureCard Component](#featurecard-component)
+11. [Bottom Navigation](#bottom-navigation)
+12. [Screen Patterns](#screen-patterns)
+13. [Navigation Drawer](#navigation-drawer)
+14. [Reusable Components](#reusable-components)
+15. [Feedback, Errors & Dialogs](#feedback-errors--dialogs)
+16. [Motion](#motion)
+17. [Design System](#design-system)
+18. [Resource Conventions](#resource-conventions)
+
+---
+
+## Modules
+
+| Module | Purpose |
+|---|---|
+| `:app` | The Tatum Tech app: UI, navigation, Room database, Tatum Tech API client, reminders, analytics. |
+| `:tatumgames-framework-android` | Shared Tatum Games infrastructure with no Tatum Tech endpoints or data: HTTP client foundation (`http/client`, `http/executor`, `http/response`, `http/logging`, `http/serialization`, `http/config`), Google/Firebase sign-in (`auth/`), the HTTP-error `AnalyticsClient` interface, and `Logger`. |
+
+Both modules use `compileSdk 37` and `minSdk 24`; the app targets SDK 35. Java/Kotlin bytecode targets JVM 11, and core library desugaring provides `java.time` on API 24–25.
+
+---
+
+## App Architecture
+
+- **UI**: 100% Jetpack Compose with Material 3. One composable per screen under `ui/components/screens/<feature>/`.
+- **State**: MVVM where a screen has non-trivial state. ViewModels live in `ui/viewmodels/` (`HomePagerViewModel`, `GamesViewModel`) and next to their feature (`ui/components/screens/coding/viewmodels/CodingChallengesViewModel`). Simpler screens hold state with `remember`/`mutableStateOf` and call repositories from a `rememberCoroutineScope`.
+- **Dependency wiring**: Manual; there is no DI framework. ViewModels are created through `ViewModelProvider.Factory` classes (`ui/viewmodels/factory/`), the database via `AppDatabase.getInstance`, and the API via the `TatumTechApiProvider` singleton.
+- **Startup** (`application/TatumTechApplication`): initializes analytics/Crashlytics, the Tatum Tech API provider and session refresh, and meeting-reminder sync.
+
+### Package overview
+
+| Package | Contents |
+|---|---|
+| `activity/` | `AuthActivity`, `MainActivity` |
+| `analytics/` | Firebase Analytics/Crashlytics service, event names, `FirebaseAnalyticsClient`, `TrackNavigationAnalytics` |
+| `api/` | `TatumTechApiClient`, provider, configuration, data-source selection, local JSON executor, models, session (`TatumTechSessionManager`, `KeystoreSessionStore`) |
+| `data/` | `content/TatumTechContentRepository` (events, speakers, partners), `games/` (`LocalGameRepository`) |
+| `database/` | Room `AppDatabase` (`tatum_tech.db`), entities, DAOs, repositories |
+| `enums/` | `HomePagerCategory`, `TimelineType`, `TimelineFilter`, `NotificationType`, etc. |
+| `reminders/` | Virtual-speaker meeting reminders (WorkManager) |
+| `ui/` | `components/` (common, layout, navigation, screens), `models/`, `theme/`, `utils/` (`JsonImporter`, `GameMediaResolver`), `viewmodels/` |
+| `utils/` | `Utils` (URL opening, validation, anonymous IDs), `CodingChallengesImporter`, `QrCodeBitmapGenerator` |
+
+---
+
+## Activities & App Flow
+
+```
+AuthActivity (launcher, splash screen)
+  ├─ existing session? ──yes──> MainActivity (task cleared)
+  └─ no ──> AccountSetupGraph ──sign-in success──> MainActivity (task cleared)
+
+MainActivity
+  ├─ MainGraph (start: HOME_PAGER_SCREEN)
+  ├─ MeetingReminderBannerHost (top-aligned overlay)
+  ├─ NotificationPermissionPrompt (one-time, Android 13+)
+  └─ on fresh start: navigate to a reminder destination from the intent,
+     otherwise record an app open (may show RATING_SCREEN)
+```
+
+- **`AuthActivity`** installs the AndroidX splash screen. If the Tatum Tech session manager is signed in, or a Google (Firebase) user is still signed in, it opens `MainActivity` immediately (forwarding any reminder destination) and finishes.
+- **`openMainScreen`** (`ui/components/screens/auth/AuthNavigation.kt`) starts `MainActivity` with `FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TASK`, so the auth flow is removed from the back stack.
+- **`MainActivity`** hosts the main graph plus app-wide overlays. A `null` saved-state bundle is treated as a new app open (rotation/process restore is not).
+
+---
+
+## Authentication Flow
+
+- **AuthScreen** (`auth/splash/AuthScreen.kt`): Sign In, Sign Up, and Google SSO.
+  - Google SSO uses the framework `GoogleAuthClient`, which requests a Google ID token through Credential Manager (`GetSignInWithGoogleOption` with the Web OAuth client ID as the server client ID), parses it with `GoogleIdTokenCredential`, and signs in to Firebase Auth. On success the ID token is exchanged with the Tatum Tech API (10 s timeout). Exchange failure is logged but does not block entry.
+  - Google failures are reported as typed `GoogleAuthError` values and shown in a dialog with friendly copy (`GoogleAuthErrorDialog`). A user cancel shows nothing. Raw exceptions are never shown.
+  - Google sign-in requires the app's package name and signing certificate SHA-1 to be registered as an Android OAuth client in the Firebase project; otherwise Google rejects the request (formerly surfaced as `ApiException: 10`). Each variant (`.debug` and release) and each signing key (debug, upload, Play App Signing) needs its own fingerprint.
+  - Account deletion removes the Firebase user, signs out of Firebase, and calls `CredentialManager.clearCredentialState()`.
+- **SignInScreen / SignUpScreen / ForgotPasswordScreen** call `TatumTechSessionManager` (`signIn`, `signUp`, `forgotPassword`) and handle the `ApiResponse` result:
+  - Success: sign-in/sign-up open the main flow; forgot-password shows a short confirmation Toast.
+  - Failure: an `AuthErrorDialog` is shown (see [Feedback, Errors & Dialogs](#feedback-errors--dialogs)).
+  - While a request runs, the submit button is replaced by its disabled outlined variant.
+- Inline validation (email format, password rules, password match) is shown as persistent red labels under the fields, using `Utils.isEmailValid` / `Utils.isPasswordValid`.
+- Session tokens are stored with `KeystoreSessionStore`. Account deletion (on `UserProfileScreen`, via `AccountDeletionManager`) also signs out. There is no standalone sign-out action.
+- `ChangePasswordScreen` exists but is not registered in either navigation graph.
 
 ---
 
 ## Navigation Architecture
 
 ### Overview
-The app uses Jetpack Compose Navigation with two separate navigation graphs to handle authentication flow and main app flow separately.
+Jetpack Compose Navigation with two `NavHost` graphs (`ui/components/navigation/graph/NavGraph.kt`), one per activity. Routes are string constants in `NavRoutes` (`ui/components/navigation/routes/NavRoutes.kt`); routes with arguments have builder functions (`gameDetailsRoute`, `virtualSpeakersRoute`, `ratingRoute`). Both graphs call `TrackNavigationAnalytics` to log screen views.
 
-### Navigation Graphs
-
-#### 1. AccountSetupGraph
-Handles all authentication-related screens before users enter the main app:
+### AccountSetupGraph (AuthActivity)
 - **Start Destination**: `AUTH_SCREEN`
-- **Screens**:
-  - `AUTH_SCREEN` - Authentication splash/landing screen
-  - `SIGN_IN_SCREEN` - User sign-in
-  - `SIGN_UP_SCREEN` - User registration
-  - `FORGOT_PASSWORD_SCREEN` - Password recovery
+- `AUTH_SCREEN`, `SIGN_IN_SCREEN`, `SIGN_UP_SCREEN`, `FORGOT_PASSWORD_SCREEN`
 
-#### 2. MainGraph
-Main application navigation graph for authenticated users:
+### MainGraph (MainActivity)
 - **Start Destination**: `HOME_PAGER_SCREEN`
-- **Primary Screens**:
-  - `HOME_PAGER_SCREEN` - Main home screen with horizontal pager
-  - `MAIN_SCREEN` - Alternative main screen (legacy)
-  - `UPCOMING_EVENTS_SCREEN` - Events listing
-  - `CODING_CHALLENGES_SCREEN` - Coding challenges/quiz
-  - `MY_TIMELINE_SCREEN` - User activity timeline
-  - `COMMUNITY_SCREEN` - Community features
-  - `SCANNER_SCREEN` - QR code scanner
-  - `DONATE_SCREEN` - Donation interface
-  - `STATS_SCREEN` - User statistics and achievements
-  - `USER_PROFILE_SCREEN` - User profile management
+- Transitions come from `MotionDefaults` (fade + slight horizontal slide; instant when system animations are off).
 
-- **Secondary Screens**:
-  - `PARTNERS_SCREEN` - Partners listing
-  - `RESOURCES_SCREEN` - Resources library
-  - `CAREER_SCREEN` - Job listings
-  - `GAMES_SCREEN` - Games listing
-  - `GAME_DETAILS_SCREEN` - Individual game details (with `gameId` parameter)
-  - `about_screen/{contentType}` - About/FAQ content (with `contentType` parameter)
+| Area | Routes |
+|---|---|
+| Home | `HOME_PAGER_SCREEN` |
+| Events & networking | `UPCOMING_EVENTS_SCREEN`, `VIRTUAL_SPEAKERS_SCREEN` (`{eventId}?speakerId=`), `SCANNER_SCREEN`, `SCANNER_FROM_UPCOMING_EVENTS`, `CONTACT_CARD_EDITOR_SCREEN`, `MY_CONTACT_CARD_QR_SCREEN`, `SCANNED_CONTACT_PREVIEW`, `PARTNERS_SCREEN` |
+| Coding | `CODING_CHALLENGES_SCREEN`, `AI_LLM_CHALLENGES_SCREEN`, `LEET_CODE_CHALLENGES_SCREEN`, `MOCK_INTERVIEW_CHALLENGES_SCREEN`, `RESOURCES_SCREEN` |
+| Progress | `MY_TIMELINE_SCREEN`, `STATS_SCREEN`, `ACHIEVEMENTS_SCREEN` |
+| Community | `COMMUNITY_SCREEN`, `DONATE_SCREEN` |
+| Career | `CAREER_SCREEN` |
+| Games | `GAMES_SCREEN`, `GAME_DETAILS_SCREEN` (`{gameId}`), `GAMES_RESOURCES_SCREEN`, `GET_YOUR_GAME_DISCOVERED_SCREEN` |
+| Account | `USER_PROFILE_SCREEN`, `DEMOGRAPHIC_SCREEN`, `about_screen/{contentType}` (About / FAQ) |
+| Prompts | `RATING_SCREEN` (`{trigger}`) |
 
 ### Navigation Flow
 
@@ -62,467 +135,232 @@ AccountSetupGraph
 
 MainGraph (after authentication)
   └─> HOME_PAGER_SCREEN (start destination)
-      ├─> Various feature screens (from FeatureCards)
-      └─> Bottom Navigation screens
-          ├─> MAIN_SCREEN (Home)
+      ├─> Feature screens (from FeatureCards in each pager tab)
+      ├─> Drawer screens (Profile, Demographic Info, About, FAQ)
+      └─> Bottom Navigation
+          ├─> HOME_PAGER_SCREEN (Home)
           ├─> CODING_CHALLENGES_SCREEN (Learn)
           ├─> MY_TIMELINE_SCREEN (Timeline)
           └─> STATS_SCREEN (Stats)
 ```
 
-### Navigation Implementation
-- Uses `NavHostController` for navigation state management
-- Route-based navigation with string constants defined in `NavRoutes` object
-- Parameter passing via route arguments (e.g., `eventId`, `gameId`, `contentType`)
-- Back stack management: `popUpTo(MainRoutes.MAIN_SCREEN)` with `inclusive = false` to prevent deep back stacks
-- `launchSingleTop = true` to prevent duplicate instances of the same screen
+Meeting reminders (banner tap or system notification) navigate to `virtualSpeakersRoute(eventId, speakerId)`. Recent notifications on the home screen navigate to the route stored with each notification.
+
+---
+
+## Data & Network Architecture
+
+### Tatum Tech API
+- `TatumTechApiClient` extends the framework `BaseApiClient`. Every call returns `ApiResponse<T>`: `Success`, or `Failure(ApiError)` where `ApiError` is `Http`, `Network`, `Serialization`, or `Unexpected`.
+- `TatumTechDataSources` selects the executor: **NETWORK** (`OkHttpRequestExecutor`) or **LOCAL_JSON** (`LocalJsonRequestExecutor`, serving bundled `assets/*.json`). The data source and environment (PRODUCTION / STAGE) are build properties; release builds always use NETWORK + PRODUCTION.
+- Debug builds can log HTTP traffic (tags `RQ`/`RS`) through the framework `HttpTrafficLogger`; release builds never log.
+- HTTP failures are reported to Firebase Analytics as `api_error` events via `FirebaseAnalyticsClient`.
+
+### Where each feature's data comes from
+
+| Feature | Source |
+|---|---|
+| Events, virtual speakers | `TatumTechContentRepository` → API (`upcoming_events.json` in LOCAL_JSON mode) |
+| Partners | `TatumTechContentRepository` → API (`partners.json` in LOCAL_JSON mode) |
+| Auth / session | `TatumTechSessionManager` → API |
+| Games | `assets/games.json` via `LocalGameRepository` |
+| Career | `assets/career_listings.json` via `JsonImporter` |
+| Resources | `assets/resources.json` via `JsonImporter` |
+| Games resources | `assets/games_resources.json` combined with API partners |
+| Coding challenges | Asset JSON imported into Room by `CodingChallengesImporter`, then read from Room |
+| Achievements | `assets/achievements.json` definitions + Room engagement counters |
+| Timeline, stats, contact cards, connections, profile, demographics, recent notifications | Room |
+| Community | Discord invite API via OkHttp (`screens/community/apiclient/DiscordApiClient`) |
+
+### Room database
+`AppDatabase` (`tatum_tech.db`, destructive migration) holds 12 tables: EventRegistration, Timeline, CodingChallenge, CodingQuestion, QuizProgress, QuizAnswerEvent, User, DemographicData, ContactCard, Connection, EngagementCounter, RecentNotification.
+
+### Meeting reminders
+Whenever events load, `reminders/` schedules WorkManager jobs for each virtual session a couple of minutes before it starts. Session times come from the event date plus the speaker's `timeZone`, never the device zone. When the app is in the foreground a banner is shown (`MeetingReminderBannerHost`); otherwise a system notification is posted. Debug builds add a "Test reminder" button on speaker cards.
+
+---
+
+## Features
+
+- **Upcoming Events**: event list with Luma RSVP links, Virtual Speakers screen with Google Meet Join links, and digital networking (Tatum Tech contact card editor, My QR, scanner, scanned-contact preview).
+- **Coding**: four challenge tracks share `ChallengeQuizScreen` (`screens/coding/CodingChallengesScreen.kt`):
+  - Coding: Kotlin, JavaScript, Python, Java, C#
+  - AI/LLM, LeetCode (adds pattern badge and code block), Mock Interview
+  - Levels: Beginner, Intermediate, Advanced. 10-question sessions; 30 answers per day per track + language + level bucket. Answer feedback uses an overlay with native animated GIFs (API 28+) and a confetti burst on correct answers.
+- **Stats / Achievements / My Timeline**: computed from Room timeline events, quiz answers, and engagement counters.
+- **Community**: Discord server info (live counts) and links. **Donate**: Stripe tiers opened in an in-app WebView.
+- **Career**: curated job listings with search and filter chips.
+- **Games**: `GamesScreen` with **Featured** (showcase cards sorted by `featuredPriority`, plus a MIKROS CTA to Get Your Game Discovered) and **Games** (search, genre/gameplay filters) tabs; `GameDetailsScreen` with media, store links, and social links. Local media use `drawable:<name>` strings resolved by `GameMediaResolver`.
+- **Partners**: category filter chips, featured partners first, data-driven CTAs (website, contact email picker, call, donate, product, social links).
+- **Resources / Games Resources**: curated learning and industry-resource directories.
+- **Profile / Demographic Info / About / FAQ**: opened from the drawer.
+- **Rating prompt**: `RATING_SCREEN` on every 20th app open or when a coding daily limit is reached; 4+ stars opens the Play Store listing.
 
 ---
 
 ## Header Component
 
 ### Location
-`app/src/main/java/com/tatumgames/tatumtech/android/ui/components/common/Header.kt`
+`ui/components/common/Header.kt`
 
 ### Overview
-The `Header` component is a standardized, reusable header used across **almost all screens** in the app. It provides consistent navigation and title display.
+The `Header` component is the standardized top bar for nearly every screen, including the auth screens. It provides consistent back navigation and title display.
 
 ### Implementation Details
-
-#### Structure
-- **Layout**: ConstraintLayout for precise positioning
-- **Height**: Fixed 80dp
-- **Status Bar Padding**: Automatically handles system status bar insets
-
-#### Components
-
-1. **Back Button** (Left-aligned)
-   - 32dp × 32dp clickable area
-   - Uses `back_arrow` drawable resource
-   - Positioned at start of header
-   - 4dp padding around icon
-   - Optional color tint via `backArrowTint` parameter
-   - Visibility controlled by `isBackButtonVisible` (default: `true`)
-
-2. **Title Text** (Center-aligned)
-   - Centered horizontally and vertically
-   - Uses `StandardText` component (custom text component)
-   - Black color (`R.color.black`)
-   - Typography: `MaterialTheme.typography.headlineSmall`
-   - Bold font weight
-   - Center text alignment
-
-3. **Horizontal Divider** (Bottom)
-   - 0.5dp thickness
-   - Black color
-   - Spans full width at bottom of header
-   - Provides visual separation between header and content
-
-### Usage Pattern
-
-**Standard Implementation:**
-```kotlin
-Scaffold(
-    topBar = {
-        Header(
-            text = "Screen Title",
-            onBackClick = { navController.popBackStack() }
-        )
-    },
-    bottomBar = {
-        BottomNavigationBar(navController = navController)
-    },
-    containerColor = Color(0xFFF0F0F0)
-) { paddingValues ->
-    // Screen content
-}
-```
+- **Layout**: `ConstraintLayout`, full width, fixed 80dp height, `statusBarsPadding()`.
+- **Back Button** (start-aligned): 32dp `Image` with 4dp padding using `back_arrow`; optional `backArrowTint`; shown when `isBackButtonVisible` (default `true`).
+- **Title** (centered): `TitleText` with `headlineSmall`, bold, `R.color.black`, centered alignment.
+- **Divider**: 0.5dp black `HorizontalDivider` below the title.
 
 ### Customization Options
+- `modifier: Modifier`
+- `text: String` (default `""`)
+- `isBackButtonVisible: Boolean` (default `true`)
+- `onBackClick: () -> Unit` (default no-op)
+- `backArrowTint: Color?` (default `null`)
 
-- **`text: String`** - Header title text (default: empty string)
-- **`isBackButtonVisible: Boolean`** - Show/hide back button (default: `true`)
-- **`onBackClick: () -> Unit`** - Back button click handler (default: empty lambda)
-- **`backArrowTint: Color?`** - Optional color tint for back arrow (default: `null`)
-- **`modifier: Modifier`** - Additional modifier for layout customization
-
-### Screens Using Header
-
-Almost all screens in the app use the Header component, including:
-- `CodingChallengesScreen`
-- `MyTimelineScreen`
-- `StatsScreen`
-- `UpcomingEventsScreen`
-- `CommunityScreen`
-- `DonateScreen`
-- `ScannerScreen`
-- `AboutScreen`
-- `UserProfileScreen`
-- And more...
-
-**Exception**: `HomePagerScreen` uses a custom header implementation with app name and hamburger menu (not the standard Header component).
+**Exception**: `HomePagerScreen` uses its own title row (app name + hamburger menu).
 
 ---
 
 ## Home Screen Design
 
 ### Location
-`app/src/main/java/com/tatumgames/tatumtech/android/ui/components/screens/HomePagerScreen.kt`
+- Screen: `ui/components/screens/HomePagerScreen.kt`
+- Pager: `ui/components/layout/HorizontalPagerLayout.kt`
+- Page content: `ui/components/layout/PagerPageContent.kt`
+- Tab bar: `ui/components/common/PagerTabBar.kt`
+- ViewModel: `ui/viewmodels/HomePagerViewModel.kt` (factory in `ui/viewmodels/factory/`)
+- Card model: `ui/models/FeatureCardItem.kt` (`imageResId`, `titleResId`, `route`)
 
 ### Overview
-The Home Screen (`HOME_PAGER_SCREEN`) is the primary entry point of the app. It features a **horizontal pager** that allows users to swipe between different categories, each containing a **vertical gridview** of feature cards. This design provides scalability for adding more categories and items without cluttering the interface.
-
-### Screen Structure
-
-The Home Screen is divided into **static elements** (that don't scroll with pager) and **dynamic pager content**:
+The home screen is the main entry point. Static elements surround a horizontal pager of categories; each page is a two-column grid of `FeatureCard`s. On entry it syncs coding questions from assets into Room.
 
 ```
-┌─────────────────────────────────────┐
-│ STATIC: App Name + Hamburger Menu  │
-├─────────────────────────────────────┤
-│ STATIC: Greeting Text               │
-├─────────────────────────────────────┤
-│ STATIC: Pager Tab Bar               │
-│ (Events | Coding | Community | Career) │
-├─────────────────────────────────────┤
-│                                     │
-│  DYNAMIC: Horizontal Pager          │
-│  ┌─────────────────────────────┐   │
-│  │ Vertical GridView of Cards  │   │
-│  │ [Card] [Card]               │   │
-│  │ [Card] [Card]               │   │
-│  │ [Card]                      │   │
-│  └─────────────────────────────┘   │
-│                                     │
-├─────────────────────────────────────┤
-│ STATIC: Notifications Title         │
-├─────────────────────────────────────┤
-│ STATIC: Notifications List          │
-└─────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│ STATIC: App Name + Hamburger Menu            │
+├──────────────────────────────────────────────┤
+│ STATIC: Greeting Text                        │
+├──────────────────────────────────────────────┤
+│ STATIC: Pager Tab Bar (horizontally scrolls) │
+│ Events | Coding | Community | Career | Games │
+├──────────────────────────────────────────────┤
+│  DYNAMIC: HorizontalPager                    │
+│  ┌──────────────────────────────┐            │
+│  │ Two-column grid of cards     │            │
+│  └──────────────────────────────┘            │
+├──────────────────────────────────────────────┤
+│ STATIC: Recent Notifications (collapsible)   │
+└──────────────────────────────────────────────┘
+│ Bottom Navigation                            │
 ```
 
-### Static Elements (Outside Pager)
+### Static Elements
+1. **Title Row**: `R.string.app_name` (`headlineSmall`, bold) and a menu icon that opens the drawer; space-between, 8dp vertical padding.
+2. **Greeting**: `headlineMedium`, bold, 12dp top padding. Uses the stored user's name (`greeting_with_name`) or `greeting_generic`.
+3. **Pager Tab Bar**: one tab per `HomePagerCategory`, in a horizontally scrolling row (4dp spacing). Selected tab: `titleMedium` bold in the primary color; others at 70% opacity. Tapping a tab animates the pager.
+4. **Recent Notifications**: `titleSmall` bold header with expand/collapse; when expanded, a scrollable list (max 200dp) or an empty state. Tapping an item marks it read and navigates to its route.
 
-1. **Top Title Row**
-   - App name on the left (`R.string.app_name`)
-   - Hamburger menu icon on the right
-   - Typography: `headlineSmall` with bold weight
-   - 8dp vertical padding
-   - Full width with space-between arrangement
-
-2. **Greeting Text**
-   - Dynamic greeting with user name (or generic greeting)
-   - Typography: `headlineMedium` with bold weight
-   - 12dp top padding
-   - Personalized: "Hello, [Name]!" or generic greeting
-
-3. **Pager Tab Bar**
-   - Four category tabs: "Events", "Coding", "Community", "Career"
-   - Horizontal arrangement with `SpaceEvenly` distribution
-   - Active tab: Bold text with primary color
-   - Inactive tabs: Regular text with 70% opacity
-   - Clicking a tab animates to that pager page
-   - 8dp vertical padding
-
-4. **Notifications Section** (Below Pager)
-   - Static "Recent Notifications" title
-   - List of notification items
-   - Always visible regardless of pager page
-
-### Dynamic Pager Content
-
-#### Horizontal Pager Implementation
-- Uses `HorizontalPager` from Compose Foundation
-- `PagerState` manages current page index
-- Synced with `PagerTabBar` - selecting a tab navigates to that page
-- Smooth animation between pages
-- Four pages corresponding to four categories
-
-#### Vertical GridView Pattern
-
-Each pager page contains a **vertical scrollable gridview** of `FeatureCard` components:
-
-- **Layout**: Column with `verticalScroll` modifier
-- **Grid Pattern**: Rows of 2 cards side-by-side
-- **Spacing**: 16dp between rows, 16dp between cards in a row
-- **Odd Item Handling**: If there's an odd number of items, the last item spans full width
-- **Padding**: 16dp horizontal padding
-- **Scalability**: Can handle any number of items - automatically wraps to new rows
-
-**Example Grid Layout:**
-```
-┌──────────┬──────────┐
-│  Card 1  │  Card 2  │
-├──────────┼──────────┤
-│  Card 3  │  Card 4  │
-├──────────┴──────────┤
-│      Card 5         │  (full width if odd)
-└─────────────────────┘
-```
+### Pager & Grid
+- `androidx.compose.foundation.pager.HorizontalPager`, synced with the tab bar.
+- Items are laid out with `chunked(2)`: two cards per row with `weight(1f)`, 16dp gaps, 16dp horizontal padding; an odd last card spans the full width.
 
 ### Category Content
 
-Each category in the pager displays different feature cards:
+| Tab | Cards → Route |
+|---|---|
+| Events | Upcoming Events → `UPCOMING_EVENTS_SCREEN`; Scanner → `SCANNER_SCREEN`; Partners → `PARTNERS_SCREEN` |
+| Coding | Coding → `CODING_CHALLENGES_SCREEN`; AI/LLM Challenges → `AI_LLM_CHALLENGES_SCREEN`; Stats → `STATS_SCREEN`; Resources → `RESOURCES_SCREEN` |
+| Community | Community → `COMMUNITY_SCREEN`; Donate → `DONATE_SCREEN` |
+| Career | Apply for Jobs → `CAREER_SCREEN`; LeetCode Challenges → `LEET_CODE_CHALLENGES_SCREEN`; Mock Interview → `MOCK_INTERVIEW_CHALLENGES_SCREEN` |
+| Games | Discover → `GAMES_SCREEN`; Resources → `GAMES_RESOURCES_SCREEN` |
 
-#### Events Category
-- Upcoming Events → `UPCOMING_EVENTS_SCREEN`
-- Scanner → `SCANNER_SCREEN`
-- Partners → `PARTNERS_SCREEN`
-- Resources → `RESOURCES_SCREEN`
-
-#### Coding Category
-- Coding Challenges → `CODING_CHALLENGES_SCREEN`
-- Stats → `STATS_SCREEN`
-- Resources → `RESOURCES_SCREEN`
-
-#### Community Category
-- Community → `COMMUNITY_SCREEN`
-- Donate → `DONATE_SCREEN`
-- Resources → `RESOURCES_SCREEN`
-
-#### Career Category
-- Apply for Jobs → `CAREER_SCREEN`
-- Resources → `RESOURCES_SCREEN`
-
-### Implementation Files
-
-- **Main Screen**: `HomePagerScreen.kt`
-- **Pager Layout**: `HorizontalPagerLayout.kt`
-- **Page Content**: `PagerPageContent.kt`
-- **Tab Bar**: `PagerTabBar.kt`
-- **ViewModel**: `HomePagerViewModel.kt`
-- **Feature Card Model**: `FeatureCardItem.kt`
+### Recent notifications
+Generated by `RecentNotificationDatabaseRepository.refreshAndLoad` with stable IDs (no duplicates on refresh): a daily coding-challenge item, up to three upcoming events, and daily Career / Community / Games spotlights. `RecentNotificationPolicy` builds IDs, keeps read items for 14 days, and resolves destination routes.
 
 ### Design Rationale
-
-1. **Scalability**: Easy to add new categories or items to categories without redesign
-2. **Organization**: Content grouped by theme (Events, Coding, Community, Career)
-3. **Discoverability**: Horizontal pager allows users to discover different content areas
-4. **Consistency**: Static elements (greeting, notifications) always visible for context
-5. **Performance**: Only visible page content is rendered (with pager caching)
+1. **Scalability**: new categories or cards only need a `HomePagerCategory` entry and `FeatureCardItem`s.
+2. **Organization**: content grouped by theme.
+3. **Consistency**: greeting and notifications stay visible regardless of the selected tab.
 
 ---
 
 ## FeatureCard Component
 
 ### Location
-`app/src/main/java/com/tatumgames/tatumtech/android/ui/components/screens/main/FeatureCard.kt`
+`ui/components/screens/main/FeatureCard.kt`
 
 ### Overview
-`FeatureCard` is a reusable card component used throughout the app, primarily in the Home Screen's pager gridview. It displays an icon/image with text and handles navigation when clicked.
-
-### Component Structure
+Reusable card used in the home pager grid. Shows an icon/image with a title and navigates on click.
 
 ```
 ┌─────────────────────────┐
 │ ┌──────────┐            │
-│ │   Icon   │            │ 36dp × 36dp
-│ │  (36dp)  │            │ Rounded background
+│ │   Icon   │            │ 36dp container
 │ └──────────┘            │
-│                         │
-│ Card Title Text         │ 16sp, Medium weight
+│ Card Title Text         │ 16sp, Medium
 └─────────────────────────┘
      100dp height
 ```
 
 ### Dimensions and Styling
+- **Height**: fixed 100dp; width from the grid (weight or full width)
+- **Shape**: 12dp rounded corners
+- **Elevation**: 4dp default
+- **Background**: `Grey200` default
+- **Padding**: 16dp; content start-aligned and vertically centered
 
-- **Height**: Fixed 100dp
-- **Width**: Flexible (weight-based in grid, or full width)
-- **Shape**: Rounded corners (12dp radius)
-- **Elevation**: 4dp default (configurable)
-- **Background Color**: White (configurable via `backgroundColor` parameter)
-- **Padding**: 16dp internal padding
+### Icon
+- 36dp container, 8dp corners, 6dp padding, `NotificationLavender` (`#EDE7F6`) background by default.
+- Accepts an `ImageVector` (`icon`) or a `Painter` (`image`); one is required (`require` check). Both are drawn with `Icon` and `iconTint` (default `Color.Unspecified`).
 
-### Icon/Image Placement
+### Text
+16sp, `FontWeight.Medium`, `Black` by default, 8dp below the icon.
 
-#### Icon Container
-- **Size**: 36dp × 36dp square
-- **Background**: Light purple (`Color(0xFFEDE7F6)`) by default
-- **Shape**: Rounded corners (8dp radius)
-- **Internal Padding**: 6dp
-- **Position**: Top-left of card
-- **Content**: Centered icon or image
-
-#### Icon Types
-The component accepts either:
-1. **ImageVector** (`icon: ImageVector?`) - Material Icons
-2. **Painter** (`image: Painter?`) - Drawable resources/images
-
-One of these must be provided (enforced via `require` check).
-
-#### Icon Styling
-- **Tint**: Configurable via `iconTint` parameter (default: `Color.Unspecified`)
-- **Background Color**: Configurable via `iconBackground` parameter (default: `Color(0xFFEDE7F6)`)
-
-### Text Content
-
-- **Position**: Below icon, left-aligned
-- **Typography**: 
-  - Font size: 16sp
-  - Font weight: Medium (`FontWeight.Medium`)
-- **Color**: Black by default (configurable via `textColor` parameter)
-- **Spacing**: 8dp gap between icon and text
-
-### Layout Implementation
-
-The card uses a `Column` layout with:
-- `fillMaxSize()` modifier
-- `padding(16.dp)` for internal spacing
-- `horizontalAlignment = Alignment.Start` (left-aligned content)
-- `verticalArrangement = Arrangement.Center` (centered vertically)
-
-### Grid Layout Pattern
-
-When used in the Home Screen's pager, FeatureCards are arranged in a specific grid pattern:
-
-1. **Two Cards Per Row**: Cards are grouped into rows of 2
-2. **Equal Width**: Each card in a row gets `weight(1f)` modifier
-3. **Row Spacing**: 16dp gap between cards horizontally
-4. **Column Spacing**: 16dp gap between rows vertically
-5. **Odd Item Handling**: If there's an odd number of items, the last card spans full width (`fillMaxWidth()`)
-
-**Implementation Logic** (from `PagerPageContent.kt`):
-```kotlin
-while (index < items.size) {
-    if (index < items.size - 1) {
-        // Two cards side-by-side
-        Row {
-            FeatureCard(...) // weight(1f)
-            FeatureCard(...) // weight(1f)
-        }
-        index += 2
-    } else {
-        // Single card full width
-        FeatureCard(...) // fillMaxWidth()
-        index += 1
-    }
-}
-```
-
-### Click Handling
-
-- **Clickable**: Entire card is clickable (when `onClick` is provided)
-- **Navigation**: Typically navigates to a route via `navController.navigate(route)`
-- **Disabled State**: If `onClick` is `null`, card is not clickable
-
-### Customization Parameters
-
-- `icon: ImageVector?` - Material icon (optional)
-- `image: Painter?` - Image/drawable (optional)
-- `text: String` - Card title text (required)
-- `modifier: Modifier` - Additional layout modifiers
-- `onClick: (() -> Unit)?` - Click handler (optional)
-- `elevation: Dp` - Card elevation (default: 4dp)
-- `backgroundColor: Color` - Card background (default: White)
-- `iconTint: Color` - Icon color tint (default: Unspecified)
-- `iconBackground: Color` - Icon background (default: `0xFFEDE7F6`)
-- `textColor: Color` - Text color (default: Black)
+### Parameters
+`modifier`, `icon: ImageVector?`, `image: Painter?`, `text: String`, `onClick: (() -> Unit)?` (not clickable when null), `elevation: Dp` (4dp), `backgroundColor: Color` (`Grey200`), `iconTint: Color` (`Unspecified`), `iconBackground: Color` (`NotificationLavender`), `textColor: Color` (`Black`).
 
 ---
 
 ## Bottom Navigation
 
 ### Location
-`app/src/main/java/com/tatumgames/tatumtech/android/ui/components/common/BottomNavigationBar.kt`
+`ui/components/common/BottomNavigationBar.kt` (items modeled in `ui/components/screens/main/models/BottomNavigation.kt`)
 
-### Overview
-The Bottom Navigation Bar provides persistent navigation access to the four main sections of the app. It appears at the bottom of almost all screens using a Material 3 `NavigationBar` component.
+### Items
 
-### Navigation Items
-
-The bottom navigation contains **4 items**:
-
-1. **Home** 
-   - Icon: `Icons.Default.Home`
-   - Route: `NavRoutes.MAIN_SCREEN`
-   - Label: "Home" (from `R.string.home`)
-
-2. **Learn**
-   - Icon: `Icons.Default.Face`
-   - Route: `NavRoutes.CODING_CHALLENGES_SCREEN`
-   - Label: "Learn" (from `R.string.learn`)
-
-3. **Timeline**
-   - Icon: `Icons.Default.DateRange`
-   - Route: `NavRoutes.MY_TIMELINE_SCREEN`
-   - Label: "Timeline" (from `R.string.timeline`)
-
-4. **Stats**
-   - Icon: `Icons.Default.Star`
-   - Route: `NavRoutes.STATS_SCREEN`
-   - Label: "Stats" (from `R.string.stats`)
+| Item | Icon | Route | Label |
+|---|---|---|---|
+| Home | `Icons.Default.Home` | `HOME_PAGER_SCREEN` | `R.string.home` |
+| Learn | `Icons.Default.Face` | `CODING_CHALLENGES_SCREEN` | `R.string.learn` |
+| Timeline | `Icons.Default.DateRange` | `MY_TIMELINE_SCREEN` | `R.string.timeline` |
+| Stats | `Icons.Default.Star` | `STATS_SCREEN` | `R.string.stats` |
 
 ### Visual Design
-
-- **Container Color**: White (`Color.White`)
-- **Elevation**: 8dp tonal elevation
-- **Always Show Labels**: `alwaysShowLabel = true` (labels always visible, not just when selected)
-- **Icons**: Material Icons (filled style)
-- **Selected State**: Highlighted icon and text when current route matches
-- **Unselected State**: Normal icon and text styling
+Material 3 `NavigationBar`, `White` container, 8dp tonal elevation, labels always shown, icon `contentDescription` set to the label.
 
 ### Navigation Behavior
+- Tapping the current item does nothing.
+- **Home** pops back to `HOME_PAGER_SCREEN`.
+- Other items:
 
-#### Route Matching
-- Uses `currentBackStackEntryAsState()` to determine current route
-- Compares current route with each item's route
-- Highlights matching item as selected
-
-#### Navigation Actions
-When an item is clicked:
-- Checks if current route differs from target route
-- If different, navigates using `navController.navigate(item.route)`
-- Uses `popUpTo(NavRoutes.MAIN_SCREEN)` with `inclusive = false`
-- Sets `launchSingleTop = true` to prevent duplicate instances
-- This ensures the back stack doesn't grow too deep
-
-#### Navigation Stack Management
 ```kotlin
 navController.navigate(item.route) {
-    popUpTo(NavRoutes.MAIN_SCREEN) {
+    popUpTo(NavRoutes.HOME_PAGER_SCREEN) {
         inclusive = false
+        saveState = true
     }
     launchSingleTop = true
+    restoreState = true
 }
 ```
 
-This means:
-- When navigating to any bottom nav item, the back stack pops to (but doesn't include) `MAIN_SCREEN`
-- Prevents deep navigation stacks
-- Ensures single instance of each screen
-- Back button from bottom nav screens goes to home
+This keeps the back stack shallow (back from a tab returns home) and preserves each tab's state.
 
-### Usage Pattern
+### Where It Appears
+Home, Upcoming Events, Virtual Speakers, all coding challenge screens, My Timeline, Stats, Achievements, Community, Donate, About/FAQ, Partners, Resources, Games Resources, Games, Get Your Game Discovered, Career.
 
-**Standard Implementation:**
-```kotlin
-Scaffold(
-    topBar = {
-        Header(...)
-    },
-    bottomBar = {
-        BottomNavigationBar(navController = navController)
-    },
-    containerColor = Color(0xFFF0F0F0)
-) { paddingValues ->
-    // Screen content
-}
-```
-
-### Icon Placement and Styling
-
-- **Icon Size**: Default Material 3 `NavigationBarItem` icon size (24dp)
-- **Icon Position**: Above label text
-- **Icon Color**: Material theme colors (primary for selected, default for unselected)
-- **Label Position**: Below icon
-- **Label Typography**: Material 3 default navigation bar label style
-
-### Accessibility
-
-- All icons have `contentDescription` set to the label text
-- Labels are always visible for clarity
-- Touch targets meet Material Design guidelines (minimum 48dp)
+Not shown on: auth screens, Scanner, Game Details, User Profile, Demographic Info, Rating, and the networking screens (contact card editor, My QR, scanned contact preview).
 
 ---
 
@@ -530,307 +368,157 @@ Scaffold(
 
 ### Standard Screen Structure
 
-Almost all screens in the app follow a consistent pattern using Jetpack Compose's `Scaffold` component:
-
 ```kotlin
 Scaffold(
     topBar = {
         Header(
-            text = "Screen Title",
+            text = stringResource(R.string.screen_title),
             onBackClick = { navController.popBackStack() }
         )
     },
     bottomBar = {
         BottomNavigationBar(navController = navController)
     },
-    containerColor = Color(0xFFF0F0F0)
+    containerColor = ScreenScaffoldLight
 ) { paddingValues ->
-    // Screen content with padding
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        // Content here
+        // Content
     }
 }
 ```
 
-### Common Elements
+### Background Colors
+- **`ScreenScaffoldLight`** (`#F0F0F0`): content/list screens (events, speakers, coding, timeline, stats, achievements, community, donate, about, partners, resources, games, career, contact card editor, scanned contact preview).
+- **`White`**: home, auth, form/account screens (user profile, demographic info), rating, My QR.
+- **`Black`**: scanner (camera preview).
 
-#### 1. Scaffold Structure
-- **`topBar`**: Contains `Header` component (except HomePagerScreen)
-- **`bottomBar`**: Contains `BottomNavigationBar` component
-- **`containerColor`**: Light gray background (`Color(0xFFF0F0F0)`)
-- **`content`**: Screen-specific content with padding from `paddingValues`
+### Layout
+- Scaffold `paddingValues` are always applied to content.
+- Long content scrolls with `verticalScroll(rememberScrollState())` or `LazyColumn`.
+- Typical spacing: 16dp horizontal padding; 8/12/16/24dp vertical rhythm.
 
-#### 2. Background Color
-- Consistent light gray background: `Color(0xFFF0F0F0)`
-- Provides visual consistency across all screens
-- Soft, non-distracting background for content
-
-#### 3. Padding and Spacing
-- **Scaffold Padding**: Automatically handled by `paddingValues` from Scaffold
-- **Content Padding**: Typically 16dp horizontal, 10-16dp vertical
-- **Element Spacing**: Consistent 8dp, 12dp, 16dp, 24dp spacing used throughout
-
-#### 4. Content Layout
-- Most screens use `Column` for vertical content
-- Scrollable content uses `verticalScroll(rememberScrollState())`
-- Grid layouts use `LazyVerticalGrid` for performance
-
-### Screen-Specific Patterns
-
-#### Screens with Lists
-- Use `LazyColumn` or `LazyVerticalGrid` for efficient rendering
-- Example: `UpcomingEventsScreen`, `CodingChallengesScreen`
-
-#### Screens with Forms
-- Use `Column` with `verticalScroll`
-- Form fields with consistent spacing
-- Example: `SignInScreen`, `SignUpScreen`
-
-#### Detail Screens
-- Header with back button
-- Content area with scrollable content
-- Example: `GameDetailsScreen`, `VirtualSpeakersScreen`
-
-### Exceptions to Standard Pattern
-
-#### HomePagerScreen
-- Does **not** use `Header` component in `topBar`
-- Uses custom header with app name and hamburger menu
-- Has horizontal pager instead of standard content
-- Still uses `BottomNavigationBar`
-
-#### Authentication Screens
-- Do **not** use `BottomNavigationBar`
-- Do **not** use `Header` component
-- Custom layouts for sign-in, sign-up, etc.
+### Screen Variants
+- **Auth screens**: `Header` (no bottom bar), white background, 20dp padding, terms/privacy text pinned to the bottom.
+- **Forms** (profile, demographic info, contact card editor): `Header`, scrollable `Column`, Snackbar host for save confirmations.
+- **Detail screens** (Game Details, Virtual Speakers): `Header` with back, scrollable content.
+- **Home**: custom title row instead of `Header`.
 
 ---
 
 ## Navigation Drawer
 
 ### Location
-`app/src/main/java/com/tatumgames/tatumtech/android/ui/components/screens/main/UserProfileDrawer.kt`
+`ui/components/screens/main/UserProfileDrawer.kt`, hosted by `HomePagerScreen`.
 
-### Overview
-The Navigation Drawer is a right-side sliding panel that provides access to user profile options, settings, and additional navigation links. It's accessed via the hamburger menu icon in the Home Screen's top bar.
+### Structure
+- **Drawer**: 75% of screen width, anchored to the end (right), white background, scrollable content.
+- **Overlay**: full-screen `Black` at 30% alpha behind the drawer; tapping it closes the drawer.
+- **Visibility**: `HomePagerScreen` toggles `isDrawerOpen` (`remember { mutableStateOf(false) }`) from the hamburger icon and shows the drawer with `AnimatedVisibility` (fade, 300ms).
 
-### Drawer Structure
+### Content
+1. `tatumgames_logo`
+2. Menu items, each navigating and then closing the drawer:
+   - Profile → `USER_PROFILE_SCREEN`
+   - Demographic Info → `DEMOGRAPHIC_SCREEN`
+   - About Tatum Games → `about_screen/about`
+   - FAQ → `about_screen/faq`
+3. Footer: divider, app version, Terms & Privacy links.
 
-```
-┌─────────────────────────────────────┐
-│                                     │
-│  [Overlay - 25% width]              │
-│  Semi-transparent black (30% alpha) │
-│                                     │
-│  [Drawer - 75% width]               │
-│  ┌─────────────────────────────┐   │
-│  │ White Background             │   │
-│  │                              │   │
-│  │ - Logo                       │   │
-│  │ - Menu Items                 │   │
-│  │ - User Profile               │   │
-│  │ - Settings                   │   │
-│  │ - About/FAQ                  │   │
-│  │ - Terms & Privacy            │   │
-│  │                              │   │
-│  └─────────────────────────────┘   │
-└─────────────────────────────────────┘
-```
+### Closing
+Overlay tap, or selecting a menu item.
 
-### Implementation Details
+---
 
-#### Drawer Dimensions
-- **Drawer Width**: 75% of screen width (`screenWidth * 0.75f`)
-- **Overlay Width**: 25% of screen width (remaining space)
-- **Drawer Position**: Right side of screen (`Alignment.CenterEnd`)
-- **Full Height**: Spans entire screen height
+## Reusable Components
 
-#### Overlay
-- **Color**: Black with 30% opacity (`Color.Black.copy(alpha = 0.3f)`)
-- **Clickable**: Clicking overlay closes the drawer
-- **Coverage**: Spans full screen behind drawer
-- **Purpose**: Provides visual separation and focus on drawer content
+All in `ui/components/common/` unless noted.
 
-#### Animation
-- **Enter Animation**: Slide in from right (`slideInHorizontally`)
-- **Exit Animation**: Slide out to right (`slideOutHorizontally`)
-- **Duration**: 500ms animation
-- **Easing**: Default easing curve
+| Component | Purpose |
+|---|---|
+| `Header` | Standard top bar (see above) |
+| `BottomNavigationBar` | Four-item bottom navigation |
+| `PagerTabBar` | Home pager category tabs |
+| `RoundedButton`, `OutlinedButton` (`Buttons.kt`) | Primary filled button (Purple200) and outlined/disabled variant (2dp purple border, 8dp corners) |
+| `OutlinedInputField` (`EditTexts.kt`) | Standard text input |
+| `StandardText`, `TitleText`, `LinkifyText`, `ClickableText`, `TermsAndPrivacyText` (`TextViews.kt`, `ClickableText.kt`) | Text primitives; `StandardText` defaults to `bodyMedium` / `R.color.black` |
+| `StandardAlertDialog` | Shared Material 3 dialog: title, scrollable description, primary button, optional secondary button |
+| `MeetingReminderBannerHost` | App-wide reminder banner that slides in from the top |
+| `NotificationPermissionPrompt` | One-time explainer dialog before requesting `POST_NOTIFICATIONS` (Android 13+) |
+| `MotionDefaults` | Shared animation timings and nav transitions |
+| `SectionCard` | Square section card (currently unused) |
+| `FeatureCard` (`screens/main/`) | Home grid card |
+| `AnimatedGifImage`, `ConfettiBurst` (`screens/coding/FeedbackAnimations.kt`) | Native GIF playback (API 28+, static fallback) and Canvas confetti for answer feedback |
 
-### Drawer Content
+---
 
-The drawer contains several sections:
+## Feedback, Errors & Dialogs
 
-1. **Logo Section**
-   - Tatum Games logo/logo text at top
-   - Provides brand identity
+Choose the mechanism by how much attention the message needs:
 
-2. **Menu Items**
-   - Navigation links to various screens
-   - User Profile
-   - Settings
-   - About Tatum Games
-   - FAQ
-   - Terms & Privacy
+| Mechanism | Used for | Examples |
+|---|---|---|
+| **Dialog** (`StandardAlertDialog`) | Errors or decisions that need acknowledgement | `AuthErrorDialog`, demographic age confirmation |
+| **Dialog** (Material 3 `AlertDialog`) | Feature-specific dialogs with custom content | Partner details, contact picker, delete-account confirmation, notification permission explainer |
+| **Snackbar** | Save confirmations and recoverable issues on a screen with a `SnackbarHost` | Profile/demographic saved, contact card editor, scanner results |
+| **Toast** | Brief, non-blocking status that needs no acknowledgement | Reset email sent, "couldn't open link/email/dialer" fallbacks, debug-only reminder scheduled |
+| **Inline label** | Form validation | Red `Red300` text under auth fields |
 
-3. **User Information**
-   - User profile details
-   - Account-related information
+### Auth error dialog
+`AuthErrorDialog(error: ApiError, onDismiss)` in `ui/components/screens/auth/AuthNavigation.kt`:
+- Title `R.string.auth_error_title`, message from `authErrorMessage`, single `R.string.ok` button.
+- Dismissed only by OK (back press and outside taps are ignored).
+- Message mapping:
+  - `ApiError.Http`: first non-blank server message, trimmed and capped at 500 characters; otherwise `something_went_wrong`.
+  - `ApiError.Network`: `error_network_unavailable`.
+  - `ApiError.Serialization` / `ApiError.Unexpected`: `something_went_wrong` (technical details are never shown).
+- Screens keep the error in Compose state (`var authError by remember { mutableStateOf<ApiError?>(null) }`) and render the dialog from composition. Because it is not created from a `Context`, it is bound to the hosting Activity's window and disappears with the screen, so it cannot leak a window during navigation.
 
-4. **Footer**
-   - Terms and Privacy text at bottom
-   - Scrollable content area
+### Long dialog text
+`StandardAlertDialog` makes its description scrollable, so long messages never push the button off screen.
 
-### Trigger Mechanism
+---
 
-The drawer is opened from the **Home Screen** (`HomePagerScreen`):
+## Motion
 
-1. **Hamburger Menu Icon**: Top-right corner of screen
-2. **Click Action**: Sets `isDrawerOpen = true`
-3. **State Management**: Uses `remember { mutableStateOf(false) }` for visibility
-
-### Drawer State Management
-
-```kotlin
-var isDrawerOpen by remember { mutableStateOf(false) }
-
-// Hamburger menu click
-Icon(
-    modifier = Modifier.clickable { isDrawerOpen = true }
-)
-
-// Drawer visibility
-AnimatedVisibility(
-    visible = isDrawerOpen,
-    enter = fadeIn(...),
-    exit = fadeOut(...)
-) {
-    // Drawer content with overlay
-}
-```
-
-### Closing the Drawer
-
-The drawer can be closed by:
-1. **Overlay Click**: Clicking the semi-transparent overlay area
-2. **Close Button**: If present in drawer content
-3. **Navigation**: Navigating to a new screen (drawer closes automatically)
-4. **Back Button**: System back button closes drawer
-
-### Drawer Content Implementation
-
-The drawer uses `UserProfileDrawer` composable:
-- **Scrollable**: Uses `verticalScroll` for content that exceeds screen height
-- **Layout**: Column with spacing between sections
-- **Padding**: 16dp internal padding
-- **Alignment**: Top-aligned content with footer at bottom
-
-### Design Rationale
-
-1. **Right-Side Placement**: Follows Material Design guidelines for navigation drawers
-2. **75/25 Split**: Provides enough space for content while maintaining overlay visibility
-3. **Smooth Animation**: Professional slide-in animation enhances user experience
-4. **Overlay Interaction**: Clickable overlay makes closing intuitive
-5. **Scrollable Content**: Handles varying amounts of content gracefully
+`MotionDefaults` centralizes timings (`NAV_MS` 220, `CONTENT_MS` 200, feedback enter/exit 280/180) and `MainGraph` transitions. `animationsEnabled()` reads the system animator duration scale; when animations are off, durations become 0 and decorative effects (GIF playback, confetti) are skipped.
 
 ---
 
 ## Design System
 
-### Color Palette
+### Theme
+`ui/theme/Theme.kt` defines `TatumTechTheme`: a static light `ColorScheme` (no dynamic color, no dark theme) with `primary = Purple200`, `secondary = Teal200`, white background/surface, black on-colors. Typography is the Material 3 default.
 
-#### Primary Colors
-- **Background**: `Color(0xFFF0F0F0)` - Light gray used across all screens
-- **Card Background**: `Color.White` - Standard card background
-- **Text**: `Color.Black` (`R.color.black`) - Primary text color
-- **Primary Theme**: Material Theme primary color (purple tones)
+### Color Palette (`ui/theme/Color.kt`)
+- **Base**: `Purple200/500/700`, `Teal200/700`, `Black`, `White`, `ScreenScaffoldLight` (`#F0F0F0`), `Grey200–500`
+- **Semantic**: `SuccessGreen`, `DestructiveRed`, `Red300` (validation), `Gold`
+- **Feature accents**: `NotificationLavender`, `SpringPurple*`, `FallDeepOrange*`, `Partner*` (partner CTAs), `SteamStoreDark`, `Discord*`
 
-#### Icon Backgrounds
-- **Default Icon Background**: `Color(0xFFEDE7F6)` - Light purple for FeatureCard icons
-- **Icon Tint**: Configurable, defaults to `Color.Unspecified`
-
-#### Navigation
-- **Bottom Nav Background**: `Color.White`
-- **Bottom Nav Elevation**: 8dp
-- **Header Divider**: Black, 0.5dp
+Use the named colors rather than hex literals.
 
 ### Typography
+- **App name / Header title**: `headlineSmall`, bold
+- **Greeting**: `headlineMedium`, bold
+- **Pager tabs**: `titleMedium`
+- **Section titles**: `titleSmall`/`titleMedium`, bold
+- **Card text**: 16sp, Medium
+- **Body**: `bodyMedium`/`bodyLarge`
 
-#### Text Styles
-- **App Name/Title**: `headlineSmall` with bold weight
-- **Greeting**: `headlineMedium` with bold weight
-- **Section Titles**: `titleMedium` with bold weight
-- **Card Text**: 16sp, Medium weight
-- **Body Text**: Material Theme default body styles
-- **Button Text**: Material Theme button styles
-
-#### Font Weights
-- **Bold**: Used for titles, headings, selected states
-- **Medium**: Used for card text, labels
-- **Regular**: Default body text
-
-### Spacing System
-
-Consistent spacing values used throughout:
-- **4dp**: Tight spacing (icon padding)
-- **8dp**: Small spacing (between icon and text in cards, tab padding)
-- **12dp**: Medium-small spacing
-- **16dp**: Standard spacing (card padding, grid gaps, content padding)
-- **24dp**: Medium spacing (section separators)
-- **30dp**: Large spacing (major section breaks)
-
-### Component Elevations
-
-- **FeatureCard**: 4dp default elevation
-- **Bottom Navigation**: 8dp tonal elevation
-- **Drawer Overlay**: No elevation (background layer)
-
-### Icon Sizes
-
-- **Header Back Button**: 32dp × 32dp
-- **FeatureCard Icon Container**: 36dp × 36dp
-- **Hamburger Menu Icon**: Default Material icon size
-- **Bottom Navigation Icons**: Default Material 3 NavigationBar icon size (24dp)
-
-### Border Radius
-
-- **FeatureCard**: 12dp rounded corners
-- **Icon Container in Cards**: 8dp rounded corners
-- **Other Cards**: Varies by component
-
-### Layout Guidelines
-
-#### Screen Padding
-- **Horizontal**: 16dp standard
-- **Vertical**: 10-16dp standard
-- **Scaffold Padding**: Handled automatically via `paddingValues`
-
-#### Grid Layouts
-- **Columns**: 2 columns standard (FeatureCard grid, Section grid)
-- **Gaps**: 16dp horizontal and vertical spacing
-
-#### Card Dimensions
-- **FeatureCard Height**: Fixed 100dp
-- **FeatureCard Width**: Flexible (weight-based or full width)
-- **Header Height**: Fixed 80dp
+### Spacing, Elevation, Shapes
+- **Spacing**: 4 / 8 / 12 / 16 / 24dp
+- **Elevation**: FeatureCard 4dp; bottom navigation 8dp tonal
+- **Corners**: FeatureCard 12dp; icon containers and buttons 8dp
+- **Sizes**: Header 80dp tall, back button 32dp, FeatureCard 100dp tall, icon container 36dp
 
 ---
 
-## Summary
+## Resource Conventions
 
-This design documentation covers the key UI/UX patterns and components used throughout the TatumTech Android app:
-
-1. **Consistent Navigation**: Two navigation graphs handle auth and main app flows
-2. **Standardized Header**: Header component used across all screens for consistency
-3. **Scalable Home Screen**: Horizontal pager with vertical gridview allows easy expansion
-4. **Reusable Components**: FeatureCard and other components promote consistency
-5. **Persistent Navigation**: Bottom navigation provides constant access to main sections
-6. **Standard Patterns**: Scaffold-based screen structure ensures consistency
-7. **User Access**: Right-side drawer provides additional navigation and settings
-
-The design prioritizes **scalability**, **consistency**, and **user experience** through reusable components and established patterns.
-
+- **Strings**: all user-facing text lives in `res/values/strings.xml` (English only), grouped by feature comments; composables use `stringResource`, non-composable code uses `context.getString`.
+- **Drawables**: feature-prefixed names (e.g. `pog_*`, `saint_art_puzzle_*`, partner logos by name). JSON assets reference drawables as `"drawable:<name>"` (games) or plain names (partner logos, achievement badges), resolved at runtime.
+- **Assets** (`app/src/main/assets/`): curated content JSON (`games.json`, `partners.json`, `upcoming_events.json`, `career_listings.json`, `resources.json`, `games_resources.json`, `achievements.json`) and coding-challenge banks named `coding_challenges_<track>_<level>.json`. Asset validation tests live in `app/src/test/.../assets/`.
+- **Configuration**: Tatum Tech API settings come from `-PtatumTech.*` Gradle properties or the git-ignored `local.properties`, exposed through `BuildConfig`. Never put credentials in source files.

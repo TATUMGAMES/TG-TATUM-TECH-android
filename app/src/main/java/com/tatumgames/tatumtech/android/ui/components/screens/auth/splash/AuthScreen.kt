@@ -15,9 +15,6 @@
 package com.tatumgames.tatumtech.android.ui.components.screens.auth.splash
 
 import android.app.Activity
-import android.content.Intent
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,14 +52,17 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.tatumgames.tatumtech.android.R
-import com.tatumgames.tatumtech.android.activity.MainActivity
+import com.tatumgames.tatumtech.android.api.TatumTechApiProvider
 import com.tatumgames.tatumtech.android.constants.Constants.TAG
 import com.tatumgames.tatumtech.android.ui.components.common.RoundedButton
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
 import com.tatumgames.tatumtech.android.ui.components.common.TermsAndPrivacyText
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
+import com.tatumgames.tatumtech.android.ui.components.screens.auth.GoogleAuthErrorDialog
+import com.tatumgames.tatumtech.android.ui.components.screens.auth.openMainScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.auth.splash.AuthScreenMessages.GOOGLE_AUTHENTICATION_FAILED
 import com.tatumgames.tatumtech.android.ui.components.screens.auth.splash.AuthScreenMessages.GOOGLE_AUTHENTICATION_SUCCESSFUL
+import com.tatumgames.tatumtech.android.ui.components.screens.auth.splash.AuthScreenMessages.TATUM_TECH_GOOGLE_SIGN_IN_FAILED
 import com.tatumgames.tatumtech.android.ui.theme.Black
 import com.tatumgames.tatumtech.android.ui.theme.TatumTechTheme
 import com.tatumgames.tatumtech.android.ui.theme.White
@@ -70,11 +71,33 @@ import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthError
 import com.tatumgames.tatumtech.framework.android.auth.configuration.GoogleAuthConfiguration
 import com.tatumgames.tatumtech.framework.android.auth.interfaces.GoogleAuthCallback
 import com.tatumgames.tatumtech.framework.android.auth.models.GoogleUser
+import com.tatumgames.tatumtech.framework.android.http.response.ApiResponse
 import com.tatumgames.tatumtech.framework.android.logger.Logger
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 object AuthScreenMessages {
     internal const val GOOGLE_AUTHENTICATION_SUCCESSFUL = "Google authentication successful"
     internal const val GOOGLE_AUTHENTICATION_FAILED = "Google authentication failed"
+    internal const val TATUM_TECH_GOOGLE_SIGN_IN_FAILED =
+        "Tatum Tech Google sign-in failed; continuing without a Tatum Tech session"
+}
+
+private const val GOOGLE_EXCHANGE_TIMEOUT_MS = 10_000L
+
+/**
+ * Signs in to the Tatum Tech API with the Google ID token. Failure does not block entering the
+ * app because the user is still signed in with Google (Firebase).
+ */
+private suspend fun exchangeGoogleSignIn(user: GoogleUser) {
+    val idToken = user.idToken ?: return
+    val result = withTimeoutOrNull(GOOGLE_EXCHANGE_TIMEOUT_MS) {
+        TatumTechApiProvider.getSessionManager().signInWithGoogle(idToken)
+    }
+    if (result !is ApiResponse.Success) {
+        val reason = (result as? ApiResponse.Failure)?.error?.message ?: "timed out"
+        Logger.w(TAG, "$TATUM_TECH_GOOGLE_SIGN_IN_FAILED: $reason")
+    }
 }
 
 @Preview(showBackground = true)
@@ -97,67 +120,49 @@ fun AuthScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var googleError by remember { mutableStateOf<GoogleAuthError?>(null) }
+    var isGoogleSignInInProgress by remember { mutableStateOf(false) }
 
     val activity = context as Activity
+    val scope = rememberCoroutineScope()
 
     // Google Authentication Callback implementation
     val authCallback = remember {
         object : GoogleAuthCallback {
             override fun onGoogleAuthSuccess(user: GoogleUser) {
-                Logger.d(TAG, "${GOOGLE_AUTHENTICATION_SUCCESSFUL}: ${user.email}")
+                Logger.d(TAG, GOOGLE_AUTHENTICATION_SUCCESSFUL)
 
-                // Navigate to main activity
-                val intent = Intent(context, MainActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                scope.launch {
+                    exchangeGoogleSignIn(user)
+                    openMainScreen(context)
                 }
-                context.startActivity(intent)
             }
 
             override fun onGoogleAuthFailure(error: GoogleAuthError) {
-                errorMessage = error.message
+                isGoogleSignInInProgress = false
                 Logger.e(TAG, "${GOOGLE_AUTHENTICATION_FAILED}: ${error.message}")
+                googleError = error
             }
         }
     }
 
-    // Legacy launcher for fallback authentication
-    val legacyLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        // Only handle legacy result if we have a valid activity
-        activity.let { safeActivity ->
-            // Create configuration for legacy result handling
-            val configuration = GoogleAuthConfiguration.builder()
-                .context(context)
-                .activity(safeActivity)
-                .webClientId(context.getString(R.string.default_web_client_id))
-                .callback(authCallback)
-                .legacyLauncher(null) // Not needed for result handling
-                .build()
-
-            // Handle legacy result through the framework
-            GoogleAuthClient.handleLegacyResult(configuration, result.data)
-        }
-    }
-
-    // Google Sign-In click handler
     val onGoogleSignInClick = {
-        errorMessage = null // Clear previous errors
-
-        // Only proceed if we have a valid activity
-        activity.let {
-            // Create configuration for sign-in
+        if (!isGoogleSignInInProgress) {
+            isGoogleSignInInProgress = true
+            googleError = null
             val configuration = GoogleAuthConfiguration.builder()
                 .context(context)
-                .activity(it)
+                .activity(activity)
                 .webClientId(context.getString(R.string.default_web_client_id))
                 .callback(authCallback)
-                .legacyLauncher(legacyLauncher)
                 .build()
 
             GoogleAuthClient.signIn(configuration)
         }
+    }
+
+    googleError?.let { error ->
+        GoogleAuthErrorDialog(error = error, onDismiss = { googleError = null })
     }
 
     Box(
