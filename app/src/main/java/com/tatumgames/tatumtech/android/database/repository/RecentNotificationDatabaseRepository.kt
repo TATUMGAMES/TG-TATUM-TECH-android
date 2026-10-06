@@ -21,7 +21,7 @@ import com.tatumgames.tatumtech.android.database.dao.RecentNotificationDao
 import com.tatumgames.tatumtech.android.database.entity.RecentNotificationEntity
 import com.tatumgames.tatumtech.android.enums.NotificationType
 import com.tatumgames.tatumtech.android.ui.components.screens.notifications.RecentNotificationPolicy
-import com.tatumgames.tatumtech.android.ui.utils.JsonImporter
+import com.tatumgames.tatumtech.android.data.content.TatumTechContentRepository
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -33,7 +33,8 @@ import java.util.TimeZone
  */
 class RecentNotificationDatabaseRepository(
     private val notificationDao: RecentNotificationDao,
-    private val codingQuestionDao: CodingQuestionDao
+    private val codingQuestionDao: CodingQuestionDao,
+    private val contentRepository: TatumTechContentRepository = TatumTechContentRepository()
 ) {
 
     /**
@@ -86,7 +87,8 @@ class RecentNotificationDatabaseRepository(
 
     private suspend fun ensureEventNotifications(context: Context, nowMillis: Long) {
         val type = NotificationType.EVENT
-        JsonImporter.loadUpcomingEvents(context).take(3).forEach { event ->
+        // Unavailable events add no notifications; others are still generated.
+        contentRepository.getUpcomingEvents().getOrNull().orEmpty().take(3).forEach { event ->
             notificationDao.insertIgnore(
                 RecentNotificationEntity(
                     id = RecentNotificationPolicy.eventId(event.id),
@@ -95,7 +97,7 @@ class RecentNotificationDatabaseRepository(
                     description = event.name,
                     iconResId = R.drawable.upcoming_events,
                     createdAtMillis = nowMillis,
-                    relatedContentId = event.id.toString(),
+                    relatedContentId = event.id,
                     destinationRoute = type.destinationRoute
                 )
             )

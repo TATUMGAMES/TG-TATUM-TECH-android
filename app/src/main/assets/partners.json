@@ -46,6 +46,24 @@
     "donationUrl": "https://www.classy.org/campaign/peer-peer-create-now-a-new-era-of-change/c623336"
   },
   {
+    "id": "community_da_rib_crib",
+    "name": "Da Rib Crib",
+    "category": "Community Partners",
+    "logo": "partner_logo_da_rib_crib",
+    "description": "Community Partner in the Tatum Games ecosystem. Da Rib Crib is a Compton-based BBQ restaurant serving home-style, backyard-style cooking with catering available for community events.",
+    "featured": true,
+    "contacts": [
+      {
+        "name": "Jonathan Green",
+        "email": "jonearlgreen@gmail.com"
+      }
+    ],
+    "websiteUrl": "https://daribcrib.com/",
+    "socialLinks": {
+      "instagram": "https://www.instagram.com/daribcrib"
+    }
+  },
+  {
     "id": "community_living_advantage",
     "name": "Living Advantage",
     "category": "Community Partners",
@@ -62,6 +80,15 @@
       "instagram": "https://www.instagram.com/livingadvantage/",
       "meta": "https://www.facebook.com/livingadvantage/"
     }
+  },
+  {
+    "id": "community_noi",
+    "name": "NOI - Nation of Islam",
+    "category": "Community Partners",
+    "logo": "partner_logo_noi",
+    "description": "Community Partner in the Tatum Games ecosystem. The Nation of Islam Los Angeles is the Western Regional Headquarters of the Nation of Islam, hosting weekly meetings, classes, and study groups focused on spiritual advancement, self-improvement, and community development.",
+    "featured": true,
+    "websiteUrl": "https://www.noilosangeles.org/"
   },
   {
     "id": "community_tretech",

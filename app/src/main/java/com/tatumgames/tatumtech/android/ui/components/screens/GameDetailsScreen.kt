@@ -41,6 +41,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -68,10 +69,12 @@ import com.tatumgames.tatumtech.android.ui.components.screens.games.ScreenshotFu
 import com.tatumgames.tatumtech.android.ui.models.GameModel
 import com.tatumgames.tatumtech.android.ui.models.GameVideoLink
 import com.tatumgames.tatumtech.android.ui.theme.Black
+import com.tatumgames.tatumtech.android.ui.theme.SteamStoreDark
 import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.android.ui.utils.GameMediaResolver
 import com.tatumgames.tatumtech.android.ui.viewmodels.GamesViewModel
 import com.tatumgames.tatumtech.android.ui.viewmodels.factory.GamesViewModelFactory
+import androidx.core.net.toUri
 
 @Composable
 fun GameDetailsScreen(
@@ -185,7 +188,7 @@ private fun GameDetailsBody(game: GameModel) {
             )
             CategoryChip(
                 text = if (comingSoon) {
-                    stringResource(R.string.games_platforms_ios_android)
+                    game.appStore
                 } else {
                     stringResource(R.string.games_status_available)
                 }
@@ -233,12 +236,16 @@ private fun GameDetailsBody(game: GameModel) {
         VideoSection(game = game)
         ScreenshotSection(game = game)
 
-        if (!comingSoon) {
+        if (!comingSoon || hasOutboundLinks(game)) {
             StandardText(
-                text = stringResource(R.string.games_get_the_game),
+                text = if (comingSoon) {
+                    stringResource(R.string.games_follow_the_game)
+                } else {
+                    stringResource(R.string.games_get_the_game)
+                },
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
             )
-            CtaButtons(game = game)
+            CtaButtons(game = game, comingSoon = comingSoon)
         }
 
         game.discoveryTags?.takeIf { it.isNotEmpty() }?.let { tags ->
@@ -376,8 +383,17 @@ private fun ScreenshotSection(game: GameModel) {
     }
 }
 
+private fun hasOutboundLinks(game: GameModel): Boolean {
+    val c = game.campaign?.ctas
+    val s = game.campaign?.socialMedia
+    return listOf(
+        c?.googleStore, c?.appleStore, c?.steamStore, c?.other, c?.website, game.website,
+        s?.discord, s?.facebook, s?.x, s?.instagram, s?.linkedin, s?.tiktok, s?.youtube
+    ).any { !it.isNullOrBlank() }
+}
+
 @Composable
-private fun CtaButtons(game: GameModel) {
+private fun CtaButtons(game: GameModel, comingSoon: Boolean) {
     val context = LocalContext.current
     val c = game.campaign?.ctas
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -391,6 +407,22 @@ private fun CtaButtons(game: GameModel) {
         c?.appleStore?.takeIf { it.isNotBlank() }?.let { url ->
             StoreButton(
                 label = stringResource(R.string.games_download_ios),
+                onClick = { openUrl(context, url) },
+                containerColor = MaterialTheme.colorScheme.secondary
+            )
+        }
+        c?.steamStore?.takeIf { it.isNotBlank() }?.let { url ->
+            StoreButton(
+                label = stringResource(
+                    if (comingSoon) R.string.games_wishlist_steam else R.string.games_get_steam
+                ),
+                onClick = { openUrl(context, url) },
+                containerColor = SteamStoreDark
+            )
+        }
+        c?.other?.takeIf { it.isNotBlank() }?.let { url ->
+            StoreButton(
+                label = stringResource(otherStoreLabel(url, comingSoon)),
                 onClick = { openUrl(context, url) },
                 containerColor = MaterialTheme.colorScheme.secondary
             )
@@ -417,6 +449,66 @@ private fun CtaButtons(game: GameModel) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 StandardText(text = stringResource(R.string.games_join_discord))
+            }
+        }
+        GameSocialIconRow(game = game)
+    }
+}
+
+private fun otherStoreLabel(url: String, comingSoon: Boolean): Int {
+    val host = runCatching { Uri.parse(url).host }.getOrNull().orEmpty().lowercase()
+    val isMetaQuest = host == "meta.com" || host.endsWith(".meta.com") ||
+            host == "oculus.com" || host.endsWith(".oculus.com")
+    val isLinktree = host == "linktr.ee" || host.endsWith(".linktr.ee")
+    return when {
+        isMetaQuest && comingSoon -> R.string.games_wishlist_meta_quest
+        isMetaQuest -> R.string.games_get_meta_quest
+        isLinktree -> R.string.games_visit_linktree
+        else -> R.string.games_view_store_page
+    }
+}
+
+@Composable
+private fun GameSocialIconRow(game: GameModel) {
+    val context = LocalContext.current
+    val social = game.campaign?.socialMedia ?: return
+    val hasAny = listOf(
+        social.x, social.linkedin, social.tiktok, social.instagram, social.facebook, social.youtube
+    ).any { !it.isNullOrBlank() }
+    if (!hasAny) return
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        social.x?.takeIf { it.isNotBlank() }?.let { url ->
+            SocialIconButton(R.drawable.social_media_x, R.string.partners_social_x, url)
+        }
+        social.linkedin?.takeIf { it.isNotBlank() }?.let { url ->
+            SocialIconButton(R.drawable.social_media_linkedin, R.string.partners_social_linkedin, url)
+        }
+        social.tiktok?.takeIf { it.isNotBlank() }?.let { url ->
+            SocialIconButton(R.drawable.social_media_tiktok, R.string.partners_social_tiktok, url)
+        }
+        social.instagram?.takeIf { it.isNotBlank() }?.let { url ->
+            SocialIconButton(
+                R.drawable.social_media_instragram,
+                R.string.partners_social_instagram,
+                url
+            )
+        }
+        social.facebook?.takeIf { it.isNotBlank() }?.let { url ->
+            SocialIconButton(R.drawable.social_media_meta, R.string.partners_social_meta, url)
+        }
+        social.youtube?.takeIf { it.isNotBlank() }?.let { url ->
+            TextButton(onClick = { openUrl(context, url) }) {
+                StandardText(
+                    text = stringResource(R.string.partners_social_youtube),
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                )
             }
         }
     }
@@ -447,7 +539,7 @@ private fun StoreButton(
 }
 
 private fun openUrl(context: android.content.Context, url: String) {
-    runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+    runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) }
 }
 
 @Composable

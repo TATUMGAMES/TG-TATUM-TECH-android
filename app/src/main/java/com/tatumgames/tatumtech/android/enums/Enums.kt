@@ -53,47 +53,6 @@ enum class HomePagerCategory(
     }
 }
 
-enum class AttendeeNames(val displayName: String) {
-    MALE_ATTENDEE_01("Alex Johnson"),
-    MALE_ATTENDEE_02("Mike Rodriguez"),
-    MALE_ATTENDEE_03("David Kim"),
-    MALE_ATTENDEE_04("James Wilson"),
-    MALE_ATTENDEE_05("Robert Brown"),
-    MALE_ATTENDEE_06("Jordan Lindsey"),
-    MALE_ATTENDEE_07("Kevin Lim"),
-    MALE_ATTENDEE_08("Lebron James"),
-    MALE_ATTENDEE_09("Marcus Johnson"),
-    FEMALE_ATTENDEE_01("Sarah Chen"),
-    FEMALE_ATTENDEE_02("Emily Davis"),
-    FEMALE_ATTENDEE_03("Lisa Wang"),
-    FEMALE_ATTENDEE_04("Maria Garcia"),
-    FEMALE_ATTENDEE_05("Jennifer Lee"),
-    FEMALE_ATTENDEE_06("Tempestt Tatum"),
-    FEMALE_ATTENDEE_07("Tyerra Garland"),
-    FEMALE_ATTENDEE_08("Aisha Thompson"),
-    FEMALE_ATTENDEE_09("Sofia Rodriguez");
-}
-
-enum class ProfileImage(val assetName: String) {
-    INITIALS("initials"),
-    MALE_PLACEHOLDER_01("profile_male_placeholder_01"),
-    MALE_PLACEHOLDER_02("profile_male_placeholder_02"),
-    MALE_PLACEHOLDER_03("profile_male_placeholder_03"),
-    MALE_PLACEHOLDER_04("profile_male_placeholder_04"),
-    MALE_PLACEHOLDER_05("profile_male_placeholder_05"),
-    FEMALE_PLACEHOLDER_01("profile_female_placeholder_01"),
-    FEMALE_PLACEHOLDER_02("profile_female_placeholder_02"),
-    FEMALE_PLACEHOLDER_03("profile_female_placeholder_03"),
-    FEMALE_PLACEHOLDER_04("profile_female_placeholder_04"),
-    FEMALE_PLACEHOLDER_05("profile_female_placeholder_05");
-
-    companion object {
-        fun fromValue(value: String): ProfileImage {
-            return ProfileImage.entries.firstOrNull { it.assetName == value } ?: MALE_PLACEHOLDER_01
-        }
-    }
-}
-
 enum class TimelineType(val typeValue: String) {
     EVENT_REGISTRATION("event_registration"),
     EVENT_UNREGISTRATION("event_unregistration"),

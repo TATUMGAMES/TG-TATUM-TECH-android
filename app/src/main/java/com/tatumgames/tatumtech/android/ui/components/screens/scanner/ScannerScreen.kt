@@ -128,7 +128,7 @@ fun ScannerScreen(
                         if (scanHandled) return@CameraPreviewWithControls
                         scanHandled = true
                         scope.launch {
-                            when (val parsed = ContactCardQrCodec.parse(raw)) {
+                            when (val parsed = ContactCardQrCodec.parseIncoming(raw)) {
                                 is ContactCardQrParseResult.Success -> {
                                     performScanSuccessHaptic(view)
                                     AnalyticsService.scanContactCard()

@@ -64,7 +64,7 @@ fun ShowcaseGameCard(
         stringResource(R.string.games_status_featured)
     }
     val platformLabel = if (comingSoon) {
-        stringResource(R.string.games_platforms_ios_android)
+        game.appStore
     } else {
         stringResource(R.string.games_status_available)
     }

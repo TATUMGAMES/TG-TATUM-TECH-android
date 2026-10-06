@@ -56,6 +56,13 @@ object Constants {
     const val URL_STRIPE_5000 = "https://buy.stripe.com/6oEbJd6dY0Hz8ow145"
     const val URL_STRIPE_10000 = "https://buy.stripe.com/3cs28D45QgGxgV2fYY"
 
+    // App store listing (append the store package name)
+    const val URI_PLAY_STORE_DETAILS = "market://details?id="
+    const val URL_PLAY_STORE_DETAILS = "https://play.google.com/store/apps/details?id="
+
+    // Local storage (cacheDir subfolders holding user content)
+    const val CONTACT_CARD_IMAGES_DIR = "contact_card_images"
+
     // Key/Values
     const val KEY_USER_ID = "user_id"
 

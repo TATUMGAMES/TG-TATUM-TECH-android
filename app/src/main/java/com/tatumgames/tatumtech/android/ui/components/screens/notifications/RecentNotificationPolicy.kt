@@ -26,7 +26,7 @@ object RecentNotificationPolicy {
 
     fun codingChallengeDailyId(dayKey: String): String = "coding_challenge:daily:$dayKey"
 
-    fun eventId(eventId: Long): String = "event:$eventId"
+    fun eventId(eventId: String): String = "event:$eventId"
 
     fun careerSpotlightId(dayKey: String): String = "career:spotlight:$dayKey"
 

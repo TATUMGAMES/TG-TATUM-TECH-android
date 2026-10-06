@@ -61,6 +61,7 @@ import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.constants.Constants
 import com.tatumgames.tatumtech.android.analytics.AnalyticsService
 import com.tatumgames.tatumtech.android.analytics.ProfileFields
 import com.tatumgames.tatumtech.android.database.AppDatabase
@@ -136,7 +137,7 @@ fun ContactCardEditorScreen(navController: NavController) {
 
     fun openCameraCapture() {
         try {
-            val dir = File(context.cacheDir, "contact_card_images").apply { mkdirs() }
+            val dir = File(context.cacheDir, Constants.CONTACT_CARD_IMAGES_DIR).apply { mkdirs() }
             val file = File(dir, "photo_${System.currentTimeMillis()}.jpg")
             val uri = FileProvider.getUriForFile(
                 context,

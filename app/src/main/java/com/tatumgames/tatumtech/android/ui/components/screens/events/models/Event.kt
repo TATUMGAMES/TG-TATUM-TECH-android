@@ -29,8 +29,6 @@ data class Event(
     val featuredImage: String,
     val lumaUrl: String? = null,
     val virtualSpeakers: List<VirtualSpeaker> = emptyList(),
-    /** Legacy field retained for older UI that still references attendees. */
-    val attendees: List<Attendee> = emptyList(),
     @Deprecated("Local registration toggle removed; RSVP is external via lumaUrl")
     val isRegistrationOpen: Boolean = true
 ) {

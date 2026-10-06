@@ -25,6 +25,8 @@ object AnalyticsEvents {
     const val CREATE_CONTACT_CARD = "create_contact_card"
     const val EXCEPTION = "exception"
     const val API_ERROR = "api_error"
+    const val DELETE_ACCOUNT = "delete_account"
+    const val RATE_APP = "rate_app"
 }
 
 object AnalyticsParams {
@@ -36,6 +38,14 @@ object AnalyticsParams {
     const val STATUS_CODE = "status_code"
     const val DURATION_MS = "duration_ms"
     const val ERROR_TYPE = "error_type"
+    const val RATING = "rating"
+    const val TRIGGER = "trigger"
+    const val SENT_TO_STORE = "sent_to_store"
+}
+
+object RatingPromptTriggers {
+    const val APP_OPEN = "app_open"
+    const val CODING_CHALLENGE_COMPLETE = "coding_challenge_complete"
 }
 
 object ProfileFields {

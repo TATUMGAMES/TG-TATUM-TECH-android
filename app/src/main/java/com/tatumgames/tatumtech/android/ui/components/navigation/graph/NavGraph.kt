@@ -20,6 +20,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.tatumgames.tatumtech.android.analytics.RatingPromptTriggers
 import com.tatumgames.tatumtech.android.analytics.TrackNavigationAnalytics
 import com.tatumgames.tatumtech.android.ui.components.common.MotionDefaults
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
@@ -44,7 +45,6 @@ import com.tatumgames.tatumtech.android.ui.components.screens.coding.LeetCodeCha
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.MockInterviewChallengesScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.community.CommunityScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.donate.DonateScreen
-import com.tatumgames.tatumtech.android.ui.components.screens.events.AttendeesScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.events.UpcomingEventsScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.events.VirtualSpeakersScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.main.DemographicInfoScreen
@@ -52,6 +52,7 @@ import com.tatumgames.tatumtech.android.ui.components.screens.main.UserProfileSc
 import com.tatumgames.tatumtech.android.ui.components.screens.networking.ContactCardEditorScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.networking.MyContactCardQrScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.networking.ScannedContactPreviewScreen
+import com.tatumgames.tatumtech.android.ui.components.screens.rating.RatingScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.scanner.ScannerScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.stats.StatsScreen
 import com.tatumgames.tatumtech.android.ui.components.screens.timeline.MyTimelineScreen
@@ -155,13 +156,6 @@ fun MainGraph(
         composable(NavRoutes.DEMOGRAPHIC_SCREEN) {
             DemographicInfoScreen(navController)
         }
-        composable(
-            route = NavRoutes.ATTENDEES_SCREEN,
-            arguments = listOf(navArgument("eventId") { type = NavType.LongType })
-        ) { backStackEntry ->
-            val eventId = backStackEntry.arguments?.getLong("eventId") ?: 0L
-            AttendeesScreen(navController, eventId)
-        }
         composable("about_screen/{contentType}") { backStackEntry ->
             val typeString =
                 backStackEntry.arguments?.getString("contentType") ?: AboutContentType.ABOUT.route
@@ -193,6 +187,14 @@ fun MainGraph(
         ) { backStackEntry ->
             val gameId = backStackEntry.arguments?.getString("gameId") ?: ""
             GameDetailsScreen(navController, gameId)
+        }
+        composable(
+            route = NavRoutes.RATING_SCREEN,
+            arguments = listOf(navArgument("trigger") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val trigger = backStackEntry.arguments?.getString("trigger")
+                ?: RatingPromptTriggers.APP_OPEN
+            RatingScreen(navController, trigger)
         }
     }
 }

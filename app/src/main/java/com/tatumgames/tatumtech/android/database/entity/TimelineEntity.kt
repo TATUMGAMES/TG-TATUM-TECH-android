@@ -27,7 +27,7 @@ import com.tatumgames.tatumtech.android.database.constants.DbConstants.TABLE_TIM
  *
  * @property type Enumerated values e.g. `event_registration`, `challenge_completion`, etc.
  * @property description The description of the timeline event.
- * @property relatedId Enumerated values e.g. `eventId`, `challengeId`, `attendeeId`, etc.
+ * @property relatedId Enumerated values e.g. `eventId`, `challengeId`, etc.
  */
 @Entity(tableName = TABLE_TIMELINE)
 data class TimelineEntity(

@@ -29,6 +29,7 @@ import com.tatumgames.tatumtech.android.ui.components.screens.coding.ChallengeCo
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.QuizSessionBuilder
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.models.AnswerFeedback
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.models.CodingChallenges
+import com.tatumgames.tatumtech.android.ui.components.screens.rating.RatingPromptManager
 import com.tatumgames.tatumtech.android.utils.CodingChallengesImporter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -97,6 +98,10 @@ class CodingChallengesViewModel(
     private val _dailyLimitReachedForBucket = MutableStateFlow(false)
     val dailyLimitReachedForBucket: StateFlow<Boolean> = _dailyLimitReachedForBucket.asStateFlow()
 
+    /** One-shot: today's count just reached [DAILY_ANSWER_LIMIT]; consume via [onRatingPromptShown]. */
+    private val _ratingPromptRequested = MutableStateFlow(false)
+    val ratingPromptRequested: StateFlow<Boolean> = _ratingPromptRequested.asStateFlow()
+
     private var activeQuizRoute: String = ""
     private var activeLanguageNormalized: String = ""
     private var activeLevel: String = ""
@@ -111,6 +116,10 @@ class CodingChallengesViewModel(
      *
      * @param value Selected option text, or empty if none.
      */
+    fun onRatingPromptShown() {
+        _ratingPromptRequested.value = false
+    }
+
     fun onSelectedAnswerChange(value: String) {
         if (_answerFeedback.value != AnswerFeedback.NONE) return
         _selectedAnswer.value = value
@@ -366,6 +375,12 @@ class CodingChallengesViewModel(
             pendingAnswerCommit = null
 
             val startOfDay = getStartOfTodayMillis()
+            val countBefore = getTodayAnswerCount(
+                pending.quizRoute,
+                pending.languageNormalized,
+                pending.level,
+                startOfDay
+            )
             quizAnswerEventRepository.insert(
                 QuizAnswerEventEntity(
                     quizRoute = pending.quizRoute,
@@ -388,6 +403,15 @@ class CodingChallengesViewModel(
                 pending.level,
                 startOfDay
             )
+            if (
+                RatingPromptManager.reachedLimitThisAnswer(
+                    countBefore = countBefore,
+                    countAfter = _todayAnswerCount.value,
+                    limit = DAILY_ANSWER_LIMIT
+                ) && RatingPromptManager.isEligible(getApplication())
+            ) {
+                _ratingPromptRequested.value = true
+            }
 
             val progressId = QuizProgressEntityHelper.makeProgressId(
                 pending.quizRoute,

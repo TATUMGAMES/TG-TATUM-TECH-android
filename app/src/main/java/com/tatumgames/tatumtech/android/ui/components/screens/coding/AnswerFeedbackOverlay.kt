@@ -28,7 +28,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -53,7 +52,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -61,7 +63,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -77,10 +80,7 @@ import com.tatumgames.tatumtech.android.ui.theme.Purple500
 import com.tatumgames.tatumtech.android.ui.theme.Red300
 import com.tatumgames.tatumtech.android.ui.theme.SuccessGreen
 import com.tatumgames.tatumtech.android.ui.theme.White
-import kotlin.math.cos
 import kotlin.math.roundToInt
-import kotlin.math.sin
-import kotlin.random.Random
 
 /**
  * Polished correct/incorrect feedback with explanation and Continue control.
@@ -131,6 +131,8 @@ fun AnswerFeedbackOverlay(
         modifier = modifier.fillMaxSize()
     ) {
         val interactionSource = remember { MutableInteractionSource() }
+        var overlayCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
+        var iconCenter by remember { mutableStateOf<Offset?>(null) }
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -138,7 +140,8 @@ fun AnswerFeedbackOverlay(
                 .clickable(
                     interactionSource = interactionSource,
                     indication = null
-                ) { },
+                ) { }
+                .onGloballyPositioned { overlayCoordinates = it },
             contentAlignment = Alignment.Center
         ) {
             FeedbackAccentBackdrop(
@@ -165,7 +168,14 @@ fun AnswerFeedbackOverlay(
                 ) {
                     FeedbackIcon(
                         isCorrect = isCorrect,
-                        animationsEnabled = animationsEnabled
+                        animationsEnabled = animationsEnabled,
+                        modifier = Modifier.onGloballyPositioned { icon ->
+                            val overlay = overlayCoordinates ?: return@onGloballyPositioned
+                            iconCenter = overlay.localPositionOf(
+                                icon,
+                                Offset(icon.size.width / 2f, icon.size.height / 2f)
+                            )
+                        }
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -225,6 +235,11 @@ fun AnswerFeedbackOverlay(
                     }
                 }
             }
+
+            val confettiOrigin = iconCenter
+            if (isCorrect && animationsEnabled && confettiOrigin != null) {
+                ConfettiBurst(origin = confettiOrigin, modifier = Modifier.fillMaxSize())
+            }
         }
     }
 }
@@ -281,29 +296,14 @@ private fun FeedbackAccentBackdrop(
             center = center,
             style = Stroke(width = 3.dp.toPx())
         )
-        if (isCorrect && animationsEnabled && ringProgress.value > 0.15f) {
-            val particleProgress = ((ringProgress.value - 0.15f) / 0.85f).coerceIn(0f, 1f)
-            val particleCount = 10
-            val rnd = Random(42)
-            repeat(particleCount) { i ->
-                val angle = (i / particleCount.toFloat()) * Math.PI * 2.0 + rnd.nextDouble(0.0, 0.4)
-                val dist = size.minDimension * 0.08f + particleProgress * size.minDimension * 0.16f
-                val px = center.x + (cos(angle) * dist).toFloat()
-                val py = center.y + (sin(angle) * dist).toFloat()
-                drawCircle(
-                    color = accent.copy(alpha = (1f - particleProgress) * 0.7f),
-                    radius = 3.5f * (1f - particleProgress * 0.4f),
-                    center = Offset(px, py)
-                )
-            }
-        }
     }
 }
 
 @Composable
 private fun FeedbackIcon(
     isCorrect: Boolean,
-    animationsEnabled: Boolean
+    animationsEnabled: Boolean,
+    modifier: Modifier = Modifier
 ) {
     val scale = remember { Animatable(if (animationsEnabled) 0.6f else 1f) }
     LaunchedEffect(isCorrect, animationsEnabled) {
@@ -316,23 +316,30 @@ private fun FeedbackIcon(
         }
     }
 
-    Image(
-        painter = painterResource(
-            id = if (isCorrect) {
+    // new answer restarts playback instead of holding the previous GIF's last frame
+    key(isCorrect) {
+        AnimatedGifImage(
+            gifRes = if (isCorrect) {
+                R.drawable.animated_coding_challenge_correct
+            } else {
+                R.drawable.animated_coding_challenge_incorrect
+            },
+            fallbackRes = if (isCorrect) {
                 R.drawable.coding_challenge_correct
             } else {
                 R.drawable.coding_challenge_incorrect
-            }
-        ),
-        contentDescription = if (isCorrect) {
-            stringResource(R.string.cd_answer_correct)
-        } else {
-            stringResource(R.string.cd_answer_incorrect)
-        },
-        modifier = Modifier
-            .size(96.dp)
-            .scale(scale.value)
-    )
+            },
+            contentDescription = if (isCorrect) {
+                stringResource(R.string.cd_answer_correct)
+            } else {
+                stringResource(R.string.cd_answer_incorrect)
+            },
+            animate = animationsEnabled,
+            modifier = modifier
+                .size(96.dp)
+                .scale(scale.value)
+        )
+    }
 }
 
 @Composable

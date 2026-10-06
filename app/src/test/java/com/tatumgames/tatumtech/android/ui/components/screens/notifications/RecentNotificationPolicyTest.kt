@@ -34,8 +34,8 @@ class RecentNotificationPolicyTest {
     }
 
     @Test
-    fun eventId_usesNumericContentId() {
-        assertEquals("event:42", RecentNotificationPolicy.eventId(42))
+    fun eventId_usesContentId() {
+        assertEquals("event:42", RecentNotificationPolicy.eventId("42"))
     }
 
     @Test
