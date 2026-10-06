@@ -103,10 +103,18 @@ fun MainGraph(
         }
         composable(
             route = NavRoutes.VIRTUAL_SPEAKERS_SCREEN,
-            arguments = listOf(navArgument("eventId") { type = NavType.LongType })
+            arguments = listOf(
+                navArgument("eventId") { type = NavType.StringType },
+                navArgument("speakerId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
         ) { backStackEntry ->
-            val eventId = backStackEntry.arguments?.getLong("eventId") ?: 0L
-            VirtualSpeakersScreen(navController, eventId)
+            val eventId = backStackEntry.arguments?.getString("eventId").orEmpty()
+            val speakerId = backStackEntry.arguments?.getString("speakerId")
+            VirtualSpeakersScreen(navController, eventId, highlightedSpeakerId = speakerId)
         }
         composable(NavRoutes.CODING_CHALLENGES_SCREEN) {
             CodingChallengesScreen(navController)

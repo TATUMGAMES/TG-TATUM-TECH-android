@@ -15,12 +15,12 @@
 package com.tatumgames.tatumtech.android.ui.components.screens.events.models
 
 /**
- * Upcoming event listing model (local JSON / future API response).
+ * Upcoming event listing model, mapped from the Tatum Tech API.
  *
  * [lumaUrl] opens external RSVP when present. Registration is not tracked in-app.
  */
 data class Event(
-    val id: Long,
+    val id: String,
     val name: String,
     val host: String,
     val date: String,
@@ -36,11 +36,14 @@ data class Event(
 
     val registerEnabled: Boolean get() = !lumaUrl.isNullOrBlank()
 
-    fun speakersInOrder(): List<VirtualSpeaker> =
-        virtualSpeakers.sortedWith(
-            compareBy<VirtualSpeaker> { it.sortOrder }.thenBy { it.startTime.orEmpty() }
-        )
+    fun speakersInOrder(): List<VirtualSpeaker> = virtualSpeakers.inSpeakingOrder()
 }
+
+/**
+ * Orders speakers as the event runs them.
+ */
+fun List<VirtualSpeaker>.inSpeakingOrder(): List<VirtualSpeaker> =
+    sortedWith(compareBy<VirtualSpeaker> { it.sortOrder }.thenBy { it.startTime.orEmpty() })
 
 /**
  * Virtual speaker session attached to an [Event].
@@ -61,31 +64,3 @@ data class VirtualSpeaker(
 ) {
     val joinEnabled: Boolean get() = !meetUrl.isNullOrBlank()
 }
-
-// New API Event model (future backend shapes; unused by current UI)
-data class ApiEvent(
-    val eventId: String,
-    val name: String,
-    val description: String,
-    val startTime: String,
-    val endTime: String,
-    val location: EventLocation,
-    val registration: EventRegistration,
-    val isUserRegistered: Boolean,
-    val attendees: List<EventAttendee>
-)
-
-data class EventLocation(
-    val name: String,
-    val address: String
-)
-
-data class EventRegistration(
-    val isOpen: Boolean,
-    val deadline: String
-)
-
-data class EventAttendee(
-    val userId: String,
-    val userDetailsUrl: String
-)
