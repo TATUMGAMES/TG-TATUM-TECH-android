@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.tatumgames.tatumtech.framework.android"
-    compileSdk = 35
+    compileSdk = 37
     // Versioning
     val versionMajor = 1
     val versionMinor = 0
@@ -71,10 +71,16 @@ dependencies {
     implementation("androidx.credentials:credentials:1.2.1")
     implementation("androidx.credentials:credentials-play-services-auth:1.2.1")
     implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
-    implementation("com.google.android.gms:play-services-auth:20.7.0") // or latest
     implementation("com.google.firebase:firebase-auth:22.3.1") // or latest
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    // HTTP stack (implementation scope keeps OkHttp/Gson out of consumers' compile classpath)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.google.code.gson:gson:2.10.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

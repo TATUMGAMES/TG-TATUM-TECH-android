@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -8,9 +10,33 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+// Tatum Tech API settings, read from `-P<key>=<value>` or the git-ignored local.properties.
+// Never put credentials in this file.
+val localProperties = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.isFile }?.inputStream()?.use(::load)
+}
+
+fun tatumTechProperty(name: String): String? =
+    (findProperty("tatumTech.$name") as String?) ?: localProperties.getProperty("tatumTech.$name")
+
+fun tatumTechChoice(name: String, allowed: List<String>, default: String): String {
+    val value = tatumTechProperty(name)?.trim() ?: default
+    require(value in allowed) { "tatumTech.$name must be one of $allowed but was '$value'" }
+    return value
+}
+
+fun buildConfigString(value: String) = "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+
+val tatumTechDataSource = tatumTechChoice("dataSource", listOf("NETWORK", "LOCAL_JSON"), "NETWORK")
+val tatumTechEnvironment = tatumTechChoice("environment", listOf("PRODUCTION", "STAGE"), "PRODUCTION")
+val tatumTechApiKey = tatumTechProperty("apiKey")?.trim().orEmpty()
+val tatumTechConnectTimeoutMs = tatumTechProperty("connectTimeoutMs")?.trim()
+    ?.let { requireNotNull(it.toLongOrNull()?.takeIf { ms -> ms > 0 }) { "tatumTech.connectTimeoutMs must be a positive number" } }
+    ?: 0L
+
 android {
     namespace = "com.tatumgames.tatumtech.android"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.tatumgames.tatumtech.android"
@@ -22,6 +48,13 @@ android {
         // Store listings use the release id; debug builds append applicationIdSuffix.
         buildConfigField("String", "STORE_PACKAGE_NAME", "\"$applicationId\"")
 
+        // Tatum Tech API; the data source is independent of the build type.
+        buildConfigField("String", "TATUM_TECH_DATA_SOURCE", buildConfigString(tatumTechDataSource))
+        buildConfigField("String", "TATUM_TECH_ENVIRONMENT", buildConfigString(tatumTechEnvironment))
+        buildConfigField("String", "TATUM_TECH_API_KEY", buildConfigString(tatumTechApiKey))
+        // 0 = framework default.
+        buildConfigField("long", "TATUM_TECH_CONNECT_TIMEOUT_MS", "${tatumTechConnectTimeoutMs}L")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -30,6 +63,9 @@ android {
             applicationIdSuffix = ".debug"
         }
         release {
+            // Store builds always use the live production API, never bundled fixtures or stage.
+            buildConfigField("String", "TATUM_TECH_DATA_SOURCE", buildConfigString("NETWORK"))
+            buildConfigField("String", "TATUM_TECH_ENVIRONMENT", buildConfigString("PRODUCTION"))
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -40,6 +76,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        // java.time (meeting times and time zones) on API 24-25.
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "11"
@@ -50,6 +88,10 @@ android {
     }
     lint {
         disable += "CredentialProviderPlayServicesAuthMissing"
+    }
+    testOptions {
+        // Lets JVM tests exercise code that logs through android.util.Log.
+        unitTests.isReturnDefaultValues = true
     }
 }
 
@@ -75,6 +117,10 @@ dependencies {
     // Core Android dependencies
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation(libs.androidx.storage)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    // Virtual speaker meeting reminders
+    implementation(libs.androidx.work.runtime.ktx)
 
     // Testing
     testImplementation(libs.junit)
@@ -82,7 +128,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     // Framework reference - contains Firebase Auth and Google SSO logic
-    implementation(project(":tatumtech-framework-android"))
+    implementation(project(":tatumgames-framework-android"))
 
     // Firebase Analytics + Crashlytics (BoM; Auth remains in framework module)
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
@@ -98,10 +144,6 @@ dependencies {
     implementation("androidx.camera:camera-view:1.3.0")
     implementation("androidx.camera:camera-extensions:1.3.0")
     implementation("io.coil-kt:coil-compose:2.4.0")
-
-    // Media3 (in-app playback of bundled game video segments)
-    implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.ui)
 
     // QR encode/decode for digital contact cards
     implementation("com.google.zxing:core:3.5.3")
