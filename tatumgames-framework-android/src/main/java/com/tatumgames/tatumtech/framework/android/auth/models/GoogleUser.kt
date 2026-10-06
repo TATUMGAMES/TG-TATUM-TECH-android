@@ -17,11 +17,19 @@ package com.tatumgames.tatumtech.framework.android.auth.models
 /**
  * Data class representing a Google authenticated user.
  * Wraps key fields from FirebaseUser for clean data transfer between layers.
+ *
+ * @param idToken Google ID token from this sign-in, for exchanging with an app backend. It is
+ * short-lived; do not persist or log it.
  */
 data class GoogleUser(
     val email: String?,
     val uid: String?,
     val photoUrl: String?,
     val isAnonymous: Boolean,
-    val displayName: String?
-)
+    val displayName: String?,
+    val idToken: String? = null
+) {
+    override fun toString(): String =
+        "GoogleUser(email=$email, uid=$uid, photoUrl=$photoUrl, isAnonymous=$isAnonymous, " +
+            "displayName=$displayName, idToken=${if (idToken == null) "null" else "***"})"
+}

@@ -14,37 +14,19 @@
  */
 package com.tatumgames.tatumtech.android.ui.utils
 
-import android.content.ContentResolver
 import android.content.Context
-import android.net.Uri
 import com.tatumgames.tatumtech.android.ui.models.GameModel
 
 /**
- * Resolves catalog media references for Coil / AsyncImage and in-app video playback.
+ * Resolves catalog media references for Coil / AsyncImage.
  *
  * Supports:
  * - `drawable:name` → local drawable resource id
- * - `raw:name` → local raw video resource [Uri] (see [resolveRawVideo])
  * - http(s) URLs → passed through for remote loading
  */
 object GameMediaResolver {
 
     private const val DRAWABLE_PREFIX = "drawable:"
-    private const val RAW_PREFIX = "raw:"
-
-    fun isLocalVideo(ref: String?): Boolean = ref?.startsWith(RAW_PREFIX) == true
-
-    fun resolveRawVideo(context: Context, ref: String?): Uri? {
-        if (!isLocalVideo(ref)) return null
-        val name = ref!!.removePrefix(RAW_PREFIX)
-        val id = context.resources.getIdentifier(name, "raw", context.packageName)
-        if (id == 0) return null
-        return Uri.Builder()
-            .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-            .authority(context.packageName)
-            .appendPath(id.toString())
-            .build()
-    }
 
     fun resolve(context: Context, ref: String?): Any? {
         if (ref.isNullOrBlank()) return null

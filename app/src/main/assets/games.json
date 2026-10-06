@@ -240,33 +240,13 @@
           ]
         },
         "videos": {
-          "promotional": [],
-          "others": [
+          "promotional": [
             {
-              "url": "raw:banjax_segment_01"
-            },
-            {
-              "url": "raw:banjax_segment_02"
-            },
-            {
-              "url": "raw:banjax_segment_03"
-            },
-            {
-              "url": "raw:banjax_segment_04"
-            },
-            {
-              "url": "raw:banjax_segment_05"
-            },
-            {
-              "url": "raw:banjax_segment_06"
-            },
-            {
-              "url": "raw:banjax_segment_07"
-            },
-            {
-              "url": "raw:banjax_segment_08"
+              "url": "https://www.youtube.com/watch?v=8Nv-PpXhG00",
+              "thumbnailUrl": "https://img.youtube.com/vi/8Nv-PpXhG00/hqdefault.jpg"
             }
-          ]
+          ],
+          "others": []
         },
         "marketingCampaignActive": true,
         "isFeatured": true,
@@ -315,7 +295,9 @@
             "drawable:banjax_ss_05",
             "drawable:banjax_ss_06"
           ],
-          "videoUrls": [],
+          "videoUrls": [
+            "https://www.youtube.com/watch?v=8Nv-PpXhG00"
+          ],
           "socialMedia": {
             "facebook": null,
             "x": null,
@@ -424,6 +406,95 @@
             "linkedin": null,
             "tiktok": "https://www.tiktok.com/@talesofencenia",
             "youtube": "https://www.youtube.com/@TalesOfEncenia",
+            "discord": null,
+            "twitch": null
+          }
+        }
+      },
+      {
+        "appId": "game_0005",
+        "appGameId": "tg-sap",
+        "appName": "Saints Art Puzzle",
+        "companyName": "Art of Devotion Games",
+        "title": "Saints Art Puzzle",
+        "shortDescription": "Piece together artwork of the saints in a relaxing puzzle game.",
+        "longDescription": "Saints Art Puzzle from Art of Devotion Games, founded by Amy Abafor, is a puzzle game built around artwork of the saints. Available on iOS and Android.",
+        "androidPackageName": "com.artofdevotiongames.saintsartpuzzle",
+        "iOSBundleId": null,
+        "website": "https://www.artofdevotiongames.com/",
+        "appCategory": "Puzzle",
+        "gameGenre": "Puzzle",
+        "gameplayType": "Casual",
+        "contentGenre": "Puzzle",
+        "contentTheme": "Art",
+        "appStore": "iOS / Android",
+        "userSubscriptionType": "Free",
+        "releaseStatus": "Released",
+        "images": {
+          "featureGraphics": [
+            "drawable:saint_art_puzzle_ss_01"
+          ],
+          "screenshots": [
+            "drawable:saint_art_puzzle_ss_01",
+            "drawable:saint_art_puzzle_ss_02",
+            "drawable:saint_art_puzzle_ss_03",
+            "drawable:saint_art_puzzle_ss_04",
+            "drawable:saint_art_puzzle_ss_05",
+            "drawable:saint_art_puzzle_ss_06"
+          ]
+        },
+        "videos": {
+          "promotional": [],
+          "others": []
+        },
+        "marketingCampaignActive": true,
+        "isFeatured": true,
+        "featuredPriority": 120,
+        "featuredStartDate": "2026-01-01T00:00:00Z",
+        "featuredEndDate": "2028-12-31T23:59:59Z",
+        "popularityScore": 50,
+        "discoveryTags": [
+          "puzzle",
+          "casual",
+          "art",
+          "mobile"
+        ],
+        "genres": [
+          "Puzzle"
+        ],
+        "campaign": {
+          "campaignId": "cmp-sap",
+          "campaignName": "Saints Art Puzzle",
+          "startDate": 1735689600,
+          "endDate": 1893456000,
+          "images": {
+            "appLogo": "drawable:saint_art_puzzle_logo"
+          },
+          "ctas": {
+            "google_store": "https://play.google.com/store/apps/details?id=com.artofdevotiongames.saintsartpuzzle",
+            "apple_store": "https://apps.apple.com/us/app/saints-art-puzzle/id6759738917",
+            "steam_store": null,
+            "samsung_store": null,
+            "amazon_store": null,
+            "website": "https://www.artofdevotiongames.com/",
+            "other": "https://linktr.ee/artofdevotiongames"
+          },
+          "screenshotUrls": [
+            "drawable:saint_art_puzzle_ss_01",
+            "drawable:saint_art_puzzle_ss_02",
+            "drawable:saint_art_puzzle_ss_03",
+            "drawable:saint_art_puzzle_ss_04",
+            "drawable:saint_art_puzzle_ss_05",
+            "drawable:saint_art_puzzle_ss_06"
+          ],
+          "videoUrls": [],
+          "socialMedia": {
+            "facebook": null,
+            "x": null,
+            "instagram": "https://www.instagram.com/artofdevotiongames/",
+            "linkedin": null,
+            "tiktok": "https://www.tiktok.com/@art.of.devotion8",
+            "youtube": null,
             "discord": null,
             "twitch": null
           }

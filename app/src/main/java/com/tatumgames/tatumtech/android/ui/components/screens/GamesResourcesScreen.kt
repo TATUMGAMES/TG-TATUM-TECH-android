@@ -57,6 +57,7 @@ import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
+import com.tatumgames.tatumtech.android.data.content.TatumTechContentRepository
 import com.tatumgames.tatumtech.android.ui.components.screens.games.GamesResourcesResolver
 import com.tatumgames.tatumtech.android.ui.models.GamesResourceEntry
 import com.tatumgames.tatumtech.android.ui.theme.Grey500
@@ -73,10 +74,11 @@ fun GamesResourcesScreen(navController: NavController) {
         mutableStateOf<List<Pair<String, List<GamesResourceEntry>>>>(emptyList())
     }
     var loadFinished by remember { mutableStateOf(false) }
+    val contentRepository = remember { TatumTechContentRepository() }
 
     LaunchedEffect(Unit) {
         val categories = JsonImporter.loadGamesResourceCategories(context)
-        val partners = JsonImporter.loadPartners(context)
+        val partners = contentRepository.getPartners().getOrNull().orEmpty()
         val entries = GamesResourcesResolver.resolve(categories, partners)
         grouped = GamesResourcesResolver.groupByCategory(entries)
         loadFinished = true

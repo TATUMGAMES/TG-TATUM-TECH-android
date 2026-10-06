@@ -65,7 +65,6 @@ import coil.request.ImageRequest
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
-import com.tatumgames.tatumtech.android.ui.components.screens.games.GameVideoPlaylistPlayer
 import com.tatumgames.tatumtech.android.ui.components.screens.games.ScreenshotFullscreenViewer
 import com.tatumgames.tatumtech.android.ui.models.GameModel
 import com.tatumgames.tatumtech.android.ui.models.GameVideoLink
@@ -75,6 +74,7 @@ import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.android.ui.utils.GameMediaResolver
 import com.tatumgames.tatumtech.android.ui.viewmodels.GamesViewModel
 import com.tatumgames.tatumtech.android.ui.viewmodels.factory.GamesViewModelFactory
+import androidx.core.net.toUri
 
 @Composable
 fun GameDetailsScreen(
@@ -280,19 +280,13 @@ private fun GameDetailsBody(game: GameModel) {
 private fun VideoSection(game: GameModel) {
     val context = LocalContext.current
     val videos = game.videos.promotional
-    val localSegments = game.videos.others
-        .map { it.url }
-        .filter { GameMediaResolver.isLocalVideo(it) }
-    if (videos.isEmpty() && localSegments.isEmpty()) return
+    if (videos.isEmpty()) return
 
     StandardText(
         text = stringResource(R.string.games_videos),
         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
     )
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        if (localSegments.isNotEmpty()) {
-            GameVideoPlaylistPlayer(segmentRefs = localSegments, gameTitle = game.title)
-        }
         videos.forEach { video ->
             VideoCard(gameTitle = game.title, video = video) {
                 openUrl(context, video.url)
@@ -465,9 +459,11 @@ private fun otherStoreLabel(url: String, comingSoon: Boolean): Int {
     val host = runCatching { Uri.parse(url).host }.getOrNull().orEmpty().lowercase()
     val isMetaQuest = host == "meta.com" || host.endsWith(".meta.com") ||
             host == "oculus.com" || host.endsWith(".oculus.com")
+    val isLinktree = host == "linktr.ee" || host.endsWith(".linktr.ee")
     return when {
         isMetaQuest && comingSoon -> R.string.games_wishlist_meta_quest
         isMetaQuest -> R.string.games_get_meta_quest
+        isLinktree -> R.string.games_visit_linktree
         else -> R.string.games_view_store_page
     }
 }
@@ -543,7 +539,7 @@ private fun StoreButton(
 }
 
 private fun openUrl(context: android.content.Context, url: String) {
-    runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+    runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) }
 }
 
 @Composable

@@ -16,8 +16,6 @@ package com.tatumgames.tatumtech.framework.android.auth.configuration
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import androidx.activity.result.ActivityResultLauncher
 import com.tatumgames.tatumtech.framework.android.auth.interfaces.GoogleAuthCallback
 
 /**
@@ -28,8 +26,7 @@ class GoogleAuthConfiguration private constructor(
     val context: Context,
     val activity: Activity,
     val webClientId: String,
-    val callback: GoogleAuthCallback,
-    val legacyLauncher: ActivityResultLauncher<Intent>?
+    val callback: GoogleAuthCallback
 ) {
 
     /**
@@ -41,7 +38,6 @@ class GoogleAuthConfiguration private constructor(
         private var activity: Activity? = null
         private var webClientId: String? = null
         private var callback: GoogleAuthCallback? = null
-        private var legacyLauncher: ActivityResultLauncher<Intent>? = null
 
         fun context(context: Context): Builder {
             this.context = context
@@ -63,11 +59,6 @@ class GoogleAuthConfiguration private constructor(
             return this
         }
 
-        fun legacyLauncher(legacyLauncher: ActivityResultLauncher<Intent>?): Builder {
-            this.legacyLauncher = legacyLauncher
-            return this
-        }
-
         /**
          * Builds the GoogleAuthConfiguration object.
          * Throws IllegalArgumentException if required parameters are missing.
@@ -86,8 +77,7 @@ class GoogleAuthConfiguration private constructor(
                 context = nonNullContext,
                 activity = nonNullActivity,
                 webClientId = nonNullWebClientId,
-                callback = nonNullCallback,
-                legacyLauncher = legacyLauncher
+                callback = nonNullCallback
             )
         }
     }
