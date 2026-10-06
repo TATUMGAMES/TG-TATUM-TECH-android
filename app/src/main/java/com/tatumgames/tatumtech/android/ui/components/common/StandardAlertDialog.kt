@@ -15,6 +15,8 @@
 package com.tatumgames.tatumtech.android.ui.components.common
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -60,7 +62,8 @@ fun StandardAlertDialog(
         text = {
             StandardText(
                 text = description,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.verticalScroll(rememberScrollState())
             )
         },
         confirmButton = {
