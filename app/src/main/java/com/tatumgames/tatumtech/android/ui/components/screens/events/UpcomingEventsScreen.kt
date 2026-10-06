@@ -39,6 +39,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.data.content.TatumTechContentRepository
+import com.tatumgames.tatumtech.android.reminders.MeetingReminders
 import com.tatumgames.tatumtech.android.database.AppDatabase
 import com.tatumgames.tatumtech.android.database.repository.ContactCardDatabaseRepository
 import com.tatumgames.tatumtech.android.database.repository.UserDatabaseRepository
@@ -48,7 +50,6 @@ import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoute
 import com.tatumgames.tatumtech.android.ui.components.screens.events.models.Event
 import com.tatumgames.tatumtech.android.ui.components.screens.networking.NetworkingContactSection
 import com.tatumgames.tatumtech.android.ui.theme.ScreenScaffoldLight
-import com.tatumgames.tatumtech.android.ui.utils.JsonImporter
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,6 +61,7 @@ fun UpcomingEventsScreen(
     val db = remember { AppDatabase.getInstance(context) }
     val userRepository = remember { UserDatabaseRepository(db.userDao()) }
     val contactCardRepository = remember { ContactCardDatabaseRepository(db.contactCardDao()) }
+    val contentRepository = remember { TatumTechContentRepository() }
 
     var events by remember { mutableStateOf<List<Event>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
@@ -68,8 +70,10 @@ fun UpcomingEventsScreen(
 
     LaunchedEffect(Unit) {
         isLoading = true
-        events = JsonImporter.loadUpcomingEvents(context).sortedBy { it.date }
+        val loaded = contentRepository.getUpcomingEvents().getOrNull()
+        events = loaded.orEmpty().sortedBy { it.date }
         isLoading = false
+        loaded?.let { MeetingReminders.sync(context, it) }
 
         val user = userRepository.getCurrentUser()
         if (user != null) {

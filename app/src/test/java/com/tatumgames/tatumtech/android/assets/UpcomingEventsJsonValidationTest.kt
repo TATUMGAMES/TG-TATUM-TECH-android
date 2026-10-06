@@ -54,7 +54,7 @@ class UpcomingEventsJsonValidationTest {
     @Test
     fun eventWithoutLuma_disablesRegister() {
         val event = Event(
-            id = 2,
+            id = "2",
             name = "No RSVP",
             host = "Tatum Games",
             date = "2027-01-01T00:00:00Z",
