@@ -15,7 +15,6 @@
 package com.tatumgames.tatumtech.android.database.constants
 
 object DbConstants {
-    const val TABLE_ATTENDEES = "attendees"
     const val TABLE_CODING_CHALLENGE = "coding_challenge"
     const val TABLE_CODING_QUESTIONS = "coding_questions"
     const val TABLE_EVENT_REGISTRATION = "event_registrations"
@@ -27,4 +26,5 @@ object DbConstants {
     const val TABLE_CONTACT_CARDS = "contact_cards"
     const val TABLE_CONNECTIONS = "connections"
     const val TABLE_ENGAGEMENT_COUNTERS = "engagement_counters"
+    const val TABLE_RECENT_NOTIFICATIONS = "recent_notifications"
 }

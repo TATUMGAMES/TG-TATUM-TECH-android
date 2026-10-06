@@ -70,6 +70,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.data.content.TatumTechContentRepository
 import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
@@ -83,8 +84,6 @@ import com.tatumgames.tatumtech.android.ui.theme.Purple200
 import com.tatumgames.tatumtech.android.ui.theme.ScreenScaffoldLight
 import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.android.ui.utils.GameMediaResolver
-import com.tatumgames.tatumtech.android.ui.utils.JsonImporter
-
 private const val CONTACT_EMAIL_SUBJECT =
     "Got Your Contact Info From Tatum Games. I Have Some Questions"
 
@@ -96,9 +95,10 @@ fun PartnersScreen(navController: NavController) {
     var selectedChip by remember { mutableStateOf(PartnerCategoryFilters.FILTER_ALL) }
     var detailPartner by remember { mutableStateOf<Partner?>(null) }
     var contactPickerPartner by remember { mutableStateOf<Partner?>(null) }
+    val contentRepository = remember { TatumTechContentRepository() }
 
     LaunchedEffect(Unit) {
-        partners = JsonImporter.loadPartners(context)
+        partners = contentRepository.getPartners().getOrNull().orEmpty()
         loadFinished = true
     }
 
@@ -542,7 +542,7 @@ private fun PartnerSocialIconRow(partner: Partner) {
 }
 
 @Composable
-private fun SocialIconButton(drawableRes: Int, labelRes: Int, url: String) {
+internal fun SocialIconButton(drawableRes: Int, labelRes: Int, url: String) {
     val context = LocalContext.current
     val label = stringResource(labelRes)
     IconButton(

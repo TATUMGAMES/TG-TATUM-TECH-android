@@ -60,4 +60,10 @@ object PartnerCategoryFilters {
 
     fun shortLabelForCategory(category: String): String =
         chips.find { it.jsonCategory == category }?.filterKey ?: category
+
+    /** Maps an API category value (the short label, e.g. "Game Studios") to its full category. */
+    fun categoryForApiValue(apiValue: String?): String =
+        chips.find { it.jsonCategory != null && it.filterKey.equals(apiValue, ignoreCase = true) }
+            ?.jsonCategory
+            ?: apiValue.orEmpty()
 }

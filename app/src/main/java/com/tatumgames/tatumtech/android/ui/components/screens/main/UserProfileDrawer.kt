@@ -95,7 +95,7 @@ fun UserProfileDrawer(
                 Column {
                     // Tesla-style logo
                     androidx.compose.foundation.Image(
-                        painter = painterResource(id = R.drawable.logo_text),
+                        painter = painterResource(id = R.drawable.tatumgames_logo),
                         contentDescription = stringResource(R.string.app_name),
                         modifier = Modifier
                             .fillMaxWidth()

@@ -31,9 +31,16 @@ class ShowcaseGamesJsonValidationTest {
         val response = Gson().fromJson(json, GamesCatalogResponse::class.java)
         val apps = response.data.apps
 
-        assertEquals(2, apps.size)
+        assertEquals(5, apps.size)
+        assertEquals(apps.size, apps.map { it.appId }.toSet().size)
         assertEquals(
-            setOf("Price of Glory", "Heroes Vs Villains: Nemesis"),
+            setOf(
+                "Price of Glory",
+                "Heroes Vs Villains: Nemesis",
+                "BANJAX",
+                "Tales of Encenia",
+                "Saints Art Puzzle"
+            ),
             apps.map { it.title }.toSet()
         )
 
@@ -59,4 +66,112 @@ class ShowcaseGamesJsonValidationTest {
         assertFalse(json.contains("picsum.photos"))
         assertFalse(json.contains("Fortnite"))
     }
+
+    @Test
+    fun gamesJson_banjaxAndTalesOfEnceniaLinksAndMedia() {
+        val apps = loadApps()
+
+        val banjax = apps.first { it.title == "BANJAX" }
+        assertEquals("MugginsVR", banjax.companyName)
+        assertTrue(GameMediaResolver.isComingSoon(banjax))
+        assertEquals("https://mugginsvr.com/", banjax.website)
+        assertEquals("drawable:banjax_logo_icon", banjax.campaign?.images?.appLogo)
+        assertEquals(6, banjax.images.screenshots.size)
+        val banjaxVideo = banjax.videos.promotional.single()
+        assertEquals("https://www.youtube.com/watch?v=8Nv-PpXhG00", banjaxVideo.url)
+        assertEquals("https://img.youtube.com/vi/8Nv-PpXhG00/hqdefault.jpg", banjaxVideo.thumbnailUrl)
+        assertTrue(banjax.videos.others.isEmpty())
+        assertEquals(listOf(banjaxVideo.url), banjax.campaign?.videoUrls)
+        val banjaxCtas = banjax.campaign!!.ctas
+        assertEquals("https://store.steampowered.com/app/4565160/BANJAX/", banjaxCtas.steamStore)
+        assertEquals("https://www.meta.com/experiences/banjax/32964033859910934/", banjaxCtas.other)
+        assertEquals("https://mugginsvr.com/", banjaxCtas.website)
+        val banjaxSocial = banjax.campaign!!.socialMedia
+        assertEquals("https://www.linkedin.com/in/barliesque/", banjaxSocial.linkedin)
+        assertEquals("https://www.instagram.com/mugginsvr", banjaxSocial.instagram)
+        assertEquals("https://www.youtube.com/@muggins-vr", banjaxSocial.youtube)
+
+        val toe = apps.first { it.title == "Tales of Encenia" }
+        assertEquals("Grey State Development", toe.companyName)
+        assertTrue(GameMediaResolver.isComingSoon(toe))
+        assertEquals("drawable:talesofencenia_logo_icon", toe.campaign?.images?.appLogo)
+        assertEquals(7, toe.images.screenshots.size)
+        assertEquals(
+            "https://www.youtube.com/watch?v=3f76jiOZET8",
+            toe.videos.promotional.single().url
+        )
+        assertFalse(toe.videos.promotional.single().thumbnailUrl.isNullOrBlank())
+        assertEquals("https://talesofencenia.com/", toe.campaign?.ctas?.website)
+        val toeSocial = toe.campaign!!.socialMedia
+        assertEquals("https://www.youtube.com/@TalesOfEncenia", toeSocial.youtube)
+        assertEquals("https://www.facebook.com/TalesOfEncenia", toeSocial.facebook)
+        assertEquals("https://www.instagram.com/talesofencenia/", toeSocial.instagram)
+        assertEquals("https://www.tiktok.com/@talesofencenia", toeSocial.tiktok)
+    }
+
+    @Test
+    fun gamesJson_saintsArtPuzzleLinksAndMedia() {
+        val apps = loadApps()
+        val game = apps.first { it.title == "Saints Art Puzzle" }
+
+        assertEquals("game_0005", game.appId)
+        assertEquals("Art of Devotion Games", game.companyName)
+        assertTrue(GameMediaResolver.isAvailable(game))
+        assertEquals("drawable:saint_art_puzzle_logo", game.campaign?.images?.appLogo)
+        assertEquals((1..6).map { "drawable:saint_art_puzzle_ss_0$it" }, game.images.screenshots)
+        assertEquals(game.images.screenshots, game.campaign?.screenshotUrls)
+        assertTrue(game.videos.promotional.isEmpty() && game.videos.others.isEmpty())
+        assertTrue(game.campaign!!.videoUrls.isEmpty())
+        assertEquals("https://www.artofdevotiongames.com/", game.website)
+        val ctas = game.campaign!!.ctas
+        assertEquals(
+            "https://play.google.com/store/apps/details?id=com.artofdevotiongames.saintsartpuzzle",
+            ctas.googleStore
+        )
+        assertEquals("https://apps.apple.com/us/app/saints-art-puzzle/id6759738917", ctas.appleStore)
+        assertEquals("https://www.artofdevotiongames.com/", ctas.website)
+        assertEquals("https://linktr.ee/artofdevotiongames", ctas.other)
+        val social = game.campaign!!.socialMedia
+        assertEquals("https://www.instagram.com/artofdevotiongames/", social.instagram)
+        assertEquals("https://www.tiktok.com/@art.of.devotion8", social.tiktok)
+        assertEquals(
+            listOf(social.facebook, social.x, social.linkedin, social.youtube, social.discord, social.twitch),
+            List(6) { null }
+        )
+        // Catalog order: appId sequence with descending featured priority and popularity.
+        assertEquals(game, apps.last())
+        assertTrue(apps.zipWithNext().all { (a, b) -> a.featuredPriority > b.featuredPriority })
+        assertTrue(apps.zipWithNext().all { (a, b) -> a.popularityScore > b.popularityScore })
+    }
+
+    @Test
+    fun gamesJson_localMediaReferencesExist() {
+        val json = File("src/main/assets/games.json").readText()
+        val refs = Regex("\"drawable:([a-z0-9_]+)\"").findAll(json).toList()
+        assertTrue(refs.isNotEmpty())
+        val drawables = File("src/main/res/drawable").listFiles().orEmpty()
+        refs.forEach { match ->
+            val name = match.groupValues[1]
+            assertTrue(
+                "Missing drawable resource: $name",
+                drawables.any { it.nameWithoutExtension == name }
+            )
+        }
+    }
+
+    @Test
+    fun gamesJson_videosAreRemoteLinksWithThumbnails() {
+        val json = File("src/main/assets/games.json").readText()
+        assertFalse(json.contains("\"raw:"))
+
+        loadApps().flatMap { it.videos.promotional + it.videos.others }.forEach { video ->
+            assertTrue("Video URL must be https: ${video.url}", video.url.startsWith("https://"))
+            assertFalse("Missing thumbnail for ${video.url}", video.thumbnailUrl.isNullOrBlank())
+        }
+    }
+
+    private fun loadApps() = Gson().fromJson(
+        File("src/main/assets/games.json").readText(),
+        GamesCatalogResponse::class.java
+    ).data.apps
 }

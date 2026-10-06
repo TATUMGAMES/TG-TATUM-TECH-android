@@ -104,6 +104,17 @@ class ContactCardQrCodecTest {
     }
 
     @Test
+    fun toConnection_treatsZeroUserIdAsUnknown() {
+        val payload = ContactCardQrPayload(
+            cardId = "card-abc",
+            userId = 0L,
+            name = "David Ashe"
+        )
+        val connection = ContactCardQrCodec.toConnection(ownerUserId = 1L, payload = payload)
+        assertEquals(null, connection.connectedUserId)
+    }
+
+    @Test
     fun isOwnCard_usesAnonymousIdNotLocalRoomUserId() {
         val currentUser = UserEntity(
             id = 1L,

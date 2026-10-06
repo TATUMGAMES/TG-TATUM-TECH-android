@@ -20,12 +20,10 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Patterns
 import android.widget.Toast
-import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.constants.Constants.TAG
-import com.tatumgames.tatumtech.android.ui.theme.StringHashPalette
 import com.tatumgames.tatumtech.framework.android.logger.Logger
 import java.text.SimpleDateFormat
 import java.time.ZonedDateTime
@@ -99,21 +97,6 @@ object Utils {
         }
     }
 
-    /**
-     * Formats an ISO calendar date string (yyyy-MM-dd) for display (MMM d, yyyy).
-     */
-    fun formatIsoDateOnly(dateString: String): String {
-        return try {
-            val inFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val date = inFormat.parse(dateString) ?: return dateString
-            val outFormat = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
-            outFormat.format(date)
-        } catch (e: Exception) {
-            Logger.e(TAG, e.message)
-            dateString
-        }
-    }
-
     fun formatTimestamp(
         context: Context,
         timestamp: Long
@@ -125,28 +108,6 @@ object Utils {
             Logger.e(TAG, e.message)
             context.getString(R.string.to_be_determined)
         }
-    }
-
-    fun drawableToUri(drawableId: Int): String {
-        return "android.resource://com.tatumgames.tatumtech.android/$drawableId"
-    }
-
-    fun getNameInitials(
-        context: Context,
-        name: String
-    ): String {
-        val words = name.trim().split(Regex("\\s+")).filter { it.isNotBlank() }
-        return if (words.isEmpty()) {
-            context.getString(R.string.anonymous_name_fallback)
-        } else {
-            words.take(2).mapNotNull { it.firstOrNull()?.uppercase() }.joinToString("")
-        }
-    }
-
-    fun generateColorFromString(input: String): Color {
-        val hash = input.hashCode()
-        val index = kotlin.math.abs(hash) % StringHashPalette.size
-        return StringHashPalette[index]
     }
 
     /**

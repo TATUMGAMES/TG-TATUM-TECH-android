@@ -16,10 +16,23 @@ package com.tatumgames.tatumtech.android.ui.components.screens.main.models
 
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.tatumgames.tatumtech.android.enums.NotificationType
 
+/**
+ * UI model for a recent notification row.
+ *
+ * @property id Stable content-keyed identity (not display text).
+ * @property isUnread True when the notification has not been opened yet.
+ * @property destinationRoute Navigation target resolved from [type] / persisted route.
+ */
 data class Notification(
+    val id: String,
+    val type: NotificationType,
+    val title: String,
+    val description: String,
+    val isUnread: Boolean,
+    val destinationRoute: String,
     val icon: ImageVector? = null,
     @DrawableRes val iconResId: Int? = null,
-    val title: String,
-    val description: String
+    val relatedContentId: String? = null
 )

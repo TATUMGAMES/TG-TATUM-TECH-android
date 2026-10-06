@@ -14,7 +14,10 @@
  */
 package com.tatumgames.tatumtech.android.ui.components.screens.events
 
+import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -25,16 +28,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,7 +58,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.tatumgames.tatumtech.android.BuildConfig
 import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.data.content.TatumTechContentRepository
+import com.tatumgames.tatumtech.android.reminders.MeetingReminders
 import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
@@ -59,17 +72,32 @@ import com.tatumgames.tatumtech.android.ui.theme.Grey500
 import com.tatumgames.tatumtech.android.ui.theme.ScreenScaffoldLight
 import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.android.ui.utils.GameMediaResolver
-import com.tatumgames.tatumtech.android.ui.utils.JsonImporter
 import com.tatumgames.tatumtech.android.utils.Utils.openUrl
 
+/**
+ * @param highlightedSpeakerId Speaker to scroll to and outline, e.g. when opened from a meeting
+ * reminder.
+ */
 @Composable
 fun VirtualSpeakersScreen(
     navController: NavController,
-    eventId: Long
+    eventId: String,
+    highlightedSpeakerId: String? = null
 ) {
-    val context = LocalContext.current
-    val event = remember(eventId) { JsonImporter.loadUpcomingEventById(context, eventId) }
-    val speakers = remember(event) { event?.speakersInOrder().orEmpty() }
+    val contentRepository = remember { TatumTechContentRepository() }
+    var speakers by remember(eventId) { mutableStateOf<List<VirtualSpeaker>>(emptyList()) }
+    var isLoading by remember(eventId) { mutableStateOf(true) }
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(eventId) {
+        speakers = contentRepository.getEventSpeakers(eventId).getOrNull().orEmpty()
+        isLoading = false
+    }
+
+    LaunchedEffect(speakers, highlightedSpeakerId) {
+        val index = speakers.indexOfFirst { it.id == highlightedSpeakerId }
+        if (index >= 0) listState.animateScrollToItem(index)
+    }
 
     Scaffold(
         topBar = {
@@ -83,7 +111,16 @@ fun VirtualSpeakersScreen(
         },
         containerColor = ScreenScaffoldLight
     ) { padding ->
-        if (speakers.isEmpty()) {
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else if (speakers.isEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -99,11 +136,16 @@ fun VirtualSpeakersScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding),
+                state = listState,
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(speakers, key = { it.id }) { speaker ->
-                    VirtualSpeakerCard(speaker = speaker)
+                    VirtualSpeakerCard(
+                        speaker = speaker,
+                        highlighted = speaker.id == highlightedSpeakerId,
+                        eventId = eventId
+                    )
                 }
             }
         }
@@ -111,20 +153,25 @@ fun VirtualSpeakersScreen(
 }
 
 @Composable
-private fun VirtualSpeakerCard(speaker: VirtualSpeaker) {
+private fun VirtualSpeakerCard(
+    speaker: VirtualSpeaker,
+    highlighted: Boolean,
+    eventId: String
+) {
     val context = LocalContext.current
     val imageData = remember(speaker.profileImage) {
         speaker.profileImage?.let { name ->
             GameMediaResolver.resolve(context, "drawable:$name")
         }
     }
-    val placeholder = painterResource(R.drawable.profile_male_placeholder_01)
+    val placeholder = painterResource(R.drawable.male_profile_default)
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = if (highlighted) BorderStroke(2.dp, colorResource(R.color.purple_200)) else null
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             AsyncImage(
@@ -199,6 +246,28 @@ private fun VirtualSpeakerCard(speaker: VirtualSpeaker) {
                     }
                 )
             }
+            if (BuildConfig.DEBUG) {
+                TextButton(
+                    onClick = {
+                        MeetingReminders.scheduler(context)
+                            .scheduleTestReminder(eventId, null, speaker, DEBUG_REMINDER_DELAY_MS)
+                        Toast.makeText(
+                            context,
+                            R.string.meeting_reminder_debug_scheduled,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    StandardText(
+                        text = stringResource(R.string.meeting_reminder_debug_test),
+                        color = Grey500,
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+            }
         }
     }
 }
+
+private const val DEBUG_REMINDER_DELAY_MS = 10_000L

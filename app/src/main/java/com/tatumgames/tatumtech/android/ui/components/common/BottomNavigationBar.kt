@@ -47,7 +47,7 @@ fun BottomNavigationBar(
         BottomNavigation(
             Icons.Default.Home,
             stringResource(R.string.home),
-            NavRoutes.MAIN_SCREEN
+            NavRoutes.HOME_PAGER_SCREEN
         ),
         BottomNavigation(
             Icons.Default.Face,
@@ -74,13 +74,26 @@ fun BottomNavigationBar(
             NavigationBarItem(
                 selected = currentRoute == item.route,
                 onClick = {
-                    if (currentRoute != item.route) {
-                        navController.navigate(item.route) {
-                            popUpTo(NavRoutes.MAIN_SCREEN) {
-                                inclusive = false
-                            }
-                            launchSingleTop = true
+                    if (currentRoute == item.route) return@NavigationBarItem
+
+                    // Navigating to the start destination with launchSingleTop + popUpTo(start)
+                    // is a no-op in Navigation Compose (Home is already under the stack after
+                    // pop). Pop back to Home instead so the tab works from Coding / other screens.
+                    if (item.route == NavRoutes.HOME_PAGER_SCREEN) {
+                        navController.popBackStack(
+                            NavRoutes.HOME_PAGER_SCREEN,
+                            inclusive = false
+                        )
+                        return@NavigationBarItem
+                    }
+
+                    navController.navigate(item.route) {
+                        popUpTo(NavRoutes.HOME_PAGER_SCREEN) {
+                            inclusive = false
+                            saveState = true
                         }
+                        launchSingleTop = true
+                        restoreState = true
                     }
                 },
                 icon = {

@@ -29,13 +29,12 @@ import com.tatumgames.tatumtech.android.ui.components.screens.coding.ChallengeCo
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.QuizSessionBuilder
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.models.AnswerFeedback
 import com.tatumgames.tatumtech.android.ui.components.screens.coding.models.CodingChallenges
+import com.tatumgames.tatumtech.android.ui.components.screens.rating.RatingPromptManager
 import com.tatumgames.tatumtech.android.utils.CodingChallengesImporter
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -99,18 +98,30 @@ class CodingChallengesViewModel(
     private val _dailyLimitReachedForBucket = MutableStateFlow(false)
     val dailyLimitReachedForBucket: StateFlow<Boolean> = _dailyLimitReachedForBucket.asStateFlow()
 
+    /** One-shot: today's count just reached [DAILY_ANSWER_LIMIT]; consume via [onRatingPromptShown]. */
+    private val _ratingPromptRequested = MutableStateFlow(false)
+    val ratingPromptRequested: StateFlow<Boolean> = _ratingPromptRequested.asStateFlow()
+
     private var activeQuizRoute: String = ""
     private var activeLanguageNormalized: String = ""
     private var activeLevel: String = ""
 
     private var submitAnswerJob: Job? = null
 
+    /** Captured at submit so Continue can persist/advance without re-reading mutable UI state. */
+    private var pendingAnswerCommit: PendingAnswerCommit? = null
+
     /**
      * Updates the current answer selection for the active question (UI binding).
      *
      * @param value Selected option text, or empty if none.
      */
+    fun onRatingPromptShown() {
+        _ratingPromptRequested.value = false
+    }
+
     fun onSelectedAnswerChange(value: String) {
+        if (_answerFeedback.value != AnswerFeedback.NONE) return
         _selectedAnswer.value = value
     }
 
@@ -139,6 +150,7 @@ class CodingChallengesViewModel(
                 _showResults.value = false
                 _selectedAnswer.value = ""
                 _answerFeedback.value = AnswerFeedback.NONE
+                pendingAnswerCommit = null
 
                 val progressId = QuizProgressEntityHelper.makeProgressId(quizRoute, language, level)
                 val startOfDay = getStartOfTodayMillis()
@@ -313,14 +325,17 @@ class CodingChallengesViewModel(
     }
 
     /**
-     * Shows correct/incorrect overlay briefly, then records the answer and advances or completes the quiz.
+     * Shows correct/incorrect feedback with explanation. Does not advance until
+     * [acknowledgeAnswerFeedback] so the learner can read the explanation.
      *
-     * Cancels any in-flight feedback job so an older delay cannot overwrite newer feedback state.
+     * Cancels any in-flight commit job so an older acknowledge cannot overwrite newer state.
      */
     fun submitAnswer(answer: String, quizRoute: String, language: String?, level: String) {
         if (answer.isBlank()) return
+        if (_answerFeedback.value != AnswerFeedback.NONE) return
+
         submitAnswerJob?.cancel()
-        submitAnswerJob = viewModelScope.launch {
+        viewModelScope.launch {
             val lang = QuizProgressEntityHelper.normalizedLanguage(language)
             val startOfDay = getStartOfTodayMillis()
             if (!canAnswerMore(quizRoute, lang, level, startOfDay)) {
@@ -332,32 +347,78 @@ class CodingChallengesViewModel(
             val currentQuestion =
                 _questionList.value.getOrNull(_currentQuestionIndex.value) ?: return@launch
             val isCorrect = answer == currentQuestion.correctAnswer
+            pendingAnswerCommit = PendingAnswerCommit(
+                quizRoute = quizRoute,
+                languageNormalized = lang,
+                level = level,
+                questionId = currentQuestion.id,
+                answer = answer,
+                isCorrect = isCorrect,
+                questionIndex = _currentQuestionIndex.value
+            )
             _answerFeedback.value =
                 if (isCorrect) AnswerFeedback.CORRECT else AnswerFeedback.INCORRECT
+        }
+    }
 
-            delay(FEEDBACK_OVERLAY_MS)
-            if (!isActive) return@launch
+    /**
+     * Clears the feedback overlay, persists the pending answer, then advances or shows results.
+     */
+    fun acknowledgeAnswerFeedback() {
+        val pending = pendingAnswerCommit ?: run {
             _answerFeedback.value = AnswerFeedback.NONE
+            return
+        }
+        submitAnswerJob?.cancel()
+        submitAnswerJob = viewModelScope.launch {
+            _answerFeedback.value = AnswerFeedback.NONE
+            pendingAnswerCommit = null
 
+            val startOfDay = getStartOfTodayMillis()
+            val countBefore = getTodayAnswerCount(
+                pending.quizRoute,
+                pending.languageNormalized,
+                pending.level,
+                startOfDay
+            )
             quizAnswerEventRepository.insert(
                 QuizAnswerEventEntity(
-                    quizRoute = quizRoute,
-                    language = lang,
-                    level = level,
-                    questionId = currentQuestion.id,
-                    answerChosen = answer,
-                    isCorrect = isCorrect,
+                    quizRoute = pending.quizRoute,
+                    language = pending.languageNormalized,
+                    level = pending.level,
+                    questionId = pending.questionId,
+                    answerChosen = pending.answer,
+                    isCorrect = pending.isCorrect,
                     timestamp = System.currentTimeMillis()
                 )
             )
 
-            _answersByQuestionId.value = _answersByQuestionId.value + (currentQuestion.id to answer)
+            _answersByQuestionId.value =
+                _answersByQuestionId.value + (pending.questionId to pending.answer)
             val newMap = _answersByQuestionId.value
             recalcSessionScore(_questionList.value, newMap)
-            refreshTodayCount(quizRoute, lang, level, startOfDay)
+            refreshTodayCount(
+                pending.quizRoute,
+                pending.languageNormalized,
+                pending.level,
+                startOfDay
+            )
+            if (
+                RatingPromptManager.reachedLimitThisAnswer(
+                    countBefore = countBefore,
+                    countAfter = _todayAnswerCount.value,
+                    limit = DAILY_ANSWER_LIMIT
+                ) && RatingPromptManager.isEligible(getApplication())
+            ) {
+                _ratingPromptRequested.value = true
+            }
 
-            val progressId = QuizProgressEntityHelper.makeProgressId(quizRoute, language, level)
-            val isLast = _currentQuestionIndex.value >= _questionList.value.lastIndex
+            val progressId = QuizProgressEntityHelper.makeProgressId(
+                pending.quizRoute,
+                pending.languageNormalized,
+                pending.level
+            )
+            val isLast = pending.questionIndex >= _questionList.value.lastIndex
 
             if (isLast) {
                 _showResults.value = true
@@ -366,10 +427,10 @@ class CodingChallengesViewModel(
                 quizProgressRepository.insertOrReplace(
                     QuizProgressEntity(
                         id = progressId,
-                        quizRoute = quizRoute,
-                        language = lang,
-                        level = level,
-                        currentIndex = _currentQuestionIndex.value,
+                        quizRoute = pending.quizRoute,
+                        language = pending.languageNormalized,
+                        level = pending.level,
+                        currentIndex = pending.questionIndex,
                         answersJson = encodeAnswersJson(newMap),
                         questionIdsJson = questionIdsJson,
                         isCompleted = true,
@@ -380,20 +441,20 @@ class CodingChallengesViewModel(
                     timelineRepository = timelineRepository,
                     progressId = progressId,
                     questionIdsJson = questionIdsJson,
-                    language = lang,
-                    quizRoute = quizRoute,
-                    level = level,
+                    language = pending.languageNormalized,
+                    quizRoute = pending.quizRoute,
+                    level = pending.level,
                     timestamp = completedAt
                 )
             } else {
-                _currentQuestionIndex.value += 1
+                _currentQuestionIndex.value = pending.questionIndex + 1
                 _selectedAnswer.value = ""
                 quizProgressRepository.insertOrReplace(
                     QuizProgressEntity(
                         id = progressId,
-                        quizRoute = quizRoute,
-                        language = lang,
-                        level = level,
+                        quizRoute = pending.quizRoute,
+                        language = pending.languageNormalized,
+                        level = pending.level,
                         currentIndex = _currentQuestionIndex.value,
                         answersJson = encodeAnswersJson(newMap),
                         questionIdsJson = encodeQuestionIdsJson(_questionList.value.map { it.id }),
@@ -404,6 +465,16 @@ class CodingChallengesViewModel(
             }
         }
     }
+
+    private data class PendingAnswerCommit(
+        val quizRoute: String,
+        val languageNormalized: String,
+        val level: String,
+        val questionId: String,
+        val answer: String,
+        val isCorrect: Boolean,
+        val questionIndex: Int
+    )
 
     /**
      * Deletes persisted progress for the active bucket and reloads a new session when under the daily cap.
@@ -478,6 +549,7 @@ class CodingChallengesViewModel(
         _questionResults.value = emptyMap()
         _selectedAnswer.value = ""
         _answerFeedback.value = AnswerFeedback.NONE
+        pendingAnswerCommit = null
         _dailyLimitReachedForBucket.value = false
     }
 
@@ -547,6 +619,5 @@ class CodingChallengesViewModel(
     companion object {
         const val DAILY_ANSWER_LIMIT = 30
         private const val SESSION_QUESTION_COUNT = 10
-        private const val FEEDBACK_OVERLAY_MS = 1200L
     }
 }

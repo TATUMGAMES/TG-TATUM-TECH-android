@@ -24,6 +24,14 @@ object Constants {
     // MIKROS / Discover
     const val URL_MIKROS_DEVELOPER = "https://developer.tatumgames.com/"
     const val URL_MIKROS_EXPLAINER_VIDEO = "https://youtu.be/pz2iMZ-mjFM"
+    const val URL_MIKROS_MARKETING_TUTORIAL = "https://youtu.be/n2a1hoINzKw"
+    const val URL_MIKROS_ANALYTICS_INTEGRATION = "https://youtu.be/4g380D_bAVA"
+    const val URL_MIKROS_ANALYTICS_LOGGING = "https://youtu.be/GINXSVBlO0M"
+    const val URL_MIKROS_TECHNICAL_DOCS =
+        "https://developer.tatumgames.com/documentation/introduction"
+
+    // Tatum Tech program site
+    const val URL_TATUM_TECH = "https://tatumgames.com/tatum-tech/"
 
     // Donation & Community URLs
     // used to retrieve server information from Discord API
@@ -47,6 +55,13 @@ object Constants {
     const val URL_STRIPE_2500 = "https://buy.stripe.com/28oaF9cCmdul7kscMO"
     const val URL_STRIPE_5000 = "https://buy.stripe.com/6oEbJd6dY0Hz8ow145"
     const val URL_STRIPE_10000 = "https://buy.stripe.com/3cs28D45QgGxgV2fYY"
+
+    // App store listing (append the store package name)
+    const val URI_PLAY_STORE_DETAILS = "market://details?id="
+    const val URL_PLAY_STORE_DETAILS = "https://play.google.com/store/apps/details?id="
+
+    // Local storage (cacheDir subfolders holding user content)
+    const val CONTACT_CARD_IMAGES_DIR = "contact_card_images"
 
     // Key/Values
     const val KEY_USER_ID = "user_id"

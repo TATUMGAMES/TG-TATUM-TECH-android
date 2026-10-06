@@ -59,7 +59,7 @@ import com.tatumgames.tatumtech.android.database.repository.UserDatabaseReposito
 import com.tatumgames.tatumtech.android.enums.TimelineType
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
-import com.tatumgames.tatumtech.android.ui.components.screens.networking.models.ContactCardQrCodec
+import com.tatumgames.tatumtech.android.ui.components.screens.networking.models.ContactCardVCardCodec
 import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.android.utils.QrCodeBitmapGenerator
 import kotlinx.coroutines.Dispatchers
@@ -83,17 +83,23 @@ fun MyContactCardQrScreen(navController: NavController) {
             val user = userRepository.getCurrentUser()
             val loaded = user?.let { cardRepository.getByOwnerUserId(it.id) }
             card = loaded
-            if (loaded != null && user != null) {
-                val payload = ContactCardQrCodec.fromCard(loaded, user.anonymousId)
-                qrBitmap = QrCodeBitmapGenerator.generate(ContactCardQrCodec.encode(payload))
-                timelineRepository.insertTimelineEvent(
-                    TimelineEntity(
-                        type = TimelineType.CONTACT_CARD_SHARED.typeValue,
-                        description = context.getString(R.string.timeline_contact_card_shared),
-                        relatedId = null,
-                        timestamp = System.currentTimeMillis()
-                    )
+            if (loaded != null) {
+                val vcard = ContactCardVCardCodec.encode(
+                    card = loaded,
+                    firstName = user.firstName,
+                    lastName = user.lastName
                 )
+                if (vcard != null) {
+                    qrBitmap = QrCodeBitmapGenerator.generate(vcard)
+                    timelineRepository.insertTimelineEvent(
+                        TimelineEntity(
+                            type = TimelineType.CONTACT_CARD_SHARED.typeValue,
+                            description = context.getString(R.string.timeline_contact_card_shared),
+                            relatedId = null,
+                            timestamp = System.currentTimeMillis()
+                        )
+                    )
+                }
             }
         }
         isLoading = false

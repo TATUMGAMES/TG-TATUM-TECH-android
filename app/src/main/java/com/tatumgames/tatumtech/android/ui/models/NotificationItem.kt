@@ -18,10 +18,13 @@ package com.tatumgames.tatumtech.android.ui.models
  * Data class representing a notification item for the user.
  * 
  * @param id Unique identifier for the notification
- * @param type Type of notification (e.g., "CodingChallenge", "EventRegistration")
+ * @param type Type of notification (e.g., "CodingChallenge", "Community")
  * @param title Display title of the notification
  * @param description Brief description of the notification
  * @param date Date when the notification was created (ISO format)
+ *
+ * Note: Event Registration notifications are discontinued. Active recent notifications
+ * are persisted via [com.tatumgames.tatumtech.android.database.entity.RecentNotificationEntity].
  */
 data class NotificationItem(
     val id: String,

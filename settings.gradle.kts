@@ -22,4 +22,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Tatum Tech"
 include(":app")
-include(":tatumtech-framework-android")
+include(":tatumgames-framework-android")

@@ -14,6 +14,9 @@
  */
 package com.tatumgames.tatumtech.android.ui.components.screens.community.apiclient
 
+import com.tatumgames.tatumtech.android.analytics.AnalyticsService
+import com.tatumgames.tatumtech.android.analytics.ApiErrorTypes
+import com.tatumgames.tatumtech.android.analytics.AnalyticsSanitizer
 import com.tatumgames.tatumtech.android.constants.Constants
 import com.tatumgames.tatumtech.framework.android.logger.Logger
 import kotlinx.coroutines.Dispatchers
@@ -51,8 +54,10 @@ class DiscordApiClient {
 
     suspend fun fetchDiscordServerInfo(inviteCode: String): ApiResult<DiscordServerInfo> =
         withContext(Dispatchers.IO) {
+            val started = System.currentTimeMillis()
+            // Path template only — invite code is not sent to Analytics.
+            val endpointTemplate = "https://discord.com/api/v9/invites/{invite}"
             try {
-                // Use Constants.DISCORD_API_URL pattern with the provided invite code
                 val url =
                     "https://discord.com/api/v9/invites/$inviteCode?with_counts=true&with_expiration=true"
                 val request = Request.Builder()
@@ -61,13 +66,28 @@ class DiscordApiClient {
                     .build()
 
                 val response = client.newCall(request).execute()
+                val durationMs = System.currentTimeMillis() - started
 
                 if (!response.isSuccessful) {
+                    AnalyticsService.apiError(
+                        endpoint = endpointTemplate,
+                        method = "GET",
+                        statusCode = response.code,
+                        durationMs = durationMs,
+                        errorType = ApiErrorTypes.HTTP
+                    )
                     return@withContext ApiResult.Error("HTTP ${response.code}: ${response.message}")
                 }
 
                 val responseBody = response.body?.string()
                 if (responseBody.isNullOrEmpty()) {
+                    AnalyticsService.apiError(
+                        endpoint = endpointTemplate,
+                        method = "GET",
+                        statusCode = response.code,
+                        durationMs = durationMs,
+                        errorType = ApiErrorTypes.PARSE
+                    )
                     return@withContext ApiResult.Error("Empty response from server")
                 }
 
@@ -89,10 +109,29 @@ class DiscordApiClient {
 
                 ApiResult.Success(serverInfo)
             } catch (e: IOException) {
+                val durationMs = System.currentTimeMillis() - started
                 Logger.e(Constants.TAG, "Network error: ${e.message}")
+                AnalyticsService.apiError(
+                    endpoint = endpointTemplate,
+                    method = "GET",
+                    statusCode = null,
+                    durationMs = durationMs,
+                    errorType = AnalyticsSanitizer.classifyThrowable(e),
+                    throwable = e
+                )
                 ApiResult.Error("Network error: ${e.message}", e)
             } catch (e: Exception) {
+                val durationMs = System.currentTimeMillis() - started
                 Logger.e(Constants.TAG, "API error: ${e.message}")
+                AnalyticsService.apiError(
+                    endpoint = endpointTemplate,
+                    method = "GET",
+                    statusCode = null,
+                    durationMs = durationMs,
+                    errorType = AnalyticsSanitizer.classifyThrowable(e),
+                    throwable = e
+                )
+                AnalyticsService.recordHandledException(e)
                 ApiResult.Error("API error: ${e.message}", e)
             }
         }

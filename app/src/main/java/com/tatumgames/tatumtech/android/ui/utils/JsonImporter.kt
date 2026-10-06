@@ -17,13 +17,11 @@ package com.tatumgames.tatumtech.android.ui.utils
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.tatumgames.tatumtech.android.ui.components.screens.events.models.Event
 import com.tatumgames.tatumtech.android.ui.models.Achievement
 import com.tatumgames.tatumtech.android.ui.models.CareerListing
 import com.tatumgames.tatumtech.android.ui.models.GameModel
 import com.tatumgames.tatumtech.android.ui.models.GamesResourceCategory
 import com.tatumgames.tatumtech.android.ui.models.NotificationItem
-import com.tatumgames.tatumtech.android.ui.models.Partner
 import com.tatumgames.tatumtech.android.ui.models.ResourceLink
 import java.io.IOException
 
@@ -44,22 +42,6 @@ object JsonImporter {
      * Configured with default settings for optimal performance.
      */
     private val gson = Gson()
-
-    /**
-     * Loads partners data from assets/partners.json
-     * 
-     * @param context Android context
-     * @return List of Partner objects
-     */
-    fun loadPartners(context: Context): List<Partner> {
-        return try {
-            val json = context.assets.open("partners.json").bufferedReader().use { it.readText() }
-            val listType = object : TypeToken<List<Partner>>() {}.type
-            gson.fromJson(json, listType)
-        } catch (e: IOException) {
-            emptyList()
-        }
-    }
 
     /**
      * Loads career listings data from assets/career_listings.json
@@ -127,23 +109,6 @@ object JsonImporter {
             emptyList()
         }
     }
-
-    /**
-     * Loads upcoming events from assets/upcoming_events.json (API-shaped local catalog).
-     */
-    fun loadUpcomingEvents(context: Context): List<Event> {
-        return try {
-            val json =
-                context.assets.open("upcoming_events.json").bufferedReader().use { it.readText() }
-            val listType = object : TypeToken<List<Event>>() {}.type
-            gson.fromJson<List<Event>>(json, listType).orEmpty()
-        } catch (e: IOException) {
-            emptyList()
-        }
-    }
-
-    fun loadUpcomingEventById(context: Context, eventId: Long): Event? =
-        loadUpcomingEvents(context).firstOrNull { it.id == eventId }
 
     /**
      * Loads Games → Resources category → partnerId mappings from assets/games_resources.json.

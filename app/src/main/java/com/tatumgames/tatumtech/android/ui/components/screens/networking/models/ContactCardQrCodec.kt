@@ -25,10 +25,16 @@ import com.tatumgames.tatumtech.android.database.entity.UserEntity
 
 /**
  * Versioned, self-contained QR payload for offline Tatum Tech contact cards.
- * Intentionally omits local profile image URIs and authentication secrets.
  *
- * [anonymousId] is the stable cross-device identity. Local Room [userId] alone is not unique
- * across devices (each install uses id = 1).
+ * **Legacy generation** used Gson JSON (`type = tatum_tech_contact`).
+ * **New generation** uses vCard 3.0 via [ContactCardVCardCodec]; this model remains the
+ * in-app scan DTO for both formats.
+ *
+ * Intentionally omits local profile image URIs and authentication secrets from public QRs.
+ *
+ * [anonymousId] is the stable cross-device identity for legacy JSON. Local Room [userId]
+ * alone is not unique across devices (each install uses id = 1). For vCard scans,
+ * [userId] is `0` (unknown) and identity uses [cardId] from vCard `UID`.
  */
 data class ContactCardQrPayload(
     val type: String = TYPE,
@@ -85,8 +91,21 @@ object ContactCardQrCodec {
 
     fun encode(payload: ContactCardQrPayload): String = gson.toJson(payload)
 
+    /**
+     * Parses QR text for the in-app scanner.
+     * Prefers vCard 3.0 (new generation); falls back to legacy Tatum Tech JSON.
+     */
+    fun parseIncoming(raw: String): ContactCardQrParseResult {
+        if (raw.isBlank()) return ContactCardQrParseResult.Invalid
+        if (ContactCardVCardCodec.isVCard(raw)) {
+            return ContactCardVCardCodec.parse(raw)
+        }
+        return parse(raw)
+    }
+
     fun parse(raw: String): ContactCardQrParseResult {
         if (raw.isBlank()) return ContactCardQrParseResult.Invalid
+        if (ContactCardVCardCodec.isVCard(raw)) return ContactCardQrParseResult.Invalid
         return try {
             val payload = gson.fromJson(raw, ContactCardQrPayload::class.java)
                 ?: return ContactCardQrParseResult.Invalid
@@ -108,7 +127,8 @@ object ContactCardQrCodec {
 
     /**
      * Own-card detection must use a stable identity.
-     * Prefer [ContactCardQrPayload.anonymousId]; fall back to matching [localCardId].
+     * Prefer [ContactCardQrPayload.anonymousId]; fall back to matching [localCardId]
+     * (vCard `UID` / legacy `cardId`).
      * Do not treat local Room [UserEntity.id] as unique across devices.
      */
     fun isOwnCard(
@@ -130,7 +150,7 @@ object ContactCardQrCodec {
     ): ConnectionEntity = ConnectionEntity(
         ownerUserId = ownerUserId,
         connectedCardId = payload.cardId,
-        connectedUserId = payload.userId,
+        connectedUserId = payload.userId.takeIf { it > 0L },
         name = payload.name,
         jobTitle = blankToNull(payload.jobTitle),
         company = blankToNull(payload.company),
