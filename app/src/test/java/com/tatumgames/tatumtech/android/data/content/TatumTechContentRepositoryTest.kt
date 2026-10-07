@@ -136,6 +136,31 @@ class TatumTechContentRepositoryTest {
     }
 
     @Test
+    fun `api speaker and event image urls reach the screen models unchanged`() = runBlocking {
+        val photo = "https://storage.googleapis.com/tg-api-new-stage.appspot.com/uploads/tatum_tech_speakers/speaker.png"
+        val flyer = "https://storage.googleapis.com/tg-api-new-stage.appspot.com/uploads/tatum_tech_events/flyer.jpg"
+        val repository = networkRepository(
+            FakeApi(
+                """{"data":{"events":[{"id":"evt-1","featuredImage":"$flyer",
+                  "virtualSpeakers":[{"id":"s1","name":"Ada","profileImage":"$photo","sortOrder":1},
+                                     {"id":"s2","name":"Bo","sortOrder":2}]}]}}"""
+            )
+        )
+
+        val event = repository.getUpcomingEvents().success().single()
+
+        assertEquals(flyer, event.featuredImage)
+        assertEquals(listOf(photo, null), event.virtualSpeakers.map { it.profileImage })
+    }
+
+    @Test
+    fun `bundled speaker images stay drawable names`() = runBlocking {
+        val event = localRepository.getUpcomingEvents().success().first()
+
+        assertEquals("speaker_jeff_bogensberger", event.virtualSpeakers.first().profileImage)
+    }
+
+    @Test
     fun `missing optional api fields fall back to screen defaults`() = runBlocking {
         val repository = networkRepository(FakeApi("""{"data":{"events":[{"id":"evt-1"}]}}"""))
 
