@@ -117,6 +117,25 @@ class TatumTechContentRepositoryTest {
     }
 
     @Test
+    fun `api partner logo urls reach the partner model unchanged`() = runBlocking {
+        val png = "https://storage.googleapis.com/tg-api-new-stage.appspot.com/uploads/tatum_tech_partners_logo/betteryouth.png"
+        val jpg = "https://storage.googleapis.com/tg-api-new-stage.appspot.com/uploads/tatum_tech_partners_logo/gbi_logo.jpg"
+        val repository = networkRepository(
+            FakeApi(
+                """{"data":{"partners":[
+                  {"id":"community_better_youth","name":"Better Youth","category":"Community Partners","logo":"$png"},
+                  {"id":"gbi","name":"GBI","category":"Community Partners","logo":"$jpg"},
+                  {"id":"no_logo","name":"No Logo","category":"Community Partners"}
+                ]}}"""
+            )
+        )
+
+        val logos = repository.getPartners().success().map { it.logo }
+
+        assertEquals(listOf(png, jpg, null), logos)
+    }
+
+    @Test
     fun `missing optional api fields fall back to screen defaults`() = runBlocking {
         val repository = networkRepository(FakeApi("""{"data":{"events":[{"id":"evt-1"}]}}"""))
 

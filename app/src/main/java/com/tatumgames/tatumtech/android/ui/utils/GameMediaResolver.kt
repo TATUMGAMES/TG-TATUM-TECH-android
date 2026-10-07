@@ -27,6 +27,8 @@ import com.tatumgames.tatumtech.android.ui.models.GameModel
 object GameMediaResolver {
 
     private const val DRAWABLE_PREFIX = "drawable:"
+    private const val HTTPS = "https://"
+    private const val HTTP = "http://"
 
     fun resolve(context: Context, ref: String?): Any? {
         if (ref.isNullOrBlank()) return null
@@ -36,6 +38,25 @@ object GameMediaResolver {
             return id.takeIf { it != 0 }
         }
         return ref
+    }
+
+    /**
+     * Partner logos come either from the API as absolute http(s) URLs, which are loaded exactly as
+     * given, or from bundled `partners.json` as drawable names (`partner_logo_x`, optionally
+     * `drawable:`-prefixed).
+     *
+     * @return The URL or drawable id for Coil, or `null` when there is nothing to load.
+     */
+    fun resolvePartnerLogo(context: Context, logo: String?): Any? =
+        resolvePartnerLogo(logo) { name ->
+            context.resources.getIdentifier(name, "drawable", context.packageName)
+        }
+
+    internal fun resolvePartnerLogo(logo: String?, drawableId: (String) -> Int): Any? {
+        val ref = logo?.trim().orEmpty()
+        if (ref.isEmpty()) return null
+        if (ref.startsWith(HTTPS, ignoreCase = true) || ref.startsWith(HTTP, ignoreCase = true)) return ref
+        return drawableId(ref.removePrefix(DRAWABLE_PREFIX)).takeIf { it != 0 }
     }
 
     fun isComingSoon(game: GameModel): Boolean =
