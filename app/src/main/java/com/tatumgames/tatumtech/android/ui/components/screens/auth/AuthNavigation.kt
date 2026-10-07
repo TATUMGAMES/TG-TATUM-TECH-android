@@ -20,6 +20,7 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.tatumgames.tatumtech.android.R
+import com.tatumgames.tatumtech.android.activity.AuthActivity
 import com.tatumgames.tatumtech.android.activity.MainActivity
 import com.tatumgames.tatumtech.android.reminders.MeetingReminderDestination
 import com.tatumgames.tatumtech.android.ui.components.common.StandardAlertDialog
@@ -35,6 +36,16 @@ fun openMainScreen(context: Context, reminderDestination: MeetingReminderDestina
         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
     }
     reminderDestination?.writeTo(intent)
+    context.startActivity(intent)
+}
+
+/**
+ * Returns to the auth flow after the session ended and removes the main flow from the back stack.
+ */
+fun openAuthScreen(context: Context) {
+    val intent = Intent(context, AuthActivity::class.java).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    }
     context.startActivity(intent)
 }
 

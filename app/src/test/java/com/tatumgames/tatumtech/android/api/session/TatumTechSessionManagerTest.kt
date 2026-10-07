@@ -351,6 +351,79 @@ class TatumTechSessionManagerTest {
         assertTrue(executor.requests.isEmpty())
     }
 
+    @Test
+    fun `confirmed sign out posts an empty body with the bearer token and clears the session`() = runBlocking {
+        signedInWith(storedSession())
+        executor.on("tatum-tech/signout", 200, ok)
+
+        val failure = manager.signOutOrFail()
+
+        assertNull(failure)
+        with(executor.requestsTo("tatum-tech/signout").single()) {
+            assertEquals("Bearer access-old", headers["Authorization"])
+            assertEquals("{}", body)
+        }
+        assertNull(store.stored)
+        assertFalse(manager.isSignedIn)
+        assertNull(client.configuration.jwtAccessToken)
+        assertNull(client.configuration.refreshToken)
+    }
+
+    @Test
+    fun `failed sign out keeps the session and returns the error`() = runBlocking {
+        signedInWith(storedSession())
+        executor.on("tatum-tech/signout", 500, error(500, "Server error"))
+
+        val failure = manager.signOutOrFail()
+
+        assertEquals(500, (failure as ApiError.Http).statusCode.code)
+        assertTrue(manager.isSignedIn)
+        assertEquals("access-old", store.stored?.accessToken)
+        assertEquals("Bearer access-old", client.configuration.jwtAccessToken)
+    }
+
+    @Test
+    fun `sign out rejected inside an http 200 envelope keeps the session`() = runBlocking {
+        signedInWith(storedSession())
+        executor.on("tatum-tech/signout", 200, error(500, "Server error"))
+
+        val failure = manager.signOutOrFail()
+
+        assertTrue(failure is ApiError.Http)
+        assertTrue(manager.isSignedIn)
+    }
+
+    @Test
+    fun `offline sign out keeps the session`() = runBlocking {
+        signedInWith(storedSession())
+        executor.on("tatum-tech/signout", 0, null)
+
+        val failure = manager.signOutOrFail()
+
+        assertTrue(failure is ApiError.Network)
+        assertTrue(manager.isSignedIn)
+    }
+
+    @Test
+    fun `sign out of a session the server already rejected counts as signed out`() = runBlocking {
+        signedInWith(storedSession())
+        executor.on("tatum-tech/signout", 401, error(401, "Token revoked"))
+        executor.on("tatum-tech/refreshToken", 401, error(401, "Refresh token expired"))
+
+        val failure = manager.signOutOrFail()
+
+        assertNull(failure)
+        assertFalse(manager.isSignedIn)
+        assertNull(store.stored)
+    }
+
+    @Test
+    fun `confirmed sign out without a session sends nothing`() = runBlocking {
+        assertNull(manager.signOutOrFail())
+
+        assertTrue(executor.requests.isEmpty())
+    }
+
     // endregion
 
     @Test

@@ -143,7 +143,11 @@ class TatumTechApiClient(
 
     /** Requires an access token in the configuration. */
     suspend fun signOut(): ApiResponse<EmptyStateInfo> =
-        post<TatumTechResponse<Any>>(TatumTechEndpoints.SIGN_OUT, authenticated = true).unwrapStatus()
+        post<TatumTechResponse<Any>>(
+            TatumTechEndpoints.SIGN_OUT,
+            body = emptyMap<String, Any>(),
+            authenticated = true
+        ).unwrapStatus()
 
     /** Requires an access token in the configuration. `null` names are left unchanged. */
     suspend fun updateUserProfile(firstName: String?, lastName: String?): ApiResponse<EmptyStateInfo> =

@@ -44,6 +44,7 @@ object DefaultErrorParser : ErrorParser {
         val root = try {
             JsonParser.parseString(body)
         } catch (e: Exception) {
+            e.printStackTrace()
             return emptyList()
         }
         if (!root.isJsonObject) return emptyList()
