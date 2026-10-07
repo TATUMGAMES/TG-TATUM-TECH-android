@@ -69,6 +69,7 @@ class TatumTechApplication : Application() {
             try {
                 AnalyticsService.recordUnhandledException(throwable)
             } catch (e: Exception) {
+                e.printStackTrace()
                 Logger.e(Constants.TAG, "Failed to record unhandled exception: ${e.message}")
             }
             previous?.uncaughtException(thread, throwable)

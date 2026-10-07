@@ -92,6 +92,7 @@ object Utils {
                 displayFormat.format(date ?: Date())
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             Logger.e(TAG, e.message)
             dateString
         }
@@ -105,6 +106,7 @@ object Utils {
             val sdf = SimpleDateFormat("MMM d, yyyy h:mm a", Locale.getDefault())
             sdf.format(Date(timestamp))
         } catch (e: Exception) {
+            e.printStackTrace()
             Logger.e(TAG, e.message)
             context.getString(R.string.to_be_determined)
         }

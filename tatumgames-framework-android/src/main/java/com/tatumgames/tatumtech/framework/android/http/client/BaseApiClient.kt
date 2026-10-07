@@ -212,6 +212,7 @@ abstract class BaseApiClient<T : BaseClientConfiguration>(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
+            e.printStackTrace()
             return failure(method, analyticsPath, null, HttpErrorType.UNEXPECTED, started) {
                 ApiError.Unexpected(e, metadata = null)
             }
@@ -231,6 +232,7 @@ abstract class BaseApiClient<T : BaseClientConfiguration>(
                 ApiError.Network(e, metadata(method, request.url, analyticsPath, started))
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             logTraffic(config) { logFailure(request, e, elapsedMs(sent)) }
             return failure(method, analyticsPath, null, HttpErrorType.UNEXPECTED, started) {
                 ApiError.Unexpected(e, metadata(method, request.url, analyticsPath, started))
@@ -283,6 +285,7 @@ abstract class BaseApiClient<T : BaseClientConfiguration>(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
+            e.printStackTrace()
             return failure(method, path, status.code, HttpErrorType.SERIALIZATION, started) {
                 ApiError.Serialization(e, status, response.body, metadata)
             }
@@ -330,6 +333,7 @@ abstract class BaseApiClient<T : BaseClientConfiguration>(
             client.block()
         } catch (e: Exception) {
             // Analytics must never change the outcome of a request.
+            e.printStackTrace()
         }
     }
 
@@ -343,6 +347,7 @@ abstract class BaseApiClient<T : BaseClientConfiguration>(
             logger.block()
         } catch (e: Exception) {
             // Logging must never change the outcome of a request.
+            e.printStackTrace()
         }
     }
 

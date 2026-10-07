@@ -49,6 +49,14 @@ class ApiErrorPresentationTest {
     }
 
     @Test
+    fun `rejected sign out is titled after it and reads as an expired session`() {
+        val presentation = presentApiError(http(401), ApiOperation.SIGN_OUT)
+
+        assertEquals(R.string.error_title_sign_out, presentation.title)
+        assertEquals(R.string.error_message_session_expired, presentation.message)
+    }
+
+    @Test
     fun `validation codes use the app's own copy`() {
         assertEquals(R.string.error_message_invalid_email, signUp(http(405, ErrorItem(code = "INVALID_EMAIL_FORMAT"))).message)
         assertEquals(R.string.error_passwords_do_not_match, signUp(http(406, ErrorItem(code = "PASSWORDS_DO_NOT_MATCH"))).message)

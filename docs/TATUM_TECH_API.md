@@ -127,7 +127,9 @@ Keystore keys are never backed up, so a session restored onto another device can
 - **Google**: after Firebase sign-in, `AuthScreen` sends the Google ID token to `tatum-tech/signin` (`signInWithGoogle`), waiting at most 10 seconds. If that fails, the user still enters the app, signed in with Google only.
 - **Launch**: `AuthActivity` opens the main screen directly when a Tatum Tech session is stored or Firebase still has a Google user; otherwise it shows the auth flow.
 - **Token refresh**: centralized in `TatumTechSessionManager.refreshIfNeeded()`. It runs in the background at launch, and before any call made through `authenticated { ... }`, which also retries once after a `401`. The access token (24 hours) is refreshed when it is within one hour of expiry, so active users stay signed in. If the server rejects the refresh token (400/401/403) the session is cleared and the next launch shows the auth flow; network failures never sign the user out.
-- **Sign out**: `TatumTechSessionManager.signOut()` calls `tatum-tech/signout` (best effort, 10-second limit) and always clears the stored session. Account deletion calls it before removing the Google account and local data.
+- **Sign out**: `tatum-tech/signout` is a `POST` with body `{}` and the bearer access token.
+  - `TatumTechSessionManager.signOut()` is best effort (10-second limit) and always clears the stored session. Account deletion calls it before removing the Google account and local data.
+  - `TatumTechSessionManager.signOutOrFail()` backs the Profile screen's Sign Out. It clears the session only when the server confirms, or when the session was already rejected (a refused refresh token clears it). Any other failure is returned and the user stays signed in.
 
 ### Developer bypass
 

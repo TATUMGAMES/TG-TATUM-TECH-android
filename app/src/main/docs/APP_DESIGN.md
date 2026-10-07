@@ -94,7 +94,8 @@ MainActivity
   - Failure: an `ApiErrorDialog` is shown (see [Feedback, Errors & Dialogs](#feedback-errors--dialogs)).
   - While a request runs, the submit button is replaced by a progress indicator and further submits are ignored; it returns after success or failure. Nothing is retried automatically: "Try Again" appears only for transient failures and sends the request again when the user taps it.
 - Inline validation (email format, password rules, password match) is shown as persistent red labels under the fields, using `Utils.isEmailValid` / `Utils.isPasswordValid`.
-- Session tokens are stored with `KeystoreSessionStore`. Account deletion (on `UserProfileScreen`, via `AccountDeletionManager`) also signs out. There is no standalone sign-out action.
+- Session tokens are stored with `KeystoreSessionStore`. Account deletion (on `UserProfileScreen`, via `AccountDeletionManager`) also signs out.
+- **Sign Out** (on `UserProfileScreen`, below Save) is a text link that opens the same Yes/No confirmation dialog as Delete Account. `UserProfileViewModel` runs `SignOutManager`, which signs out of the Tatum Tech API and, only on success, out of Firebase and Credential Manager. Both are cleared because `AuthActivity` treats either as an existing session. The app then opens `AuthActivity` with `FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TASK` (`openAuthScreen`). A failure keeps the user signed in on Profile and shows `ApiErrorDialog` (`ApiOperation.SIGN_OUT`). Room data and the account are kept.
 - `ChangePasswordScreen` exists but is not registered in either navigation graph.
 
 ---
