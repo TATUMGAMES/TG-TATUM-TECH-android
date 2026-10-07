@@ -162,8 +162,7 @@ fun GamesResourcesScreen(navController: NavController) {
 private fun GamesResourcePartnerCard(entry: GamesResourceEntry) {
     val context = LocalContext.current
     val partner = entry.partner
-    val logoData = partner.logo?.let { GameMediaResolver.resolve(context, "drawable:$it") }
-        ?: R.drawable.partners
+    val logoData = GameMediaResolver.resolvePartnerLogo(context, partner.logo) ?: R.drawable.partners
     val website = partner.websiteUrl
 
     Card(
