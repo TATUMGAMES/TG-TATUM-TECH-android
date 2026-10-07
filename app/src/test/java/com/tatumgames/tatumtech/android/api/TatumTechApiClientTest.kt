@@ -308,6 +308,7 @@ class TatumTechApiClientTest {
             assertEquals("42", id)
             assertEquals("Meetup", name)
             assertEquals(2, durationHours)
+            assertEquals("https://img", featuredImage)
             assertEquals("https://lu.ma/x", lumaUrl)
             assertEquals("Ada", virtualSpeakers.single().name)
         }
@@ -327,6 +328,7 @@ class TatumTechApiClientTest {
         val speaker = client().getEventSpeakers("e1").success().single()
 
         assertEquals("Analytical", speaker.companyName)
+        assertEquals("https://img", speaker.profileImage)
         assertEquals("Engines", speaker.speakingTopic)
         assertEquals("Day 1", speaker.speakingSchedule)
         assertEquals("18:00", speaker.startTime)

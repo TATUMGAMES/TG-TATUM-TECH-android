@@ -76,17 +76,7 @@ fun EventCard(
     var showFullscreenImage by remember { mutableStateOf(false) }
     val isColorBackground = event.featuredImage.startsWith("color://")
     val featuredImageData = remember(event.featuredImage) {
-        when {
-            isColorBackground -> null
-            event.featuredImage.startsWith("http", ignoreCase = true) ||
-                    event.featuredImage.startsWith("android.resource://") -> event.featuredImage
-
-            event.featuredImage.startsWith("drawable:") ->
-                GameMediaResolver.resolve(context, event.featuredImage)
-
-            else -> GameMediaResolver.resolve(context, "drawable:${event.featuredImage}")
-                ?: event.featuredImage
-        }
+        if (isColorBackground) null else GameMediaResolver.resolve(context, event.featuredImage)
     }
 
     Card(

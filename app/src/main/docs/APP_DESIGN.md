@@ -522,6 +522,6 @@ Use the named colors rather than hex literals.
 ## Resource Conventions
 
 - **Strings**: all user-facing text lives in `res/values/strings.xml` (English only), grouped by feature comments; composables use `stringResource`, non-composable code uses `context.getString`.
-- **Drawables**: feature-prefixed names (e.g. `pog_*`, `saint_art_puzzle_*`, partner logos by name). JSON assets reference drawables as `"drawable:<name>"` (games) or plain names (partner logos, achievement badges), resolved at runtime.
+- **Drawables**: feature-prefixed names (e.g. `pog_*`, `saint_art_puzzle_*`, partner logos by name). JSON assets reference drawables as `"drawable:<name>"` (games) or plain names (partner logos, speaker photos, event flyers, achievement badges), resolved at runtime. Content images (games, events, speakers, partners) all go through `GameMediaResolver.resolve`, which passes URLs from the API (`https://…`) to Coil unchanged and maps `drawable:<name>` or plain names to drawable ids.
 - **Assets** (`app/src/main/assets/`): curated content JSON (`games.json`, `partners.json`, `upcoming_events.json`, `career_listings.json`, `resources.json`, `games_resources.json`, `achievements.json`) and coding-challenge banks named `coding_challenges_<track>_<level>.json`. Asset validation tests live in `app/src/test/.../assets/`.
 - **Configuration**: Tatum Tech API settings come from `-PtatumTech.*` Gradle properties or the git-ignored `local.properties`, exposed through `BuildConfig`. Never put credentials in source files.
