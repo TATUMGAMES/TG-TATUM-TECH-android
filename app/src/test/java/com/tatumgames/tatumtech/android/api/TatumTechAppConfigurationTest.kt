@@ -44,17 +44,56 @@ class TatumTechAppConfigurationTest {
     }
 
     @Test
-    fun `unknown environment falls back to production`() {
-        assertEquals(TatumTechEnvironment.PRODUCTION, TatumTechEnvironment.fromName("bogus"))
+    fun `environment names are parsed leniently and unknown names are rejected`() {
         assertEquals(TatumTechEnvironment.STAGE, TatumTechEnvironment.fromName(" stage "))
+        assertEquals(TatumTechEnvironment.PRODUCTION, TatumTechEnvironment.fromName("PRODUCTION"))
+        assertNull(TatumTechEnvironment.fromName("bogus"))
+        assertNull(TatumTechEnvironment.fromName(null))
     }
 
     @Test
-    fun `build config defaults to the production network api`() {
+    fun `debug builds use stage unless production is requested explicitly`() {
+        assertEquals(TatumTechEnvironment.STAGE, TatumTechAppConfiguration.resolveEnvironment("STAGE", debugBuild = true))
+        assertEquals(TatumTechEnvironment.STAGE, TatumTechAppConfiguration.resolveEnvironment("", debugBuild = true))
+        assertEquals(TatumTechEnvironment.STAGE, TatumTechAppConfiguration.resolveEnvironment("bogus", debugBuild = true))
+        assertEquals(
+            TatumTechEnvironment.PRODUCTION,
+            TatumTechAppConfiguration.resolveEnvironment("PRODUCTION", debugBuild = true)
+        )
+    }
+
+    @Test
+    fun `release builds always use production`() {
+        listOf("STAGE", "PRODUCTION", "", "bogus").forEach {
+            assertEquals(TatumTechEnvironment.PRODUCTION, TatumTechAppConfiguration.resolveEnvironment(it, debugBuild = false))
+        }
+        val release = TatumTechAppConfiguration.create("STAGE", "NETWORK", "", 0, debugMode = false)
+        assertEquals("https://tg-api-new.uc.r.appspot.com", release.baseUrl)
+    }
+
+    @Test
+    fun `debug build config resolves to the stage api`() {
         val config = TatumTechAppConfiguration.fromBuildConfig()
 
-        assertEquals(TatumTechEnvironment.fromName(BuildConfig.TATUM_TECH_ENVIRONMENT), config.environment)
-        assertEquals(TatumTechDataSourceMode.fromName(BuildConfig.TATUM_TECH_DATA_SOURCE), config.dataSourceMode)
         assertEquals(BuildConfig.DEBUG, config.debugMode)
+        assertEquals(TatumTechDataSourceMode.fromName(BuildConfig.TATUM_TECH_DATA_SOURCE), config.dataSourceMode)
+        if (BuildConfig.DEBUG && !BuildConfig.TATUM_TECH_ENVIRONMENT_OVERRIDDEN) {
+            assertEquals(TatumTechEnvironment.STAGE, config.environment)
+            assertEquals("https://tg-api-new-stage.uc.r.appspot.com", config.baseUrl)
+        }
+        if (!BuildConfig.DEBUG) assertEquals(TatumTechEnvironment.PRODUCTION, config.environment)
+    }
+
+    @Test
+    fun `startup log names the environment and why it was chosen`() {
+        val stage = TatumTechAppConfiguration.create("STAGE", "NETWORK", "", 0, debugMode = true)
+        val description = TatumTechApiProvider.describeEnvironment(stage, overridden = false)
+
+        assertTrue(description, description.contains("STAGE"))
+        assertTrue(description, description.contains("https://tg-api-new-stage.uc.r.appspot.com"))
+        assertTrue(description, description.contains("debug build default"))
+        assertTrue(
+            TatumTechApiProvider.describeEnvironment(stage, overridden = true).contains("tatumTech.environment")
+        )
     }
 }

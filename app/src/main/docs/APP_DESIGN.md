@@ -91,8 +91,8 @@ MainActivity
   - Account deletion removes the Firebase user, signs out of Firebase, and calls `CredentialManager.clearCredentialState()`.
 - **SignInScreen / SignUpScreen / ForgotPasswordScreen** call `TatumTechSessionManager` (`signIn`, `signUp`, `forgotPassword`) and handle the `ApiResponse` result:
   - Success: sign-in/sign-up open the main flow; forgot-password shows a short confirmation Toast.
-  - Failure: an `AuthErrorDialog` is shown (see [Feedback, Errors & Dialogs](#feedback-errors--dialogs)).
-  - While a request runs, the submit button is replaced by its disabled outlined variant.
+  - Failure: an `ApiErrorDialog` is shown (see [Feedback, Errors & Dialogs](#feedback-errors--dialogs)).
+  - While a request runs, the submit button is replaced by a progress indicator and further submits are ignored; it returns after success or failure. Nothing is retried automatically: "Try Again" appears only for transient failures and sends the request again when the user taps it.
 - Inline validation (email format, password rules, password match) is shown as persistent red labels under the fields, using `Utils.isEmailValid` / `Utils.isPasswordValid`.
 - Session tokens are stored with `KeystoreSessionStore`. Account deletion (on `UserProfileScreen`, via `AccountDeletionManager`) also signs out. There is no standalone sign-out action.
 - `ChangePasswordScreen` exists but is not registered in either navigation graph.
@@ -461,21 +461,23 @@ Choose the mechanism by how much attention the message needs:
 
 | Mechanism | Used for | Examples |
 |---|---|---|
-| **Dialog** (`StandardAlertDialog`) | Errors or decisions that need acknowledgement | `AuthErrorDialog`, demographic age confirmation |
+| **Dialog** (`StandardAlertDialog`) | Errors or decisions that need acknowledgement | `ApiErrorDialog`, demographic age confirmation |
+| **Error state** (`ApiErrorState`) | Content that failed to load | Upcoming events, virtual speakers, partners |
 | **Dialog** (Material 3 `AlertDialog`) | Feature-specific dialogs with custom content | Partner details, contact picker, delete-account confirmation, notification permission explainer |
 | **Snackbar** | Save confirmations and recoverable issues on a screen with a `SnackbarHost` | Profile/demographic saved, contact card editor, scanner results |
 | **Toast** | Brief, non-blocking status that needs no acknowledgement | Reset email sent, "couldn't open link/email/dialer" fallbacks, debug-only reminder scheduled |
 | **Inline label** | Form validation | Red `Red300` text under auth fields |
 
-### Auth error dialog
-`AuthErrorDialog(error: ApiError, onDismiss)` in `ui/components/screens/auth/AuthNavigation.kt`:
-- Title `R.string.auth_error_title`, message from `authErrorMessage`, single `R.string.ok` button.
-- Dismissed only by OK (back press and outside taps are ignored).
-- Message mapping:
-  - `ApiError.Http`: first non-blank server message, trimmed and capped at 500 characters; otherwise `something_went_wrong`.
-  - `ApiError.Network`: `error_network_unavailable`.
-  - `ApiError.Serialization` / `ApiError.Unexpected`: `something_went_wrong` (technical details are never shown).
-- Screens keep the error in Compose state (`var authError by remember { mutableStateOf<ApiError?>(null) }`) and render the dialog from composition. Because it is not created from a `Context`, it is bound to the hosting Activity's window and disappears with the screen, so it cannot leak a window during navigation.
+### API errors
+API failures are interpreted in one place and screens never inspect status codes:
+
+1. `ApiErrorClassifier` (`api/error/`) turns an `ApiError` into an `ApiErrorKind`: `NETWORK_UNAVAILABLE`, `TIMEOUT`, `BAD_REQUEST`, `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`, `RATE_LIMITED`, `SERVER_ERROR`, `INVALID_RESPONSE`, or `UNKNOWN`. Known server codes (`TatumTechServerCode`, e.g. `USER_ALREADY_EXISTS`) take precedence over the status. Server text is kept only if `SafeServerMessage` accepts it (short sentences without markup, URLs, stack traces, or database/runtime wording).
+2. `presentApiError(error, operation)` (`ui/components/common/ApiErrorPresentation.kt`) picks the copy. Request-specific failures (validation, rejected credentials, conflicts) are titled after the `ApiOperation` ("Unable to Create Your Account"); connectivity and service failures use "We’ve Encountered an Issue". Known codes get the app's own message, otherwise a safe server sentence or the category's message. Network, timeout, 429, and 5xx failures are marked retryable.
+3. `ApiErrorDialog(error, operation, onDismiss, onRetry)` shows it with OK, or "Try Again" and Cancel when the failure is retryable and the screen passes `onRetry`. `ApiErrorState` is the inline variant with a "Try Again" button for content screens.
+
+Dialog titles and buttons use title case. Dialogs are dismissed only by their buttons (back press and outside taps are ignored).
+
+Screens keep the error in Compose state (`var authError by remember { mutableStateOf<ApiError?>(null) }`) and render the dialog from composition. Because it is not created from a `Context`, it is bound to the hosting Activity's window and disappears with the screen, so it cannot leak a window during navigation.
 
 ### Long dialog text
 `StandardAlertDialog` makes its description scrollable, so long messages never push the button off screen.

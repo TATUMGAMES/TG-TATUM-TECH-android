@@ -16,10 +16,13 @@ package com.tatumgames.tatumtech.android.api
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import com.tatumgames.tatumtech.android.BuildConfig
 import com.tatumgames.tatumtech.android.api.local.AndroidAssetJsonSource
 import com.tatumgames.tatumtech.android.api.session.KeystoreSessionStore
 import com.tatumgames.tatumtech.android.api.session.TatumTechSessionManager
+import com.tatumgames.tatumtech.android.constants.Constants.TAG
 import com.tatumgames.tatumtech.framework.android.http.analytics.AnalyticsClient
+import com.tatumgames.tatumtech.framework.android.logger.Logger
 
 /**
  * Application-wide holder of the single [TatumTechApiClient] and its [TatumTechSessionManager].
@@ -53,7 +56,18 @@ object TatumTechApiProvider {
                 TatumTechDataSources.createClient(configuration, AndroidAssetJsonSource(context), analyticsClient)
             },
             sessionFactory = { TatumTechSessionManager(::getInstance, KeystoreSessionStore(context)) }
-        )
+        ).also { Logger.i(TAG, describeEnvironment(configuration, BuildConfig.TATUM_TECH_ENVIRONMENT_OVERRIDDEN)) }
+    }
+
+    /** One line naming the deployment in use and why it was chosen, for the debug log. */
+    internal fun describeEnvironment(configuration: TatumTechClientConfiguration, overridden: Boolean): String {
+        val reason = when {
+            !configuration.debugMode -> "release build"
+            overridden -> "set by tatumTech.environment"
+            else -> "debug build default"
+        }
+        val name = configuration.environment?.name ?: "CUSTOM"
+        return "Tatum Tech API: $name ${configuration.baseUrl} ($reason), data source ${configuration.dataSourceMode}"
     }
 
     @VisibleForTesting

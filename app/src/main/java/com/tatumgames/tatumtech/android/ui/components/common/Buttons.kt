@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +30,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -100,5 +103,22 @@ fun RoundedButton(
             style = style,
             color = textColor
         )
+    }
+}
+
+/**
+ * Takes a submit button's place while its request runs, so the form shows progress and the
+ * button cannot be pressed again.
+ */
+@Composable
+fun ButtonProgressIndicator(
+    modifier: Modifier = Modifier,
+    contentDescription: String
+) {
+    Box(
+        modifier = modifier.semantics { this.contentDescription = contentDescription },
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(color = colorResource(R.color.purple_200))
     }
 }

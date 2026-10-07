@@ -240,7 +240,8 @@ class TatumTechSessionManager(
 
         const val SIGN_OUT_TIMEOUT_MS = 10_000L
 
-        private val REJECTION_CODES = setOf(400, 401, 403)
+        /** 419 is the API's `REFRESH_TOKEN_DOES_NOT_EXIST`. */
+        private val REJECTION_CODES = setOf(400, 401, 403, 419)
 
         private const val MISSING_ACCESS_TOKEN = "Auth response has no accessToken"
         private const val SESSION_REJECTED = "Tatum Tech refresh token rejected; signing out"

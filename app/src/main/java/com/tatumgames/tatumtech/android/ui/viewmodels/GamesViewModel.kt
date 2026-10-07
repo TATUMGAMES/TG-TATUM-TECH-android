@@ -16,10 +16,12 @@ package com.tatumgames.tatumtech.android.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tatumgames.tatumtech.android.constants.Constants.TAG
 import com.tatumgames.tatumtech.android.data.games.GameRepository
 import com.tatumgames.tatumtech.android.ui.models.GameDiscoveryUiState
 import com.tatumgames.tatumtech.android.ui.models.GameModel
 import com.tatumgames.tatumtech.android.ui.models.GamesCatalogSections
+import com.tatumgames.tatumtech.framework.android.logger.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -57,6 +59,7 @@ class GamesViewModel(
                     }
                 },
                 onFailure = { e ->
+                    Logger.w(TAG, "Games catalog failed to load: ${e.javaClass.name}: ${e.message}")
                     _uiState.update {
                         it.copy(
                             isLoading = false,
