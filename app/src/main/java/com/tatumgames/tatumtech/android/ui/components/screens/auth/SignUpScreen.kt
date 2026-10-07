@@ -48,6 +48,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.api.TatumTechApiProvider
+import com.tatumgames.tatumtech.android.ui.components.common.ApiErrorDialog
+import com.tatumgames.tatumtech.android.ui.components.common.ApiOperation
+import com.tatumgames.tatumtech.android.ui.components.common.ButtonProgressIndicator
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.OutlinedButton
 import com.tatumgames.tatumtech.android.ui.components.common.OutlinedInputField
@@ -106,6 +109,7 @@ fun SignUpScreen(
     val scope = rememberCoroutineScope()
 
     fun submitSignUp() {
+        if (isSubmitting) return
         isSubmitting = true
         scope.launch {
             val result = TatumTechApiProvider.getSessionManager()
@@ -121,7 +125,15 @@ fun SignUpScreen(
     }
 
     authError?.let { error ->
-        AuthErrorDialog(error = error, onDismiss = { authError = null })
+        ApiErrorDialog(
+            error = error,
+            operation = ApiOperation.SIGN_UP,
+            onDismiss = { authError = null },
+            onRetry = {
+                authError = null
+                submitSignUp()
+            }
+        )
     }
 
     Scaffold(
@@ -252,7 +264,14 @@ fun SignUpScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Sign-Up Button
-                if (isFormValid && !isSubmitting) {
+                if (isSubmitting) {
+                    ButtonProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp),
+                        contentDescription = stringResource(R.string.cd_request_in_progress)
+                    )
+                } else if (isFormValid) {
                     RoundedButton(
                         modifier = Modifier
                             .fillMaxWidth()

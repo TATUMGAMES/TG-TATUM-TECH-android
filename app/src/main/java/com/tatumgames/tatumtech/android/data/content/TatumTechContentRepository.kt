@@ -19,7 +19,6 @@ import com.tatumgames.tatumtech.android.api.TatumTechApiProvider
 import com.tatumgames.tatumtech.android.api.models.TatumTechEvent
 import com.tatumgames.tatumtech.android.api.models.TatumTechPartner
 import com.tatumgames.tatumtech.android.api.models.TatumTechSpeaker
-import com.tatumgames.tatumtech.android.constants.Constants.TAG
 import com.tatumgames.tatumtech.android.ui.components.screens.events.models.Event
 import com.tatumgames.tatumtech.android.ui.components.screens.events.models.VirtualSpeaker
 import com.tatumgames.tatumtech.android.ui.components.screens.events.models.inSpeakingOrder
@@ -29,7 +28,6 @@ import com.tatumgames.tatumtech.android.ui.models.PartnerContact
 import com.tatumgames.tatumtech.android.ui.models.PartnerLink
 import com.tatumgames.tatumtech.android.ui.models.PartnerSocialLinks
 import com.tatumgames.tatumtech.framework.android.http.response.ApiResponse
-import com.tatumgames.tatumtech.framework.android.logger.Logger
 
 /**
  * Events, speakers, and partners for the UI, loaded through [TatumTechApiClient] (live API or
@@ -43,7 +41,7 @@ class TatumTechContentRepository(
      * Upcoming events.
      */
     suspend fun getUpcomingEvents(): ApiResponse<List<Event>> =
-        clientProvider().getUpcomingEvents().logFailure("upcoming events").map { events ->
+        clientProvider().getUpcomingEvents().map { events ->
             events.map { it.toEvent() }
         }
 
@@ -51,7 +49,7 @@ class TatumTechContentRepository(
      * Speakers for [eventId] in speaking order.
      */
     suspend fun getEventSpeakers(eventId: String): ApiResponse<List<VirtualSpeaker>> =
-        clientProvider().getEventSpeakers(eventId).logFailure("event speakers").map { speakers ->
+        clientProvider().getEventSpeakers(eventId).map { speakers ->
             speakers.map { it.toVirtualSpeaker() }.inSpeakingOrder()
         }
 
@@ -59,13 +57,9 @@ class TatumTechContentRepository(
      * Partners associated with the events.
      */
     suspend fun getPartners(): ApiResponse<List<Partner>> =
-        clientProvider().getPartners().logFailure("partners").map { partners ->
+        clientProvider().getPartners().map { partners ->
             partners.map { it.toPartner() }
         }
-
-    private fun <T> ApiResponse<T>.logFailure(what: String): ApiResponse<T> = also {
-        if (it is ApiResponse.Failure) Logger.w(TAG, "Failed to load $what: ${it.error.message}")
-    }
 }
 
 internal fun TatumTechEvent.toEvent() = Event(

@@ -29,9 +29,9 @@ enum class TatumTechEnvironment(val baseUrl: String) {
         fun fromBaseUrl(baseUrl: String?): TatumTechEnvironment? =
             entries.firstOrNull { it.baseUrl.equals(baseUrl?.trimEnd('/'), ignoreCase = true) }
 
-        /** Parses an environment name (case-insensitive), falling back to [PRODUCTION]. */
-        fun fromName(name: String?): TatumTechEnvironment =
-            entries.firstOrNull { it.name.equals(name?.trim(), ignoreCase = true) } ?: PRODUCTION
+        /** Parses an environment name (case-insensitive), or `null` for blank or unknown names. */
+        fun fromName(name: String?): TatumTechEnvironment? =
+            entries.firstOrNull { it.name.equals(name?.trim(), ignoreCase = true) }
     }
 }
 

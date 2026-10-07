@@ -97,8 +97,13 @@ class TatumTechApiClientTest {
         with(executor.last) {
             assertEquals(HttpMethod.POST, method)
             assertEquals(url("tatum-tech/signup"), url)
+            assertEquals("application/json", headers["Accept"])
+            assertTrue(contentType.startsWith("application/json"))
             val body = json(body)
+            assertEquals("a@b.co", body["email"].asString)
+            assertEquals("pw", body["password"].asString)
             assertEquals("pw2", body["confirmPassword"].asString)
+            assertEquals("device-1", body["deviceId"].asString)
             assertEquals(4, body.size())
         }
     }
@@ -397,6 +402,58 @@ class TatumTechApiClientTest {
         val error = client().getEventDetails("e1").error()
 
         assertTrue(error is ApiError.Serialization)
+    }
+
+    @Test
+    fun `envelope error inside an http 200 becomes an http error with the api status`() = runBlocking {
+        executor.body = """{"status":{"statusCode":400,"statusMessage":"USER_ALREADY_EXISTS"},"data":{}}"""
+
+        val error = client().signUp("a@b.co", "pw123456", "pw123456", "device-1").error()
+
+        assertTrue(error is ApiError.Http)
+        with(error as ApiError.Http) {
+            assertEquals(400, statusCode.code)
+            assertEquals(200, responseStatusCode)
+            assertEquals("USER_ALREADY_EXISTS", errors.single().code)
+            assertEquals("tatum-tech/signup", metadata?.path)
+        }
+    }
+
+    @Test
+    fun `envelope errors are honored by endpoints without data`() = runBlocking {
+        executor.body = """{"status":{"statusCode":401,"statusMessage":"UNAUTHORIZED"},"data":{}}"""
+        val client = client(accessToken = "access-1")
+
+        listOf(
+            client.forgotPassword("a@b.co"),
+            client.resetPassword("verify-1", "pw"),
+            client.signOut(),
+            client.updateUserProfile("Ada", "Lovelace")
+        ).forEach { response ->
+            val error = response.error()
+            assertTrue("$error", error is ApiError.Http)
+            assertEquals(401, (error as ApiError.Http).statusCode.code)
+        }
+    }
+
+    @Test
+    fun `envelope success statuses pass through`() = runBlocking {
+        executor.body = """{"status":{"statusCode":201,"statusMessage":"CREATE_SUCCESS"},"data":{"accessToken":"a"}}"""
+
+        val session = client().signUp("a@b.co", "pw123456", "pw123456", "device-1").success()
+
+        assertEquals("a", session.accessToken)
+    }
+
+    @Test
+    fun `html 404 page from a missing deployment is an http 404`() = runBlocking {
+        executor.statusCode = 404
+        executor.body = "<html><head><title>404 Page Not Found</title></head><body>Not found</body></html>"
+
+        val error = client().signUp("a@b.co", "pw123456", "pw123456", "device-1").error()
+
+        assertTrue(error is ApiError.Http)
+        assertEquals(404, (error as ApiError.Http).statusCode.code)
     }
 
     @Test

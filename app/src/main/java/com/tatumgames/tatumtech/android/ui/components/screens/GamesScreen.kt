@@ -114,8 +114,7 @@ fun GamesScreen(navController: NavController) {
                     contentAlignment = Alignment.Center
                 ) {
                     StandardText(
-                        text = uiState.errorMessage
-                            ?: stringResource(R.string.something_went_wrong),
+                        text = stringResource(R.string.games_load_failed),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }

@@ -52,6 +52,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,6 +72,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.data.content.TatumTechContentRepository
+import com.tatumgames.tatumtech.android.ui.components.common.ApiErrorState
 import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
@@ -84,6 +86,10 @@ import com.tatumgames.tatumtech.android.ui.theme.Purple200
 import com.tatumgames.tatumtech.android.ui.theme.ScreenScaffoldLight
 import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.android.ui.utils.GameMediaResolver
+import com.tatumgames.tatumtech.framework.android.http.response.ApiError
+import com.tatumgames.tatumtech.framework.android.http.response.ApiResponse
+import kotlinx.coroutines.launch
+
 private const val CONTACT_EMAIL_SUBJECT =
     "Got Your Contact Info From Tatum Games. I Have Some Questions"
 
@@ -95,11 +101,24 @@ fun PartnersScreen(navController: NavController) {
     var selectedChip by remember { mutableStateOf(PartnerCategoryFilters.FILTER_ALL) }
     var detailPartner by remember { mutableStateOf<Partner?>(null) }
     var contactPickerPartner by remember { mutableStateOf<Partner?>(null) }
+    var loadError by remember { mutableStateOf<ApiError?>(null) }
     val contentRepository = remember { TatumTechContentRepository() }
+    val scope = rememberCoroutineScope()
+
+    suspend fun loadPartners() {
+        loadFinished = false
+        when (val result = contentRepository.getPartners()) {
+            is ApiResponse.Success -> {
+                partners = result.data
+                loadError = null
+            }
+            is ApiResponse.Failure -> loadError = result.error
+        }
+        loadFinished = true
+    }
 
     LaunchedEffect(Unit) {
-        partners = contentRepository.getPartners().getOrNull().orEmpty()
-        loadFinished = true
+        loadPartners()
     }
 
     val filtered = remember(partners, selectedChip) {
@@ -118,6 +137,7 @@ fun PartnersScreen(navController: NavController) {
         },
         containerColor = ScreenScaffoldLight
     ) { paddingValues ->
+        val error = loadError
         when {
             !loadFinished -> {
                 Box(
@@ -129,6 +149,20 @@ fun PartnersScreen(navController: NavController) {
                     StandardText(
                         text = stringResource(R.string.partners_loading),
                         style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+
+            error != null && partners.isEmpty() -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ApiErrorState(
+                        error = error,
+                        onRetry = { scope.launch { loadPartners() } }
                     )
                 }
             }
