@@ -146,7 +146,10 @@ fun CommunityScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    StandardText(text = "Error: $errorMessage")
+                    StandardText(
+                        text = stringResource(R.string.community_load_failed),
+                        modifier = Modifier.padding(24.dp)
+                    )
                 }
             } else {
                 // Content

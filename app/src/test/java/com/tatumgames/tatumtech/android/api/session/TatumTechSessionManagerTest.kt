@@ -292,6 +292,29 @@ class TatumTechSessionManagerTest {
         assertFalse(manager.isSignedIn)
     }
 
+    @Test
+    fun `refresh rejected inside an http 200 envelope signs out`() = runBlocking {
+        signedInWith(storedSession(expiresInMs = -1))
+        executor.on("tatum-tech/refreshToken", 200, error(419, "REFRESH_TOKEN_DOES_NOT_EXIST"))
+
+        assertEquals(TatumTechSessionManager.RefreshResult.SignedOut, manager.refreshIfNeeded())
+        assertNull(store.stored)
+        assertFalse(manager.isSignedIn)
+    }
+
+    @Test
+    fun `authenticated call retries after a 401 reported inside an http 200 envelope`() = runBlocking {
+        signedInWith(storedSession())
+        executor.on("tatum-tech/updateUserProfile", 200, error(401, "UNAUTHORIZED"))
+        executor.on("tatum-tech/refreshToken", 200, authBody("access-new"))
+        executor.on("tatum-tech/updateUserProfile", 200, ok)
+
+        val result = manager.authenticated { updateUserProfile("Ada", "Lovelace") }
+
+        assertTrue(result is ApiResponse.Success)
+        assertEquals(2, executor.requestsTo("tatum-tech/updateUserProfile").size)
+    }
+
     // endregion
 
     // region Sign-out

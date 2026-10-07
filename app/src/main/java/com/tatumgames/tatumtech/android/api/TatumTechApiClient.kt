@@ -14,6 +14,9 @@
  */
 package com.tatumgames.tatumtech.android.api
 
+import com.google.gson.Gson
+import com.tatumgames.tatumtech.android.api.error.ApiErrorClassifier
+import com.tatumgames.tatumtech.android.api.error.ApiErrorLogger
 import com.tatumgames.tatumtech.android.api.models.TatumTechAuthSession
 import com.tatumgames.tatumtech.android.api.models.TatumTechEmailSignInRequest
 import com.tatumgames.tatumtech.android.api.models.TatumTechEvent
@@ -33,6 +36,8 @@ import com.tatumgames.tatumtech.android.api.models.TatumTechSpeaker
 import com.tatumgames.tatumtech.android.api.models.TatumTechSpeakersData
 import com.tatumgames.tatumtech.android.api.models.TatumTechUpdateUserProfileRequest
 import com.tatumgames.tatumtech.framework.android.http.analytics.AnalyticsClient
+import com.tatumgames.tatumtech.framework.android.http.analytics.HttpErrorEvent
+import com.tatumgames.tatumtech.framework.android.http.analytics.HttpErrorType
 import com.tatumgames.tatumtech.framework.android.http.client.BaseApiClient
 import com.tatumgames.tatumtech.framework.android.http.config.BearerToken
 import com.tatumgames.tatumtech.framework.android.http.executor.HttpRequestExecutor
@@ -40,6 +45,8 @@ import com.tatumgames.tatumtech.framework.android.http.executor.OkHttpRequestExe
 import com.tatumgames.tatumtech.framework.android.http.response.ApiError
 import com.tatumgames.tatumtech.framework.android.http.response.ApiResponse
 import com.tatumgames.tatumtech.framework.android.http.response.EmptyStateInfo
+import com.tatumgames.tatumtech.framework.android.http.response.ErrorItem
+import com.tatumgames.tatumtech.framework.android.http.response.HttpStatusCode
 
 /**
  * Paths of the Tatum Tech API, relative to the configured base URL.
@@ -119,29 +126,32 @@ class TatumTechApiClient(
     }
 
     suspend fun forgotPassword(email: String): ApiResponse<EmptyStateInfo> =
-        post(TatumTechEndpoints.FORGOT_PASSWORD, body = TatumTechForgotPasswordRequest(email))
+        post<TatumTechResponse<Any>>(
+            TatumTechEndpoints.FORGOT_PASSWORD,
+            body = TatumTechForgotPasswordRequest(email)
+        ).unwrapStatus()
 
     suspend fun resetPassword(
         verifyToken: String,
         password: String,
         confirmPassword: String? = null,
         email: String? = null
-    ): ApiResponse<EmptyStateInfo> = post(
+    ): ApiResponse<EmptyStateInfo> = post<TatumTechResponse<Any>>(
         TatumTechEndpoints.RESET_PASSWORD,
         body = TatumTechResetPasswordRequest(verifyToken, password, confirmPassword, email)
-    )
+    ).unwrapStatus()
 
     /** Requires an access token in the configuration. */
     suspend fun signOut(): ApiResponse<EmptyStateInfo> =
-        post(TatumTechEndpoints.SIGN_OUT, authenticated = true)
+        post<TatumTechResponse<Any>>(TatumTechEndpoints.SIGN_OUT, authenticated = true).unwrapStatus()
 
     /** Requires an access token in the configuration. `null` names are left unchanged. */
     suspend fun updateUserProfile(firstName: String?, lastName: String?): ApiResponse<EmptyStateInfo> =
-        post(
+        post<TatumTechResponse<Any>>(
             TatumTechEndpoints.UPDATE_USER_PROFILE,
             body = TatumTechUpdateUserProfileRequest(firstName, lastName),
             authenticated = true
-        )
+        ).unwrapStatus()
 
     // region Events
     suspend fun getUpcomingEvents(): ApiResponse<List<TatumTechEvent>> =
@@ -176,7 +186,56 @@ class TatumTechApiClient(
 
     /** A 2xx envelope without `data` cannot satisfy a typed call, so it becomes a parse failure. */
     private fun <D> ApiResponse<TatumTechResponse<D>>.unwrapData(): ApiResponse<D> =
-        requireField("data") { it.data }
+        checkStatus().requireField("data") { it.data }
+
+    /** For calls whose `data` the app does not use; only the envelope status matters. */
+    private fun ApiResponse<TatumTechResponse<Any>>.unwrapStatus(): ApiResponse<EmptyStateInfo> =
+        when (val checked = checkStatus()) {
+            is ApiResponse.Failure -> checked
+            is ApiResponse.Success -> ApiResponse.Success(EmptyStateInfo(checked.statusCode), checked.statusCode, checked.metadata)
+        }
+
+    /**
+     * The API answers HTTP 200 even for failures and reports the outcome in `status.statusCode`
+     * (e.g. `406 PASSWORDS_DO_NOT_MATCH`), so a non-2xx envelope status becomes an
+     * [ApiError.Http] carrying that status, exactly like a non-2xx status line. Every failure is
+     * logged here, so all endpoints share one diagnostic path.
+     */
+    private fun <D> ApiResponse<TatumTechResponse<D>>.checkStatus(): ApiResponse<TatumTechResponse<D>> {
+        val success = when (this) {
+            is ApiResponse.Failure -> {
+                ApiErrorLogger.log(error, configuration)
+                return this
+            }
+            is ApiResponse.Success -> this
+        }
+        val status = success.data.status ?: return success
+        if (status.statusCode == 0 || status.statusCode in 200..299) return success
+
+        val reported = status.statusMessage?.trim()?.takeIf { it.isNotEmpty() }
+        val item = if (reported == null || ApiErrorClassifier.isMachineCode(reported)) {
+            ErrorItem(code = reported)
+        } else {
+            ErrorItem(message = reported)
+        }
+        val metadata = success.metadata
+        val error = ApiError.Http(
+            statusCode = HttpStatusCode.fromCode(status.statusCode),
+            errors = listOf(item),
+            rawBody = envelopeJson.toJson(mapOf("status" to status)),
+            metadata = metadata,
+            responseStatusCode = success.statusCode.code
+        )
+        try {
+            analyticsClient?.logHttpError(
+                HttpErrorEvent(metadata.method, metadata.path, status.statusCode, metadata.durationMs, HttpErrorType.HTTP)
+            )
+        } catch (e: Exception) {
+            // Analytics must never change the outcome of a request.
+        }
+        ApiErrorLogger.log(error, configuration)
+        return ApiResponse.Failure(error)
+    }
 
     private fun <S, D> ApiResponse<S>.requireField(name: String, select: (S) -> D?): ApiResponse<D> =
         when (this) {
@@ -189,7 +248,11 @@ class TatumTechApiClient(
                         statusCode = statusCode,
                         rawBody = null,
                         metadata = metadata
-                    )
+                    ).also { ApiErrorLogger.log(it, configuration) }
                 )
         }
+
+    private companion object {
+        val envelopeJson = Gson()
+    }
 }

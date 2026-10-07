@@ -28,7 +28,11 @@ fun tatumTechChoice(name: String, allowed: List<String>, default: String): Strin
 fun buildConfigString(value: String) = "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 
 val tatumTechDataSource = tatumTechChoice("dataSource", listOf("NETWORK", "LOCAL_JSON"), "NETWORK")
-val tatumTechEnvironment = tatumTechChoice("environment", listOf("PRODUCTION", "STAGE"), "PRODUCTION")
+// Development builds use STAGE unless tatumTech.environment explicitly asks for another
+// deployment, so they never reach production by accident. Release builds always use PRODUCTION.
+val tatumTechEnvironmentOverride = tatumTechProperty("environment")?.trim()?.takeIf { it.isNotEmpty() }
+    ?.also { require(it in listOf("PRODUCTION", "STAGE")) { "tatumTech.environment must be PRODUCTION or STAGE but was '$it'" } }
+val tatumTechEnvironment = tatumTechEnvironmentOverride ?: "STAGE"
 val tatumTechApiKey = tatumTechProperty("apiKey")?.trim().orEmpty()
 val tatumTechConnectTimeoutMs = tatumTechProperty("connectTimeoutMs")?.trim()
     ?.let { requireNotNull(it.toLongOrNull()?.takeIf { ms -> ms > 0 }) { "tatumTech.connectTimeoutMs must be a positive number" } }
@@ -51,6 +55,7 @@ android {
         // Tatum Tech API; the data source is independent of the build type.
         buildConfigField("String", "TATUM_TECH_DATA_SOURCE", buildConfigString(tatumTechDataSource))
         buildConfigField("String", "TATUM_TECH_ENVIRONMENT", buildConfigString(tatumTechEnvironment))
+        buildConfigField("boolean", "TATUM_TECH_ENVIRONMENT_OVERRIDDEN", "${tatumTechEnvironmentOverride != null}")
         buildConfigField("String", "TATUM_TECH_API_KEY", buildConfigString(tatumTechApiKey))
         // 0 = framework default.
         buildConfigField("long", "TATUM_TECH_CONNECT_TIMEOUT_MS", "${tatumTechConnectTimeoutMs}L")
@@ -66,6 +71,7 @@ android {
             // Store builds always use the live production API, never bundled fixtures or stage.
             buildConfigField("String", "TATUM_TECH_DATA_SOURCE", buildConfigString("NETWORK"))
             buildConfigField("String", "TATUM_TECH_ENVIRONMENT", buildConfigString("PRODUCTION"))
+            buildConfigField("boolean", "TATUM_TECH_ENVIRONMENT_OVERRIDDEN", "false")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
