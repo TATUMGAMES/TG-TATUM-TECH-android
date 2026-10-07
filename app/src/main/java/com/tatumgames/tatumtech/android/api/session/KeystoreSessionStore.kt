@@ -51,6 +51,7 @@ class KeystoreSessionStore(context: Context) : TatumTechSessionStore {
             session?.takeIf { it.accessToken != null && it.authMethod != null }
                 ?: run { clear(); null }
         } catch (e: Exception) {
+            e.printStackTrace()
             Logger.e(TAG, SESSION_UNREADABLE, e)
             clear()
             null

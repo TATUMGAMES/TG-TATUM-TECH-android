@@ -168,6 +168,7 @@ class TatumTechApiClientTest {
             assertEquals(HttpMethod.POST, method)
             assertEquals(url("tatum-tech/signout"), url)
             assertEquals("Bearer access-1", headers["Authorization"])
+            assertEquals("{}", body)
         }
     }
 

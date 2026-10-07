@@ -14,7 +14,7 @@
  */
 package com.tatumgames.tatumtech.android.ui.components.screens.main
 
-import android.content.Intent
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,8 +45,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,26 +58,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.tatumgames.tatumtech.android.R
-import com.tatumgames.tatumtech.android.activity.AuthActivity
 import com.tatumgames.tatumtech.android.analytics.AnalyticsService
 import com.tatumgames.tatumtech.android.analytics.ProfileFields
 import com.tatumgames.tatumtech.android.database.AppDatabase
 import com.tatumgames.tatumtech.android.database.repository.UserDatabaseRepository
+import com.tatumgames.tatumtech.android.ui.components.common.ApiErrorDialog
+import com.tatumgames.tatumtech.android.ui.components.common.ApiOperation
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.OutlinedButton
 import com.tatumgames.tatumtech.android.ui.components.common.RoundedButton
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
+import com.tatumgames.tatumtech.android.ui.components.screens.auth.openAuthScreen
+import com.tatumgames.tatumtech.android.ui.theme.Black
 import com.tatumgames.tatumtech.android.ui.theme.DestructiveRed
 import com.tatumgames.tatumtech.android.ui.theme.Purple500
 import com.tatumgames.tatumtech.android.ui.theme.White
+import com.tatumgames.tatumtech.android.ui.viewmodels.UserProfileViewModel
+import com.tatumgames.tatumtech.android.ui.viewmodels.factory.UserProfileViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -97,6 +106,12 @@ fun UserProfileScreen(
     var isLoading by remember { mutableStateOf(true) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var isDeleting by remember { mutableStateOf(false) }
+    val viewModel: UserProfileViewModel = viewModel(factory = UserProfileViewModelFactory(context))
+    val signOutState by viewModel.signOutState.collectAsState()
+
+    LaunchedEffect(signOutState.isSignedOut) {
+        if (signOutState.isSignedOut) openAuthScreen(context)
+    }
 
     // Load user data
     LaunchedEffect(Unit) {
@@ -252,6 +267,11 @@ fun UserProfileScreen(
                             }
                         }
                     )
+
+                    SignOutText(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        onClick = viewModel::requestSignOut
+                    )
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -267,21 +287,61 @@ fun UserProfileScreen(
     }
 
     if (showDeleteDialog) {
-        DeleteAccountDialog(
-            isDeleting = isDeleting,
+        AccountConfirmationDialog(
+            title = R.string.delete_account,
+            message = R.string.delete_account_dialog_message,
+            progressMessage = R.string.deleting_account,
+            isInProgress = isDeleting,
+            isDestructive = true,
             onConfirm = {
                 isDeleting = true
                 scope.launch {
                     AccountDeletionManager.deleteAccount(context)
-                    val intent = Intent(context, AuthActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    }
-                    context.startActivity(intent)
+                    openAuthScreen(context)
                 }
             },
             onDismiss = { if (!isDeleting) showDeleteDialog = false }
         )
     }
+
+    if (signOutState.isConfirmationVisible) {
+        AccountConfirmationDialog(
+            title = R.string.sign_out,
+            message = R.string.sign_out_dialog_message,
+            progressMessage = R.string.signing_out,
+            isInProgress = signOutState.isSigningOut,
+            isDestructive = false,
+            onConfirm = viewModel::confirmSignOut,
+            onDismiss = viewModel::cancelSignOut
+        )
+    }
+
+    signOutState.error?.let { error ->
+        ApiErrorDialog(
+            error = error,
+            operation = ApiOperation.SIGN_OUT,
+            onDismiss = viewModel::dismissError,
+            onRetry = viewModel::confirmSignOut
+        )
+    }
+}
+
+/** A text link rather than a button, so it stays visually subordinate to Save. */
+@Composable
+private fun SignOutText(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    StandardText(
+        text = stringResource(R.string.sign_out),
+        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+        color = Black,
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(role = Role.Button, onClick = onClick)
+            .minimumInteractiveComponentSize()
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+    )
 }
 
 @Composable
@@ -312,44 +372,53 @@ private fun DeleteAccountButton(
 }
 
 /**
- * "No" is the primary (purple) action. While [isDeleting] the dialog cannot be dismissed, so
- * deletion is never interrupted halfway.
+ * Yes/No confirmation for account actions; "No" is the primary (purple) action. While
+ * [isInProgress] the dialog shows [progressMessage] and cannot be dismissed, so the action is
+ * never interrupted halfway or submitted twice.
+ *
+ * @param isDestructive Adds the warning icon and colors "Yes" red.
  */
 @Composable
-private fun DeleteAccountDialog(
-    isDeleting: Boolean,
+private fun AccountConfirmationDialog(
+    @StringRes title: Int,
+    @StringRes message: Int,
+    @StringRes progressMessage: Int,
+    isInProgress: Boolean,
+    isDestructive: Boolean,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
-            dismissOnBackPress = !isDeleting,
-            dismissOnClickOutside = !isDeleting
+            dismissOnBackPress = !isInProgress,
+            dismissOnClickOutside = !isInProgress
         ),
-        icon = {
-            Icon(
-                imageVector = Icons.Default.Warning,
-                contentDescription = stringResource(R.string.content_description_warning),
-                tint = DestructiveRed
-            )
+        icon = if (isDestructive) {
+            {
+                Icon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = stringResource(R.string.content_description_warning),
+                    tint = DestructiveRed
+                )
+            }
+        } else {
+            null
         },
         title = {
             StandardText(
-                text = stringResource(R.string.delete_account),
+                text = stringResource(title),
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
             )
         },
         text = {
             StandardText(
-                text = stringResource(
-                    if (isDeleting) R.string.deleting_account else R.string.delete_account_dialog_message
-                ),
+                text = stringResource(if (isInProgress) progressMessage else message),
                 style = MaterialTheme.typography.bodyMedium
             )
         },
         confirmButton = {
-            if (isDeleting) {
+            if (isInProgress) {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = Purple500)
                 }
@@ -358,13 +427,14 @@ private fun DeleteAccountDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+                    val confirmColor = if (isDestructive) DestructiveRed else colorResource(R.color.purple_200)
                     OutlinedButton(
                         text = stringResource(R.string.yes),
                         modifier = Modifier
                             .weight(1f)
                             .height(48.dp),
-                        borderColor = DestructiveRed,
-                        textColor = DestructiveRed,
+                        borderColor = confirmColor,
+                        textColor = confirmColor,
                         onClick = onConfirm
                     )
                     RoundedButton(

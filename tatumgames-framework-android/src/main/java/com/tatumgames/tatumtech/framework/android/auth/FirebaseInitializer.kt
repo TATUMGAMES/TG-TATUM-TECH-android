@@ -50,6 +50,7 @@ object FirebaseInitializer {
                 isInitialized = true
                 Logger.d(TAG, FIREBASE_INITIALIZED_SUCCESSFULLY)
             } catch (e: Exception) {
+                e.printStackTrace()
                 Logger.e(TAG, FIREBASE_FAILED_TO_INITIALIZE, e)
                 throw e
             }

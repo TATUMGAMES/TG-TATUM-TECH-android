@@ -152,6 +152,7 @@ object AnalyticsService {
         try {
             analytics?.logEvent(name, params)
         } catch (e: Exception) {
+            e.printStackTrace()
             Logger.e(TAG, "Failed to log analytics event $name: ${e.message}")
         }
     }
