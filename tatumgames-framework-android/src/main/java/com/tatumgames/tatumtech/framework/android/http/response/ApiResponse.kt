@@ -16,6 +16,8 @@ package com.tatumgames.tatumtech.framework.android.http.response
 
 import com.tatumgames.tatumtech.framework.android.http.executor.HttpMethod
 import java.io.IOException
+import java.io.InterruptedIOException
+import java.net.SocketTimeoutException
 
 /**
  * Where and how long a request went, captured for both outcomes.
@@ -69,13 +71,18 @@ sealed class ApiError {
     abstract val metadata: ResponseMetadata?
 
     /**
-     * The server answered with a non-2xx status.
+     * The server answered with a non-2xx status, either in the status line or, for APIs that
+     * always answer 200, in the response body.
+     *
+     * @param responseStatusCode Status line of the response when it differs from [statusCode],
+     * e.g. `200` for a body that reports `406`; `null` when [statusCode] is the status line.
      */
     data class Http(
         val statusCode: HttpStatusCode,
         val errors: List<ErrorItem>,
         val rawBody: String?,
-        override val metadata: ResponseMetadata
+        override val metadata: ResponseMetadata,
+        val responseStatusCode: Int? = null
     ) : ApiError() {
         override val message: String
             get() = errors.firstNotNullOfOrNull { it.message } ?: statusCode.toString()
@@ -89,6 +96,11 @@ sealed class ApiError {
         override val metadata: ResponseMetadata
     ) : ApiError() {
         override val message: String get() = cause.message ?: "Network error"
+
+        /** The connection was made or attempted but a connect, read, write, or call timeout expired. */
+        val isTimeout: Boolean
+            get() = cause is SocketTimeoutException ||
+                (cause is InterruptedIOException && cause.message?.contains("timeout", ignoreCase = true) == true)
     }
 
     /**

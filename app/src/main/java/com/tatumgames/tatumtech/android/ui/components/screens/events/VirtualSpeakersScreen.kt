@@ -44,6 +44,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,6 +63,7 @@ import com.tatumgames.tatumtech.android.BuildConfig
 import com.tatumgames.tatumtech.android.R
 import com.tatumgames.tatumtech.android.data.content.TatumTechContentRepository
 import com.tatumgames.tatumtech.android.reminders.MeetingReminders
+import com.tatumgames.tatumtech.android.ui.components.common.ApiErrorState
 import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.common.StandardText
@@ -73,6 +75,9 @@ import com.tatumgames.tatumtech.android.ui.theme.ScreenScaffoldLight
 import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.android.ui.utils.GameMediaResolver
 import com.tatumgames.tatumtech.android.utils.Utils.openUrl
+import com.tatumgames.tatumtech.framework.android.http.response.ApiError
+import com.tatumgames.tatumtech.framework.android.http.response.ApiResponse
+import kotlinx.coroutines.launch
 
 /**
  * @param highlightedSpeakerId Speaker to scroll to and outline, e.g. when opened from a meeting
@@ -87,11 +92,24 @@ fun VirtualSpeakersScreen(
     val contentRepository = remember { TatumTechContentRepository() }
     var speakers by remember(eventId) { mutableStateOf<List<VirtualSpeaker>>(emptyList()) }
     var isLoading by remember(eventId) { mutableStateOf(true) }
+    var loadError by remember(eventId) { mutableStateOf<ApiError?>(null) }
     val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+
+    suspend fun loadSpeakers() {
+        isLoading = true
+        when (val result = contentRepository.getEventSpeakers(eventId)) {
+            is ApiResponse.Success -> {
+                speakers = result.data
+                loadError = null
+            }
+            is ApiResponse.Failure -> loadError = result.error
+        }
+        isLoading = false
+    }
 
     LaunchedEffect(eventId) {
-        speakers = contentRepository.getEventSpeakers(eventId).getOrNull().orEmpty()
-        isLoading = false
+        loadSpeakers()
     }
 
     LaunchedEffect(speakers, highlightedSpeakerId) {
@@ -111,6 +129,7 @@ fun VirtualSpeakersScreen(
         },
         containerColor = ScreenScaffoldLight
     ) { padding ->
+        val error = loadError
         if (isLoading) {
             Box(
                 modifier = Modifier
@@ -119,6 +138,18 @@ fun VirtualSpeakersScreen(
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
+            }
+        } else if (error != null && speakers.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                ApiErrorState(
+                    error = error,
+                    onRetry = { scope.launch { loadSpeakers() } }
+                )
             }
         } else if (speakers.isEmpty()) {
             Column(

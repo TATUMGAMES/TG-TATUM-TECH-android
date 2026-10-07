@@ -24,12 +24,6 @@ import com.tatumgames.tatumtech.android.activity.MainActivity
 import com.tatumgames.tatumtech.android.reminders.MeetingReminderDestination
 import com.tatumgames.tatumtech.android.ui.components.common.StandardAlertDialog
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthError
-import com.tatumgames.tatumtech.framework.android.http.response.ApiError
-
-/**
- * Server messages beyond this length are cut short so the dialog stays readable.
- */
-internal const val MAX_AUTH_ERROR_MESSAGE_LENGTH = 500
 
 /**
  * Enters the app's main flow and removes the auth flow from the back stack.
@@ -45,52 +39,14 @@ fun openMainScreen(context: Context, reminderDestination: MeetingReminderDestina
 }
 
 /**
- * Explains why a Tatum Tech auth request failed. Only dismissed by pressing OK, so the
- * user can't miss it; back presses and outside taps are ignored.
- *
- * Shown from composition (not a [Context]), so it is tied to the hosting Activity's
- * window and is removed automatically if the screen leaves composition.
- */
-@Composable
-fun AuthErrorDialog(error: ApiError, onDismiss: () -> Unit) {
-    StandardAlertDialog(
-        title = stringResource(R.string.auth_error_title),
-        description = authErrorMessage(
-            error = error,
-            networkMessage = stringResource(R.string.error_network_unavailable),
-            genericMessage = stringResource(R.string.something_went_wrong)
-        ),
-        confirmButtonText = stringResource(R.string.ok),
-        onConfirm = onDismiss
-    )
-}
-
-/**
- * User-facing text for [error]. Server-provided HTTP messages are shown as-is (trimmed and
- * length-capped); anything else falls back to localized copy so no technical detail leaks.
- */
-internal fun authErrorMessage(
-    error: ApiError,
-    networkMessage: String,
-    genericMessage: String
-): String = when (error) {
-    is ApiError.Http -> error.errors
-        .firstNotNullOfOrNull { it.message?.trim()?.takeIf(String::isNotEmpty) }
-        ?.let(::capLength)
-        ?: genericMessage
-    is ApiError.Network -> networkMessage
-    is ApiError.Serialization, is ApiError.Unexpected -> genericMessage
-}
-
-/**
- * Explains why Google sign-in failed, using the same dialog as other auth errors. Not shown
- * when the user simply dismissed Google's account sheet.
+ * Explains why Google sign-in failed in the standard dialog, titled like other sign-in errors.
+ * Not shown when the user simply dismissed Google's account sheet.
  */
 @Composable
 fun GoogleAuthErrorDialog(error: GoogleAuthError, onDismiss: () -> Unit) {
     val messageRes = googleAuthErrorMessageRes(error) ?: return
     StandardAlertDialog(
-        title = stringResource(R.string.auth_error_title),
+        title = stringResource(R.string.error_title_sign_in),
         description = stringResource(messageRes),
         confirmButtonText = stringResource(R.string.ok),
         onConfirm = onDismiss
@@ -104,15 +60,8 @@ fun GoogleAuthErrorDialog(error: GoogleAuthError, onDismiss: () -> Unit) {
 @StringRes
 internal fun googleAuthErrorMessageRes(error: GoogleAuthError): Int? = when (error) {
     GoogleAuthError.Cancelled -> null
-    GoogleAuthError.Network -> R.string.error_network_unavailable
+    GoogleAuthError.Network -> R.string.error_message_network
     GoogleAuthError.NoCredentialAvailable,
     GoogleAuthError.ProviderUnavailable -> R.string.google_sign_in_unavailable
     else -> R.string.google_sign_in_failed
 }
-
-private fun capLength(message: String): String =
-    if (message.length <= MAX_AUTH_ERROR_MESSAGE_LENGTH) {
-        message
-    } else {
-        message.take(MAX_AUTH_ERROR_MESSAGE_LENGTH).trimEnd() + "…"
-    }

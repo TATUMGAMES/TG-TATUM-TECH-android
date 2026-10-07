@@ -27,7 +27,7 @@ All settings are build-time values read from Gradle properties (`-P...`) or from
 
 | Property | Values | Default | Notes |
 |---|---|---|---|
-| `tatumTech.environment` | `PRODUCTION`, `STAGE` | `PRODUCTION` | Release builds always use `PRODUCTION`. |
+| `tatumTech.environment` | `PRODUCTION`, `STAGE` | `STAGE` | Debug builds only. Release builds always use `PRODUCTION`. |
 | `tatumTech.dataSource` | `NETWORK`, `LOCAL_JSON` | `NETWORK` | Release builds always use `NETWORK`. Independent of debug/release. |
 | `tatumTech.apiKey` | string | none | Sent as `x-api-key` when set. It is compiled into the APK, so treat it as a public client key. |
 | `tatumTech.connectTimeoutMs` | positive number | framework default (15 s) | |
@@ -56,17 +56,20 @@ In this mode events, event details, speakers, partners, and partner details are 
 
 ### Run against the stage API
 
-```properties
-# local.properties
-tatumTech.environment=STAGE
-tatumTech.dataSource=NETWORK
-```
-
-or `./gradlew :app:installDebug -PtatumTech.environment=STAGE`.
+This is the default for debug builds: remove `tatumTech.environment` from `local.properties` (or set it to `STAGE`) and keep `tatumTech.dataSource=NETWORK`.
 
 ### Run against the production API
 
-This is the default: remove the `tatumTech.*` lines from `local.properties`, or set `tatumTech.environment=PRODUCTION` and `tatumTech.dataSource=NETWORK`. Release builds always use production.
+Release builds always use production. To point a debug build at production, opt in explicitly:
+
+```properties
+# local.properties
+tatumTech.environment=PRODUCTION
+```
+
+or `./gradlew :app:installDebug -PtatumTech.environment=PRODUCTION`.
+
+At startup debug builds log the selected environment, base URL, and why it was chosen (debug build default, set by `tatumTech.environment`, or release build), e.g. `Tatum Tech API: STAGE https://tg-api-new-stage.uc.r.appspot.com (debug build default), data source NETWORK`.
 
 Rebuild after changing any of these values; they are compiled into `BuildConfig`.
 
@@ -96,6 +99,14 @@ Client methods are `suspend` functions that are safe to call from the main threa
 ### Debug HTTP logging
 
 Debug builds log every request under the Logcat tag `RQ` and every response (or network failure) under `RS`, with pretty-printed JSON, headers, status, and duration. Filter Logcat with `tag:RQ | tag:RS`. It covers both `NETWORK` and `LOCAL_JSON` modes because `BaseApiClient` logs around whichever executor it uses. Passwords, tokens, secrets, and the `Authorization`/`x-api-key` headers are masked. Release builds never log: it requires both the framework's debug build type and `debugMode` in the client configuration. To customize it (tags, masking, body size), pass a `PrettyHttpTrafficLogger` or your own `HttpTrafficLogger` as `trafficLogger` to `BaseApiClient`; pass `null` to turn it off.
+
+### Response envelope and errors
+
+The API answers `{"status":{"statusCode":N,"statusMessage":"CODE"},"data":{...}}` and reports most failures inside an HTTP 200 response, for example `{"status":{"statusCode":406,"statusMessage":"PASSWORDS_DO_NOT_MATCH"},"data":{}}`. `TatumTechApiClient` checks `status.statusCode` on every response: anything other than 2xx becomes `ApiError.Http` with the API status as `statusCode`, the HTTP status as `responseStatusCode`, and the code as an `ErrorItem`. This also applies to endpoints without data (forgot/reset password, sign-out, profile update), so a rejected request is never reported as success. Observed codes include `USER_ALREADY_EXISTS` (400), `INVALID_EMAIL_FORMAT` (405), `INVALID_PASSWORD_FORMAT` and `PASSWORDS_DO_NOT_MATCH` (406), `WRONG_EMAIL_OR_PASSWORD` (414), `REFRESH_TOKEN_DOES_NOT_EXIST` (419), `UNAUTHORIZED` (401), and `EVENT_NOT_FOUND` (404). A refresh rejected with 400, 401, 403, or 419 signs the user out.
+
+Every failure is logged once in debug builds under the app tag `TG_TatumTech` by `ApiErrorLogger`: environment, method, path (no query string), HTTP and API status, server code, error type, exception, duration, and a summarized response body (credential-like JSON values masked, HTML pages reduced to their title). Request bodies and headers are never included. The API does not return a request ID.
+
+How errors reach the user is described in `app/src/main/docs/APP_DESIGN.md` under "API errors".
 
 ## Authentication
 

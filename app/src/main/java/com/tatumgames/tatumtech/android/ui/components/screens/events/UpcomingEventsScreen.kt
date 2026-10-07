@@ -31,6 +31,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,13 +45,17 @@ import com.tatumgames.tatumtech.android.reminders.MeetingReminders
 import com.tatumgames.tatumtech.android.database.AppDatabase
 import com.tatumgames.tatumtech.android.database.repository.ContactCardDatabaseRepository
 import com.tatumgames.tatumtech.android.database.repository.UserDatabaseRepository
+import com.tatumgames.tatumtech.android.ui.components.common.ApiErrorState
 import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
 import com.tatumgames.tatumtech.android.ui.components.common.Header
 import com.tatumgames.tatumtech.android.ui.components.navigation.routes.NavRoutes
 import com.tatumgames.tatumtech.android.ui.components.screens.events.models.Event
 import com.tatumgames.tatumtech.android.ui.components.screens.networking.NetworkingContactSection
 import com.tatumgames.tatumtech.android.ui.theme.ScreenScaffoldLight
+import com.tatumgames.tatumtech.framework.android.http.response.ApiError
+import com.tatumgames.tatumtech.framework.android.http.response.ApiResponse
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,15 +70,26 @@ fun UpcomingEventsScreen(
 
     var events by remember { mutableStateOf<List<Event>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
+    var loadError by remember { mutableStateOf<ApiError?>(null) }
     var hasContactCard by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    suspend fun loadEvents() {
+        isLoading = true
+        when (val result = contentRepository.getUpcomingEvents()) {
+            is ApiResponse.Success -> {
+                events = result.data.sortedBy { it.date }
+                loadError = null
+                MeetingReminders.sync(context, result.data)
+            }
+            is ApiResponse.Failure -> loadError = result.error
+        }
+        isLoading = false
+    }
 
     LaunchedEffect(Unit) {
-        isLoading = true
-        val loaded = contentRepository.getUpcomingEvents().getOrNull()
-        events = loaded.orEmpty().sortedBy { it.date }
-        isLoading = false
-        loaded?.let { MeetingReminders.sync(context, it) }
+        loadEvents()
 
         val user = userRepository.getCurrentUser()
         if (user != null) {
@@ -124,6 +140,11 @@ fun UpcomingEventsScreen(
                             },
                             modifier = Modifier.padding(top = 8.dp)
                         )
+                    }
+                    loadError?.let { error ->
+                        item(key = "load_error") {
+                            ApiErrorState(error = error, onRetry = { scope.launch { loadEvents() } })
+                        }
                     }
                     items(
                         items = events,

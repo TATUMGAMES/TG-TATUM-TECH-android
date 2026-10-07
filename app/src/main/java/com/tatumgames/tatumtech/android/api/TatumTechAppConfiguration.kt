@@ -32,8 +32,21 @@ object TatumTechAppConfiguration {
     )
 
     /**
+     * Release builds always use [TatumTechEnvironment.PRODUCTION]. Debug builds use the requested
+     * environment, or [TatumTechEnvironment.STAGE] when none is recognized, so a development build
+     * never reaches production unless a developer explicitly asks for it.
+     */
+    fun resolveEnvironment(requested: String?, debugBuild: Boolean): TatumTechEnvironment =
+        if (!debugBuild) {
+            TatumTechEnvironment.PRODUCTION
+        } else {
+            TatumTechEnvironment.fromName(requested) ?: TatumTechEnvironment.STAGE
+        }
+
+    /**
      * @param apiKey Blank for none.
      * @param connectTimeoutMs `0` or less for the framework default.
+     * @param debugMode Whether this is a debug build; see [resolveEnvironment].
      */
     internal fun create(
         environment: String,
@@ -42,7 +55,7 @@ object TatumTechAppConfiguration {
         connectTimeoutMs: Long,
         debugMode: Boolean
     ): TatumTechClientConfiguration = TatumTechClientConfiguration.Builder()
-        .setEnvironment(TatumTechEnvironment.fromName(environment))
+        .setEnvironment(resolveEnvironment(environment, debugBuild = debugMode))
         .setDataSourceMode(TatumTechDataSourceMode.fromName(dataSource))
         .setApiKey(apiKey.takeIf { it.isNotBlank() })
         .setHttpClientTimeout(connectTimeoutMs.takeIf { it > 0 })
