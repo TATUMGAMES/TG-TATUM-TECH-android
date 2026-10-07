@@ -36,6 +36,7 @@ import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.CLEAR_CREDENTIAL_STATE_FAILED
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.CREDENTIAL_MANAGER_EXCEPTION
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.DELETE_FIREBASE_USER_FAILED
+import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.FIREBASE_SIGN_OUT_FAILED
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.FIREBASE_INIT_ERROR
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.FIREBASE_SIGN_IN_FAILED
 import com.tatumgames.tatumtech.framework.android.auth.GoogleAuthClientMessages.GOOGLE_AUTH_INITIALIZATION_FAILED
@@ -76,6 +77,7 @@ object GoogleAuthClientMessages {
     internal const val FIREBASE_INIT_ERROR = "Failed to initialize Firebase"
     internal const val DELETE_FIREBASE_USER_FAILED = "Failed to delete Firebase user"
     internal const val CLEAR_CREDENTIAL_STATE_FAILED = "Failed to clear credential state"
+    internal const val FIREBASE_SIGN_OUT_FAILED = "Failed to sign out of Firebase"
 }
 
 /**
@@ -100,6 +102,7 @@ object GoogleAuthClient {
         try {
             FirebaseInitializer.initialize(configuration.context)
         } catch (e: Exception) {
+            e.printStackTrace()
             Logger.e(TAG, FIREBASE_INIT_ERROR, e)
             configuration.callback.onGoogleAuthFailure(GoogleAuthError.FirebaseInitializationFailed)
             return
@@ -110,6 +113,7 @@ object GoogleAuthClient {
                 val idToken = requestGoogleIdToken(configuration) ?: return@launch
                 authenticateWithFirebase(configuration, idToken)
             } catch (e: Exception) {
+                e.printStackTrace()
                 Logger.e(TAG, GOOGLE_AUTH_INITIALIZATION_FAILED, e)
                 configuration.callback.onGoogleAuthFailure(
                     GoogleAuthError.InitializationError(e.message ?: UNKNOWN_ERROR)
@@ -196,6 +200,7 @@ object GoogleAuthClient {
         FirebaseInitializer.initialize(context.applicationContext)
         FirebaseAuth.getInstance().currentUser != null
     } catch (e: Exception) {
+        e.printStackTrace()
         Logger.e(TAG, FIREBASE_INIT_ERROR, e)
         false
     }
@@ -227,6 +232,7 @@ object GoogleAuthClient {
             }
             auth.signOut()
         } catch (e: Exception) {
+            e.printStackTrace()
             remoteDeleted = false
             Logger.e(TAG, DELETE_FIREBASE_USER_FAILED, e)
         }
@@ -235,10 +241,37 @@ object GoogleAuthClient {
             CredentialManager.create(appContext)
                 .clearCredentialState(ClearCredentialStateRequest())
         } catch (e: Exception) {
+            e.printStackTrace()
             Logger.e(TAG, CLEAR_CREDENTIAL_STATE_FAILED, e)
         }
 
         return remoteDeleted
+    }
+
+    /**
+     * Signs out of Firebase and clears Credential Manager state so the next sign-in shows the
+     * account picker again. The Firebase user itself is kept. Both steps are best-effort.
+     *
+     * @param context Any context; the application context is used internally.
+     */
+    suspend fun signOut(context: Context) {
+        val appContext = context.applicationContext
+
+        try {
+            FirebaseInitializer.initialize(appContext)
+            FirebaseAuth.getInstance().signOut()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Logger.e(TAG, FIREBASE_SIGN_OUT_FAILED, e)
+        }
+
+        try {
+            CredentialManager.create(appContext)
+                .clearCredentialState(ClearCredentialStateRequest())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Logger.e(TAG, CLEAR_CREDENTIAL_STATE_FAILED, e)
+        }
     }
 
     private suspend fun awaitTask(task: Task<*>): Boolean =

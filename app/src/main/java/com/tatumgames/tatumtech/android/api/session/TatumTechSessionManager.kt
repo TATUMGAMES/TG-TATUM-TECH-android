@@ -159,6 +159,24 @@ class TatumTechSessionManager(
         refreshMutex.withLock { clearLocked() }
     }
 
+    /**
+     * Signs out of the Tatum Tech API and clears the local session only once the server confirms
+     * it, so a failed request leaves the user signed in and able to retry. A session the server
+     * already rejected (its refresh token was refused, which clears it) also counts as signed out.
+     *
+     * @return `null` once signed out (also when there was no session); the failure otherwise.
+     */
+    suspend fun signOutOrFail(): ApiError? {
+        if (session == null) return null
+        val response = authenticated { signOut() }
+        if (response is ApiResponse.Failure && session != null) {
+            Logger.w(TAG, "$SIGN_OUT_FAILED: ${response.error.message}")
+            return response.error
+        }
+        refreshMutex.withLock { clearLocked() }
+        return null
+    }
+
     private fun isNearExpiry(session: TatumTechSession): Boolean =
         session.expiresAtMillis?.let { it - clock() <= REFRESH_WINDOW_MS } ?: false
 

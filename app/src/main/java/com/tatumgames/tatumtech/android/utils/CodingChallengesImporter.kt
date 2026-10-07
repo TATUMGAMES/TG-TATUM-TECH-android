@@ -104,11 +104,13 @@ object CodingChallengesImporter {
                             Log.d(TAG, "Synced ${entities.size} questions from $file")
                         }
                     } catch (e: Exception) {
+                        e.printStackTrace()
                         Log.e(TAG, "Error syncing from $file: ${e.message}")
                     }
                 }
                 Log.d(TAG, "Sync completed. Total question rows upserted: $totalUpserted")
             } catch (e: Exception) {
+                e.printStackTrace()
                 Log.e(TAG, "Error during sync: ${e.message}")
             }
         }
@@ -134,6 +136,7 @@ object CodingChallengesImporter {
                     )
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 Log.e(TAG, "Error during importFromAssetsIfDbEmpty: ${e.message}")
             }
         }
@@ -213,6 +216,7 @@ object CodingChallengesImporter {
                 )
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             Log.e(TAG, "Error loading $fileName: ${e.message}")
             emptyList()
         }

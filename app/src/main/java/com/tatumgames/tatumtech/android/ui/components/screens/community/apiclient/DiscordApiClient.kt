@@ -121,6 +121,7 @@ class DiscordApiClient {
                 )
                 ApiResult.Error("Network error: ${e.message}", e)
             } catch (e: Exception) {
+                e.printStackTrace()
                 val durationMs = System.currentTimeMillis() - started
                 Logger.e(Constants.TAG, "API error: ${e.message}")
                 AnalyticsService.apiError(

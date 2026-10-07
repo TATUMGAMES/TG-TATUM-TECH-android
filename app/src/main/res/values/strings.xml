@@ -53,6 +53,7 @@
     <string name="error_title_sign_up">Unable to Create Your Account</string>
     <string name="error_title_forgot_password">Unable to Send Reset Email</string>
     <string name="error_title_load_content">Unable to Load Content</string>
+    <string name="error_title_sign_out">Unable to Sign Out</string>
     <string name="error_message_network">We couldn’t connect to the server. Please check your internet connection and try again.</string>
     <string name="error_message_timeout">The request is taking longer than expected. Please try again.</string>
     <string name="error_message_bad_request">Some of the information you entered couldn’t be accepted. Please check it and try again.</string>
@@ -546,6 +547,9 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="deleting_account">Deleting account…</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_out_dialog_message">Are you sure you want to sign out?</string>
+    <string name="signing_out">Signing out…</string>
     <string name="content_description_delete_account">Delete account</string>
     <string name="content_description_warning">Warning</string>
 

@@ -32,7 +32,7 @@ enum class ApiOperation(@StringRes val failureTitle: Int) {
     SIGN_UP(R.string.error_title_sign_up),
     FORGOT_PASSWORD(R.string.error_title_forgot_password),
     LOAD_CONTENT(R.string.error_title_load_content),
-    GENERAL(R.string.error_title_generic)
+    SIGN_OUT(R.string.error_title_sign_out)
 }
 
 /**

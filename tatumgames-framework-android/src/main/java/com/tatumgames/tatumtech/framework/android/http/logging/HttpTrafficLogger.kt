@@ -156,8 +156,8 @@ class PrettyHttpTrafficLogger(
     }
 
     internal companion object {
-        const val TAG_REQUEST = "RQ"
-        const val TAG_RESPONSE = "RS"
+        const val TAG_REQUEST = "RQ-"
+        const val TAG_RESPONSE = "RS-"
         const val REDACTED = "██ redacted ██"
         const val DEFAULT_MAX_BODY_CHARS = 50_000
         const val MAX_CHUNK_CHARS = 3_500
