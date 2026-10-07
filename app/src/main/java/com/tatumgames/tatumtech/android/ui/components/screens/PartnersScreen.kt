@@ -308,7 +308,7 @@ fun PartnerCard(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val logoData = GameMediaResolver.resolvePartnerLogo(context, partner.logo) ?: R.drawable.partners
+    val logoData = GameMediaResolver.resolve(context, partner.logo) ?: R.drawable.partners
 
     Card(
         onClick = onOpenDetails,
@@ -599,7 +599,7 @@ private fun PartnerDetailDialog(
     onContact: () -> Unit
 ) {
     val context = LocalContext.current
-    val logoData = GameMediaResolver.resolvePartnerLogo(context, partner.logo) ?: R.drawable.partners
+    val logoData = GameMediaResolver.resolve(context, partner.logo) ?: R.drawable.partners
 
     AlertDialog(
         onDismissRequest = onDismiss,

@@ -191,9 +191,7 @@ private fun VirtualSpeakerCard(
 ) {
     val context = LocalContext.current
     val imageData = remember(speaker.profileImage) {
-        speaker.profileImage?.let { name ->
-            GameMediaResolver.resolve(context, "drawable:$name")
-        }
+        GameMediaResolver.resolve(context, speaker.profileImage)
     }
     val placeholder = painterResource(R.drawable.male_profile_default)
 

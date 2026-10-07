@@ -18,45 +18,33 @@ import android.content.Context
 import com.tatumgames.tatumtech.android.ui.models.GameModel
 
 /**
- * Resolves catalog media references for Coil / AsyncImage.
+ * Resolves image references from content (API responses or bundled JSON) into data for
+ * Coil / AsyncImage. Every content image (games, events, speakers, partners) goes through
+ * [resolve], so screens never need to know where an image comes from.
  *
  * Supports:
- * - `drawable:name` → local drawable resource id
- * - http(s) URLs → passed through for remote loading
+ * - URIs with a scheme (`https://…`, `http://…`, `android.resource://…`) → passed through unchanged
+ * - `drawable:name` or a bare `name` → local drawable resource id
  */
 object GameMediaResolver {
 
     private const val DRAWABLE_PREFIX = "drawable:"
-    private const val HTTPS = "https://"
-    private const val HTTP = "http://"
-
-    fun resolve(context: Context, ref: String?): Any? {
-        if (ref.isNullOrBlank()) return null
-        if (ref.startsWith(DRAWABLE_PREFIX)) {
-            val name = ref.removePrefix(DRAWABLE_PREFIX)
-            val id = context.resources.getIdentifier(name, "drawable", context.packageName)
-            return id.takeIf { it != 0 }
-        }
-        return ref
-    }
+    private val URI_SCHEME = Regex("^[a-zA-Z][a-zA-Z0-9+.-]*://")
 
     /**
-     * Partner logos come either from the API as absolute http(s) URLs, which are loaded exactly as
-     * given, or from bundled `partners.json` as drawable names (`partner_logo_x`, optionally
-     * `drawable:`-prefixed).
-     *
-     * @return The URL or drawable id for Coil, or `null` when there is nothing to load.
+     * @return The URI string or drawable id for Coil, or `null` when the reference is blank or names
+     * a drawable that doesn't exist, so the caller's placeholder/fallback is shown.
      */
-    fun resolvePartnerLogo(context: Context, logo: String?): Any? =
-        resolvePartnerLogo(logo) { name ->
-            context.resources.getIdentifier(name, "drawable", context.packageName)
-        }
+    fun resolve(context: Context, ref: String?): Any? =
+        resolve(ref) { name -> context.resources.getIdentifier(name, "drawable", context.packageName) }
 
-    internal fun resolvePartnerLogo(logo: String?, drawableId: (String) -> Int): Any? {
-        val ref = logo?.trim().orEmpty()
-        if (ref.isEmpty()) return null
-        if (ref.startsWith(HTTPS, ignoreCase = true) || ref.startsWith(HTTP, ignoreCase = true)) return ref
-        return drawableId(ref.removePrefix(DRAWABLE_PREFIX)).takeIf { it != 0 }
+    internal fun resolve(ref: String?, drawableId: (String) -> Int): Any? {
+        val value = ref?.trim().orEmpty()
+        if (value.isEmpty()) return null
+        if (URI_SCHEME.containsMatchIn(value)) return value
+        val name = value.removePrefix(DRAWABLE_PREFIX)
+        if (name.isEmpty()) return null
+        return drawableId(name).takeIf { it != 0 }
     }
 
     fun isComingSoon(game: GameModel): Boolean =
