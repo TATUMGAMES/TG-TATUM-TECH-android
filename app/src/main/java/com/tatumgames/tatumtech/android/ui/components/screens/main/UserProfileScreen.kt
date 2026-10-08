@@ -68,8 +68,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.tatumgames.tatumtech.android.R
-import com.tatumgames.tatumtech.android.analytics.AnalyticsService
-import com.tatumgames.tatumtech.android.analytics.ProfileFields
 import com.tatumgames.tatumtech.android.database.AppDatabase
 import com.tatumgames.tatumtech.android.database.repository.UserDatabaseRepository
 import com.tatumgames.tatumtech.android.ui.components.common.ApiErrorDialog
@@ -85,9 +83,7 @@ import com.tatumgames.tatumtech.android.ui.theme.Purple500
 import com.tatumgames.tatumtech.android.ui.theme.White
 import com.tatumgames.tatumtech.android.ui.viewmodels.UserProfileViewModel
 import com.tatumgames.tatumtech.android.ui.viewmodels.factory.UserProfileViewModelFactory
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun UserProfileScreen(
@@ -108,9 +104,17 @@ fun UserProfileScreen(
     var isDeleting by remember { mutableStateOf(false) }
     val viewModel: UserProfileViewModel = viewModel(factory = UserProfileViewModelFactory(context))
     val signOutState by viewModel.signOutState.collectAsState()
+    val saveState by viewModel.saveState.collectAsState()
 
     LaunchedEffect(signOutState.isSignedOut) {
         if (signOutState.isSignedOut) openAuthScreen(context)
+    }
+
+    LaunchedEffect(saveState.isSaved) {
+        if (saveState.isSaved) {
+            viewModel.consumeSaved()
+            snackbarHostState.showSnackbar("Profile updated successfully!")
+        }
     }
 
     // Load user data
@@ -225,47 +229,11 @@ fun UserProfileScreen(
 
                     // Save Button
                     RoundedButton(
-                        text = "Save",
+                        text = if (saveState.isSaving) stringResource(R.string.saving_profile) else "Save",
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(60.dp),
-                        onClick = {
-                            // Update user in database
-                            CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
-                                val currentUser = userRepository.getCurrentUser()
-                                if (currentUser != null) {
-                                    val newFirst = firstName.ifBlank { null }
-                                    val newLast = lastName.ifBlank { null }
-                                    val newEmail = email.ifBlank { null }
-                                    val changedFields = buildList {
-                                        if (currentUser.firstName != newFirst) {
-                                            add(ProfileFields.FIRST_NAME)
-                                        }
-                                        if (currentUser.lastName != newLast) {
-                                            add(ProfileFields.LAST_NAME)
-                                        }
-                                        if (currentUser.email != newEmail) {
-                                            add(ProfileFields.EMAIL)
-                                        }
-                                    }
-                                    val updatedUser = currentUser.copy(
-                                        firstName = newFirst,
-                                        lastName = newLast,
-                                        email = newEmail
-                                        // Keep the original username unchanged
-                                    )
-                                    userRepository.updateUser(updatedUser)
-                                    changedFields.forEach { field ->
-                                        AnalyticsService.updateProfile(field)
-                                    }
-
-                                    // Show success message on main thread
-                                    withContext(kotlinx.coroutines.Dispatchers.Main) {
-                                        snackbarHostState.showSnackbar("Profile updated successfully!")
-                                    }
-                                }
-                            }
-                        }
+                        onClick = { viewModel.save(firstName, lastName, email) }
                     )
 
                     SignOutText(
@@ -322,6 +290,15 @@ fun UserProfileScreen(
             operation = ApiOperation.SIGN_OUT,
             onDismiss = viewModel::dismissError,
             onRetry = viewModel::confirmSignOut
+        )
+    }
+
+    saveState.error?.let { error ->
+        ApiErrorDialog(
+            error = error,
+            operation = ApiOperation.UPDATE_PROFILE,
+            onDismiss = viewModel::dismissSaveError,
+            onRetry = { viewModel.save(firstName, lastName, email) }
         )
     }
 }

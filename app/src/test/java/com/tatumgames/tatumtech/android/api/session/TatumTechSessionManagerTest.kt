@@ -5,6 +5,7 @@ import com.tatumgames.tatumtech.android.api.TatumTechApiClient
 import com.tatumgames.tatumtech.android.api.TatumTechClientConfiguration
 import com.tatumgames.tatumtech.android.api.TatumTechEnvironment
 import com.tatumgames.tatumtech.android.api.models.TatumTechUser
+import com.tatumgames.tatumtech.framework.android.http.executor.HttpMethod
 import com.tatumgames.tatumtech.framework.android.http.executor.HttpRequest
 import com.tatumgames.tatumtech.framework.android.http.executor.HttpRequestExecutor
 import com.tatumgames.tatumtech.framework.android.http.executor.HttpResponse
@@ -420,6 +421,55 @@ class TatumTechSessionManagerTest {
     @Test
     fun `confirmed sign out without a session sends nothing`() = runBlocking {
         assertNull(manager.signOutOrFail())
+
+        assertTrue(executor.requests.isEmpty())
+    }
+
+    // endregion
+
+    // region Profile
+
+    @Test
+    fun `profile update posts both names with the bearer token`() = runBlocking {
+        signedInWith(storedSession())
+        executor.on("tatum-tech/updateUserProfile", 200, ok)
+
+        val failure = manager.updateUserProfile("Tatum2", "Tech1")
+
+        assertNull(failure)
+        with(executor.requestsTo("tatum-tech/updateUserProfile").single()) {
+            assertEquals(HttpMethod.POST, method)
+            assertEquals("Bearer access-old", headers["Authorization"])
+            assertEquals("""{"firstName":"Tatum2","lastName":"Tech1"}""", body)
+        }
+    }
+
+    @Test
+    fun `profile update leaves missing names out of the body`() = runBlocking {
+        signedInWith(storedSession())
+        executor.on("tatum-tech/updateUserProfile", 200, ok)
+        executor.on("tatum-tech/updateUserProfile", 200, ok)
+
+        manager.updateUserProfile("Ada", null)
+        manager.updateUserProfile(null, null)
+
+        assertEquals(listOf("""{"firstName":"Ada"}""", "{}"), executor.requestsTo("tatum-tech/updateUserProfile").map { it.body })
+    }
+
+    @Test
+    fun `failed profile update returns the error and keeps the session`() = runBlocking {
+        signedInWith(storedSession())
+        executor.on("tatum-tech/updateUserProfile", 500, error(500, "Server error"))
+
+        val failure = manager.updateUserProfile("Ada", "Lovelace")
+
+        assertEquals(500, (failure as ApiError.Http).statusCode.code)
+        assertTrue(manager.isSignedIn)
+    }
+
+    @Test
+    fun `profile update without a session sends nothing`() = runBlocking {
+        assertNull(manager.updateUserProfile("Ada", "Lovelace"))
 
         assertTrue(executor.requests.isEmpty())
     }

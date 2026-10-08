@@ -44,6 +44,7 @@ import com.tatumgames.tatumtech.android.data.content.TatumTechContentRepository
 import com.tatumgames.tatumtech.android.reminders.MeetingReminders
 import com.tatumgames.tatumtech.android.database.AppDatabase
 import com.tatumgames.tatumtech.android.database.repository.ContactCardDatabaseRepository
+import com.tatumgames.tatumtech.android.database.repository.RecentNotificationDatabaseRepository
 import com.tatumgames.tatumtech.android.database.repository.UserDatabaseRepository
 import com.tatumgames.tatumtech.android.ui.components.common.ApiErrorState
 import com.tatumgames.tatumtech.android.ui.components.common.BottomNavigationBar
@@ -66,6 +67,9 @@ fun UpcomingEventsScreen(
     val db = remember { AppDatabase.getInstance(context) }
     val userRepository = remember { UserDatabaseRepository(db.userDao()) }
     val contactCardRepository = remember { ContactCardDatabaseRepository(db.contactCardDao()) }
+    val notificationRepository = remember {
+        RecentNotificationDatabaseRepository(db.recentNotificationDao(), db.codingQuestionDao())
+    }
     val contentRepository = remember { TatumTechContentRepository() }
 
     var events by remember { mutableStateOf<List<Event>>(emptyList()) }
@@ -82,6 +86,7 @@ fun UpcomingEventsScreen(
                 events = result.data.sortedBy { it.date }
                 loadError = null
                 MeetingReminders.sync(context, result.data)
+                notificationRepository.recordEventNotifications(context, result.data)
             }
             is ApiResponse.Failure -> loadError = result.error
         }
