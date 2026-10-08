@@ -16,6 +16,7 @@ package com.tatumgames.tatumtech.android.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tatumgames.tatumtech.android.ui.models.ProfileSaveUiState
 import com.tatumgames.tatumtech.android.ui.models.SignOutUiState
 import com.tatumgames.tatumtech.framework.android.http.response.ApiError
 import kotlinx.coroutines.CoroutineScope
@@ -26,18 +27,44 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * Sign-out flow of the Profile screen: confirmation, a single in-flight request, and the result.
+ * Save and sign-out flows of the Profile screen: a single in-flight request each, and the result.
  *
  * @param signOut Signs out; returns `null` on success or the API failure.
+ * @param saveProfile Saves the trimmed names and email (`null` when blank); returns `null` on
+ * success or the API failure.
  * @param scope Overrides [viewModelScope], for tests.
  */
 class UserProfileViewModel(
     private val signOut: suspend () -> ApiError?,
+    private val saveProfile: suspend (firstName: String?, lastName: String?, email: String?) -> ApiError?,
     private val scope: CoroutineScope? = null
 ) : ViewModel() {
 
     private val _signOutState = MutableStateFlow(SignOutUiState())
     val signOutState: StateFlow<SignOutUiState> = _signOutState.asStateFlow()
+
+    private val _saveState = MutableStateFlow(ProfileSaveUiState())
+    val saveState: StateFlow<ProfileSaveUiState> = _saveState.asStateFlow()
+
+    /** Ignored while a save is running, so it is never sent twice. */
+    fun save(firstName: String, lastName: String, email: String) {
+        val current = _saveState.value
+        if (current.isSaving) return
+        _saveState.value = current.copy(isSaving = true, isSaved = false, error = null)
+
+        (scope ?: viewModelScope).launch {
+            val failure = saveProfile(firstName.nonBlank(), lastName.nonBlank(), email.nonBlank())
+            _saveState.value = ProfileSaveUiState(isSaved = failure == null, error = failure)
+        }
+    }
+
+    fun consumeSaved() {
+        _saveState.update { it.copy(isSaved = false) }
+    }
+
+    fun dismissSaveError() {
+        _saveState.update { it.copy(error = null) }
+    }
 
     fun requestSignOut() {
         _signOutState.update { if (it.isSigningOut) it else it.copy(isConfirmationVisible = true) }
@@ -68,4 +95,6 @@ class UserProfileViewModel(
     fun dismissError() {
         _signOutState.update { it.copy(error = null) }
     }
+
+    private fun String.nonBlank(): String? = trim().ifEmpty { null }
 }

@@ -32,15 +32,22 @@ class UserProfileViewModelTest {
 
     private var calls = 0
     private var pending = CompletableDeferred<ApiError?>()
+    private val saves = mutableListOf<Triple<String?, String?, String?>>()
+    private var pendingSave = CompletableDeferred<ApiError?>()
     private val viewModel = UserProfileViewModel(
         signOut = {
             calls++
             pending.await()
         },
+        saveProfile = { firstName, lastName, email ->
+            saves += Triple(firstName, lastName, email)
+            pendingSave.await()
+        },
         scope = CoroutineScope(Dispatchers.Unconfined)
     )
 
     private val state get() = viewModel.signOutState.value
+    private val saveState get() = viewModel.saveState.value
 
     private val offline = ApiError.Network(
         IOException("offline"),
@@ -151,4 +158,74 @@ class UserProfileViewModelTest {
         assertNull(state.error)
         assertFalse(state.isSignedOut)
     }
+
+    // region Save
+
+    @Test
+    fun `save sends the trimmed names and email`() {
+        viewModel.save(" Ada ", "Lovelace\n", " ada@example.com ")
+
+        assertEquals(listOf(Triple("Ada", "Lovelace", "ada@example.com")), saves)
+        assertTrue(saveState.isSaving)
+    }
+
+    @Test
+    fun `blank fields are saved as missing`() {
+        viewModel.save("Ada", "   ", "")
+
+        assertEquals(listOf(Triple("Ada", null, null)), saves)
+    }
+
+    @Test
+    fun `repeated saves while saving send one request`() {
+        viewModel.save("Ada", "Lovelace", "")
+        viewModel.save("Ada", "Lovelace", "")
+        viewModel.save("Grace", "Hopper", "")
+
+        assertEquals(1, saves.size)
+    }
+
+    @Test
+    fun `successful save is confirmed once`() {
+        viewModel.save("Ada", "Lovelace", "")
+
+        pendingSave.complete(null)
+
+        assertFalse(saveState.isSaving)
+        assertTrue(saveState.isSaved)
+        assertNull(saveState.error)
+
+        viewModel.consumeSaved()
+
+        assertFalse(saveState.isSaved)
+    }
+
+    @Test
+    fun `failed save keeps the error for the standard dialog and allows a retry`() {
+        viewModel.save("Ada", "Lovelace", "")
+        pendingSave.complete(offline)
+
+        assertFalse(saveState.isSaving)
+        assertFalse(saveState.isSaved)
+        assertSame(offline, saveState.error)
+
+        pendingSave = CompletableDeferred()
+        viewModel.save("Ada", "Lovelace", "")
+
+        assertEquals(2, saves.size)
+        assertNull(saveState.error)
+        assertTrue(saveState.isSaving)
+    }
+
+    @Test
+    fun `dismissing the save error clears it`() {
+        viewModel.save("Ada", "Lovelace", "")
+        pendingSave.complete(offline)
+
+        viewModel.dismissSaveError()
+
+        assertNull(saveState.error)
+    }
+
+    // endregion
 }

@@ -20,8 +20,8 @@ import com.tatumgames.tatumtech.android.database.dao.CodingQuestionDao
 import com.tatumgames.tatumtech.android.database.dao.RecentNotificationDao
 import com.tatumgames.tatumtech.android.database.entity.RecentNotificationEntity
 import com.tatumgames.tatumtech.android.enums.NotificationType
+import com.tatumgames.tatumtech.android.ui.components.screens.events.models.Event
 import com.tatumgames.tatumtech.android.ui.components.screens.notifications.RecentNotificationPolicy
-import com.tatumgames.tatumtech.android.data.content.TatumTechContentRepository
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -30,15 +30,17 @@ import java.util.TimeZone
 /**
  * Creates, deduplicates, retains, and marks recent notifications.
  * Generation is content-keyed (stable ids) — not regenerated from display text.
+ *
+ * Never requests content itself: event notifications come from [recordEventNotifications], called
+ * with the events the Upcoming Events screen loaded.
  */
 class RecentNotificationDatabaseRepository(
     private val notificationDao: RecentNotificationDao,
-    private val codingQuestionDao: CodingQuestionDao,
-    private val contentRepository: TatumTechContentRepository = TatumTechContentRepository()
+    private val codingQuestionDao: CodingQuestionDao
 ) {
 
     /**
-     * Syncs candidates from app content, purges obsolete/expired rows, returns display list.
+     * Syncs candidates from local content, purges obsolete/expired rows, returns display list.
      */
     suspend fun refreshAndLoad(context: Context, nowMillis: Long = System.currentTimeMillis()):
         List<RecentNotificationEntity> {
@@ -47,7 +49,6 @@ class RecentNotificationDatabaseRepository(
 
         val dayKey = dayKey(nowMillis)
         ensureCodingChallengeNotification(context, dayKey, nowMillis)
-        ensureEventNotifications(context, nowMillis)
         ensureSpotlightNotifications(context, dayKey, nowMillis)
 
         val cutoff = nowMillis - RecentNotificationPolicy.READ_RETENTION_MS
@@ -85,10 +86,14 @@ class RecentNotificationDatabaseRepository(
         )
     }
 
-    private suspend fun ensureEventNotifications(context: Context, nowMillis: Long) {
+    /** Adds a notification for each of the first three [events]; ones already recorded are kept. */
+    suspend fun recordEventNotifications(
+        context: Context,
+        events: List<Event>,
+        nowMillis: Long = System.currentTimeMillis()
+    ) {
         val type = NotificationType.EVENT
-        // Unavailable events add no notifications; others are still generated.
-        contentRepository.getUpcomingEvents().getOrNull().orEmpty().take(3).forEach { event ->
+        events.take(3).forEach { event ->
             notificationDao.insertIgnore(
                 RecentNotificationEntity(
                     id = RecentNotificationPolicy.eventId(event.id),
