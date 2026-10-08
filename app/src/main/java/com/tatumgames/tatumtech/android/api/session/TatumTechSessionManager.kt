@@ -177,6 +177,18 @@ class TatumTechSessionManager(
         return null
     }
 
+    /**
+     * Saves the account's names; `null` names are left out of the request and stay unchanged.
+     *
+     * @return `null` once saved (also when there is no session, so no account to update); the
+     * failure otherwise.
+     */
+    suspend fun updateUserProfile(firstName: String?, lastName: String?): ApiError? {
+        if (session == null) return null
+        val response = authenticated { updateUserProfile(firstName, lastName) }
+        return (response as? ApiResponse.Failure)?.error
+    }
+
     private fun isNearExpiry(session: TatumTechSession): Boolean =
         session.expiresAtMillis?.let { it - clock() <= REFRESH_WINDOW_MS } ?: false
 

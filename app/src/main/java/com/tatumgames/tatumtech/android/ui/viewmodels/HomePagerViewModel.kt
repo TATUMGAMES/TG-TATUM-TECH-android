@@ -56,7 +56,6 @@ class HomePagerViewModel(
 
     init {
         initializeUser()
-        refreshNotifications()
     }
 
     val pagerCategories: List<HomePagerCategory> = HomePagerCategory.entries
